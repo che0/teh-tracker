@@ -1,0 +1,16 @@
+{% extends "primitive_base.html" %}
+{% block fulltitle %}404 Not Found{% endblock %}
+
+{% block head %}
+<style>
+<!--
+body { background-color: black; color: gray; text-align: center; }
+-->
+</style>
+{% endblock %}
+
+{% block body %}
+<h1>Not Found</h1>
+<p><img src="http://cosmoboy.cz/rpl/images/a5.jpg" width="640" height="426" alt="Not Found" /><br />
+The requested URL {{ request_path }} was not found on this server.</p>
+{% endblock %}

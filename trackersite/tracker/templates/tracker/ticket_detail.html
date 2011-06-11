@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ticket.summary }}{% endblock %}
+
+{% block content %}
+<h1>{{ ticket.summary }}</h1>
+<p>Created: {{ ticket.created }}, last changed: {{ ticket.updated }}<br />
+Requested by: {{ ticket.requested_by }}<br />
+Topic: {{ ticket.topic }}<br />
+Status: {{ ticket.status }}</p>
+
+<div>{{ ticket.description|urlize|linebreaks }}</div>
+{% endblock content %}
