@@ -1,5 +1,9 @@
 {% extends "primitive_base.html" %}
 
+{% block head %}{{ block.super }}
+<link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block fulltitle %}{% block title %}{% endblock %}{% endblock %}
 
 {% block body %}{% block content %}{% endblock %}{% endblock %}
