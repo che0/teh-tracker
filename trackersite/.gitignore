@@ -1,3 +1,3 @@
 *.py[co]
-manage.py
-settings.py
+/manage.py
+/settings.py
