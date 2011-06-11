@@ -9,5 +9,5 @@ Requested by: {{ ticket.requested_by }}<br />
 Topic: {{ ticket.topic }}<br />
 Status: {{ ticket.status }}</p>
 
-<div>{{ ticket.description|urlize|linebreaks }}</div>
+<div>{{ ticket.description|safe|linebreaks }}</div>
 {% endblock content %}

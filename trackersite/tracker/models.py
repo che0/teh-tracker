@@ -10,7 +10,7 @@ class Ticket(models.Model):
     summary = models.CharField(max_length=100, help_text=u'Headline summary for the ticket')
     topic = models.CharField(max_length=80, help_text=u'Topic this ticket belongs to')
     status = models.CharField(max_length=20, help_text=u'Status of this ticket')
-    description = models.TextField(help_text=u'Detailed description')
+    description = models.TextField(help_text=u'Detailed description; HTML is allowed for now, line breaks are auto-parsed')
     
     def save(self, *args, **kwargs):
         self.updated = datetime.datetime.now()
@@ -21,4 +21,3 @@ class Ticket(models.Model):
     
     class Meta:
         ordering = ['-updated']
-
