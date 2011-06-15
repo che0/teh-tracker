@@ -17,6 +17,7 @@ COMMON_INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'django.contrib.comments',
     'south',
     'tracker',
 )

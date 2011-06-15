@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.contrib.comments.signals import comment_was_posted
+from django.dispatch import receiver
+
 
 from django.db import models
 
@@ -16,8 +19,18 @@ class Ticket(models.Model):
         self.updated = datetime.datetime.now()
         super(Ticket, self).save(*args, **kwargs)
     
+    def _note_comment(self, **kwargs):
+        self.save()
+    
     def __unicode__(self):
         return self.summary
     
     class Meta:
         ordering = ['-updated']
+
+@receiver(comment_was_posted)
+def ticket_note_comment(sender, comment, **kwargs):
+    obj = comment.content_object 
+    print 'comment posted to %s (type %s)' % (obj, type(obj))
+    if type(obj) == Ticket:
+        obj.save()

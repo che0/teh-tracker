@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load comments %}
 
 {% block title %}{{ ticket.summary }}{% endblock %}
 
@@ -10,4 +11,16 @@ Topic: {{ ticket.topic }}<br />
 Status: {{ ticket.status }}</p>
 
 <div>{{ ticket.description|safe|linebreaks }}</div>
+{% get_comment_count for ticket as comment_count %}
+{% if comment_count %}
+<h2>Komentáře ({{comment_count}})</h2>
+{% render_comment_list for ticket %}
+{% else %}
+<h2>Komentáře</h2>
+<p>Zatím žádné nejsou</p>
+{% endif %}
+
+<h3>Přidat komentář</h3>
+{% render_comment_form for ticket %}
+
 {% endblock content %}
