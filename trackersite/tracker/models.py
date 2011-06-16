@@ -31,6 +31,5 @@ class Ticket(models.Model):
 @receiver(comment_was_posted)
 def ticket_note_comment(sender, comment, **kwargs):
     obj = comment.content_object 
-    print 'comment posted to %s (type %s)' % (obj, type(obj))
     if type(obj) == Ticket:
         obj.save()
