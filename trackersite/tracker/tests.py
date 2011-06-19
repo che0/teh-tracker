@@ -67,10 +67,10 @@ class TicketTests(TestCase):
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': 'some topic',
-                'status': 'new',
                 'description': 'some desc',
             })
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
         self.assertEqual(self.user.username, ticket.requested_by)
+        self.assertEqual('new', ticket.status)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))

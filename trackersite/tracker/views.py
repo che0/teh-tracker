@@ -11,7 +11,7 @@ from tracker.models import Ticket
 class CreateTicketForm(ModelForm):
     class Meta:
         model = Ticket
-        exclude = ('created', 'updated', 'requested_by',)
+        exclude = ('created', 'updated', 'requested_by', 'status')
 
 class CreateTicketView(CreateView):
     form_class = CreateTicketForm
@@ -20,6 +20,7 @@ class CreateTicketView(CreateView):
     def form_valid(self, form):
         ticket = form.save(commit=False)
         ticket.requested_by = self.request.user.username
+        ticket.status = 'new'
         ticket.save()
         form.save_m2m()
         messages.success(self.request, 'Ticket %s created.' % ticket)
