@@ -2,15 +2,15 @@
 from os.path import dirname, abspath, join
 PROJECT_DIR = abspath(join(dirname(__file__), '..'))
 
-COMMON_TEMPLATE_DIRS = (
+TEMPLATE_DIRS = (
     join(PROJECT_DIR, 'templates'),
 )
 
-COMMON_STATICFILES_DIRS = (
+STATICFILES_DIRS = (
     join(PROJECT_DIR, 'static'),
 )    
 
-COMMON_INSTALLED_APPS = (
+INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
