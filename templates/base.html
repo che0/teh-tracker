@@ -10,5 +10,14 @@
 <div id="user">{% if user.is_authenticated %}user: {{ user.username }}; {% if user.is_staff %}<a href="{% url admin:index %}">admin</a>; {% endif%}<a href="{% url logout %}">logout</a>
 {% else %}<a href="{% url login %}">login</a>, <a href="{% url register %}">register</a>
 {% endif %}</div>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% block content %}{% endblock %}
 {% endblock body %}
