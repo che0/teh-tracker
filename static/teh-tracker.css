@@ -2,3 +2,4 @@ table th, table td { padding: 0 0.2em 0 0.2em; }
 table th { border-bottom: 2px solid black; }
 table td { border-bottom: 1px solid black; }
 table tr:hover td { background-color: #ddd; }
+#user { text-align: right; }

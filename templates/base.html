@@ -6,4 +6,9 @@
 
 {% block fulltitle %}{% block title %}{% endblock %}{% endblock %}
 
-{% block body %}{% block content %}{% endblock %}{% endblock %}
+{% block body %}
+<div id="user">{% if user.is_authenticated %}user: {{ user.username }}; {% if user.is_staff %}<a href="{% url admin:index %}">admin</a>; {% endif%}<a href="{% url logout %}">logout</a>
+{% else %}<a href="{% url login %}">login</a>, register
+{% endif %}</div>
+{% block content %}{% endblock %}
+{% endblock body %}

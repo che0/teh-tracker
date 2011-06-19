@@ -20,6 +20,8 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'south',
     'tracker',
+    'users',
 )
 
 ROOT_URLCONF = 'urls'
+LOGIN_REDIRECT_URL = '/'
