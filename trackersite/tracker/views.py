@@ -1,1 +1,27 @@
-# Create your views here.
+# -*- coding: utf-8 -*-
+from django.forms import ModelForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.views.generic import CreateView
+
+from tracker.models import Ticket
+
+class CreateTicketForm(ModelForm):
+    class Meta:
+        model = Ticket
+        exclude = ('created', 'updated', 'requested_by',)
+
+class CreateTicketView(CreateView):
+    form_class = CreateTicketForm
+    template_name = 'tracker/create_ticket.html'
+    
+    def form_valid(self, form):
+        ticket = form.save(commit=False)
+        ticket.requested_by = self.request.user.username
+        ticket.save()
+        form.save_m2m()
+        messages.success(self.request, 'Ticket %s created.' % ticket)
+        return HttpResponseRedirect(ticket.get_absolute_url())
+create_ticket = login_required(CreateTicketView.as_view())

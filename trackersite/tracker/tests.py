@@ -3,6 +3,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 from tracker.models import Ticket
 
@@ -38,3 +39,38 @@ class SimpleTicketTest(TestCase):
         self.ticket1.save()
         response = Client().get(reverse('ticket_detail', kwargs={'pk':self.ticket1.id}))
         self.assertContains(response, 'href="%s"' % url, 1)
+    
+    def test_ticket_absolute_url(self):
+        t = self.ticket1
+        self.assertEqual(reverse('ticket_detail', kwargs={'pk':t.id}), t.get_absolute_url())
+    
+class TicketTests(TestCase):
+    def setUp(self):
+        self.password = 'password'
+        self.user = User(username='user')
+        self.user.set_password(self.password)
+        self.user.save()
+    
+    def test_ticket_creation_denied(self):
+        response = Client().get(reverse('create_ticket'))
+        self.assertEqual(302, response.status_code) # redirects to login
+    
+    def test_ticket_creation(self):
+        c = Client()
+        c.login(username=self.user.username, password=self.password)
+        response = c.get(reverse('create_ticket'))
+        self.assertEqual(200, response.status_code)
+        
+        response = c.post(reverse('create_ticket'))
+        self.assertEqual(200, response.status_code)
+        
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': 'some topic',
+                'status': 'new',
+                'description': 'some desc',
+            })
+        self.assertEqual(1, Ticket.objects.count())
+        ticket = Ticket.objects.order_by('-created')[0]
+        self.assertEqual(self.user.username, ticket.requested_by)
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))

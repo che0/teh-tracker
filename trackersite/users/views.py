@@ -10,6 +10,7 @@ class RegisterView(CreateView):
     template_name = 'users/register.html'
     
     def form_valid(self, form):
+        form.save()
         messages.success(self.request, 'User %s created.' % form.cleaned_data['username'])
         return HttpResponseRedirect(reverse('ticket_list'))
 register = RegisterView.as_view()

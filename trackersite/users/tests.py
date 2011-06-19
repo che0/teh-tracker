@@ -7,9 +7,13 @@ from django.contrib.auth.models import User
 
 class CreateUserTest(TestCase):
     def test_user_registration(self):
-        response = Client().post(reverse('register'), {'username':'fooUser', 'password1':'foo', 'password2':'foo'})
+        USERNAME, PW = 'foouser', 'foo'
+        response = Client().post(reverse('register'), {'username':USERNAME, 'password1':PW, 'password2':PW})
         self.assertEqual(302, response.status_code)
         
-        user = User.objects.get(username='fooUser')
-        self.assertTrue(user.check_password('foo'))
-
+        # user exists
+        user = User.objects.get(username=USERNAME)
+        self.assertTrue(user.check_password(PW))
+        
+        # login works
+        self.assertTrue(Client().login(username=USERNAME, password=PW))

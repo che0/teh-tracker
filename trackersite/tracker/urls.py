@@ -7,5 +7,6 @@ from tracker.models import Ticket
 urlpatterns = patterns('',
     url(r'^$', ListView.as_view(model=Ticket), name='ticket_list'),
     url(r'^ticket/(?P<pk>\d+)/$', DetailView.as_view(model=Ticket), name='ticket_detail'),
+    url(r'^ticket/new/$', 'tracker.views.create_ticket', name='create_ticket'),
     url(r'^comments/', include('django.contrib.comments.urls')),
 )

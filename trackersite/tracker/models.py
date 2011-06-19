@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from django.contrib.comments.signals import comment_was_posted
 from django.dispatch import receiver
-
-
 from django.db import models
+from django.core.urlresolvers import reverse
 
 class Ticket(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -24,6 +24,9 @@ class Ticket(models.Model):
     
     def __unicode__(self):
         return self.summary
+        
+    def get_absolute_url(self):
+        return reverse('ticket_detail', kwargs={'pk':self.id})
     
     class Meta:
         ordering = ['-updated']

@@ -13,4 +13,5 @@
 {% else %}
 <p>No tickets available.</p>
 {% endif %}
+{% if user.is_authenticated %}<p><a href="{% url create_ticket %}">Create new ticket</a></p>{% endif %}
 {% endblock content %}
