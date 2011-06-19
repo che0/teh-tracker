@@ -8,7 +8,7 @@
 
 {% block body %}
 <div id="user">{% if user.is_authenticated %}user: {{ user.username }}; {% if user.is_staff %}<a href="{% url admin:index %}">admin</a>; {% endif%}<a href="{% url logout %}">logout</a>
-{% else %}<a href="{% url login %}">login</a>, register
+{% else %}<a href="{% url login %}">login</a>, <a href="{% url register %}">register</a>
 {% endif %}</div>
 {% block content %}{% endblock %}
 {% endblock body %}
