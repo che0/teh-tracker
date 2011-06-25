@@ -1,18 +1,1 @@
-{% extends "base.html" %}
-{% load i18n %}
-
-{% block title %}{% trans "Ticket list" %}{% endblock %}
-
-{% block content %}
-{% if ticket_list %}
-<table>
-<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th><th>{% trans "Topic" %}</th><th>{% trans "Requested by" %}</th><th>{% trans "Status" %}</th><th>{% trans "Last changed" %}</th></tr>
-{% for ticket in ticket_list %}
-<tr><td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td><td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td><td>{{ticket.topic}}</td><td>{{ticket.requested_by}}</td><td>{{ticket.status}}</td><td>{{ticket.updated}}</td></tr>
-{% endfor %}
-</table>
-{% else %}
-<p>{% trans "No tickets available." %}</p>
-{% endif %}
-{% if user.is_authenticated %}<p><a href="{% url create_ticket %}">{% trans "Create new ticket" %}</a></p>{% endif %}
-{% endblock content %}
+{% extends "tracker/generic/ticket_list.html" %}

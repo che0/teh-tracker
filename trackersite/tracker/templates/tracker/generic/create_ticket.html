@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Create ticket" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Create ticket" %}</h1>
+{% block above_form %}{% endblock %}
+<form method="post" action="{% url create_ticket %}">
+{{ form.as_p }}
+{% csrf_token %}
+<input type="submit" value="{% trans "submit" %}" />
+</form>
+{% block below_form %}{% endblock %}
+{% endblock content %}

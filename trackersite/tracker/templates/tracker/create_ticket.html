@@ -1,12 +1,1 @@
-{% extends "base.html" %}
-{% load i18n %}
-
-{% block title %}{% trans "Create ticket" %}{% endblock %}
-
-{% block content %}
-<form method="post" action="{% url create_ticket %}">
-{{ form.as_p }}
-{% csrf_token %}
-<input type="submit" value="{% trans "submit" %}" />
-</form>
-{% endblock content %}
+{% extends "tracker/generic/create_ticket.html" %}
