@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Create ticket{% endblock %}
+{% block title %}{% trans "Create ticket" %}{% endblock %}
 
 {% block content %}
 <form method="post" action="{% url create_ticket %}">
 {{ form.as_p }}
 {% csrf_token %}
-<input type="submit" value="submit" />
+<input type="submit" value="{% trans "submit" %}" />
 </form>
 {% endblock content %}

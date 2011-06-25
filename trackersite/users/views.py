@@ -4,6 +4,7 @@ from django.views.generic import CreateView
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
@@ -11,6 +12,6 @@ class RegisterView(CreateView):
     
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'User %s created.' % form.cleaned_data['username'])
+        messages.success(self.request, _('User %s created.') % form.cleaned_data['username'])
         return HttpResponseRedirect(reverse('ticket_list'))
 register = RegisterView.as_view()

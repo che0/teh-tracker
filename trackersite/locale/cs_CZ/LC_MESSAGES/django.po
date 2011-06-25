@@ -1,0 +1,185 @@
+# teh-tracker cs translation.
+# Copyright (C) 2011
+# This file is distributed under the same license as the teh-tracker package.
+# Petr Novák <petr.novak@cosmoboy.cz>, 2011.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HEAD\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-25 16:10+0200\n"
+"PO-Revision-Date: 2011-06-25 15:00+0200\n"
+"Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
+"Language-Team: none <none@example.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: tracker/models.py:11
+msgid "created"
+msgstr "vytvořeno"
+
+#: tracker/models.py:12
+msgid "updated"
+msgstr "aktualizováno"
+
+#: tracker/models.py:13
+msgid "requested by"
+msgstr "žadatel"
+
+#: tracker/models.py:13
+msgid "Person who created/requested for this ticket"
+msgstr "Osoba co vytvořila nebo žádá o tento tiket"
+
+#: tracker/models.py:14
+msgid "summary"
+msgstr "shrnutí"
+
+#: tracker/models.py:14
+msgid "Headline summary for the ticket"
+msgstr "Shrnutí do titulku tiketu"
+
+#: tracker/models.py:15
+msgid "topic"
+msgstr "téma"
+
+#: tracker/models.py:15
+msgid "Project topic this ticket belongs to"
+msgstr "Projektové téma do kterého tento tiket patří"
+
+#: tracker/models.py:16
+msgid "status"
+msgstr "stav"
+
+#: tracker/models.py:16
+msgid "Status of this ticket"
+msgstr "Aktuální stav tiketu"
+
+#: tracker/models.py:17
+msgid "description"
+msgstr "popis"
+
+#: tracker/models.py:17
+msgid ""
+"Detailed description; HTML is allowed for now, line breaks are auto-parsed"
+msgstr "Detailní popis; HTML je zatím povoleno, konce řádků jsou zachovány"
+
+#: tracker/models.py:33
+msgid "Ticket"
+msgstr "Tiket"
+
+#: tracker/models.py:34
+msgid "Tickets"
+msgstr "Tikety"
+
+#: tracker/views.py:27
+#, python-format
+msgid "Ticket %s created."
+msgstr "Vytvořen tiket %s."
+
+#: tracker/templates/tracker/create_ticket.html:4
+msgid "Create ticket"
+msgstr "Vytvořit tiket"
+
+#: tracker/templates/tracker/create_ticket.html:10
+msgid "submit"
+msgstr "odeslat"
+
+#: tracker/templates/tracker/ticket_detail.html:9
+msgid "Created"
+msgstr "Vytvořeno"
+
+#: tracker/templates/tracker/ticket_detail.html:9
+msgid "last changed"
+msgstr "naposledy změněno"
+
+#: tracker/templates/tracker/ticket_detail.html:10
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "Requested by"
+msgstr "Žadatel"
+
+#: tracker/templates/tracker/ticket_detail.html:11
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "Topic"
+msgstr "Téma"
+
+#: tracker/templates/tracker/ticket_detail.html:12
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "Status"
+msgstr "Stav"
+
+#: tracker/templates/tracker/ticket_detail.html:17
+#: tracker/templates/tracker/ticket_detail.html:20
+msgid "Comments"
+msgstr "Komentáře"
+
+#: tracker/templates/tracker/ticket_detail.html:21
+msgid "There are no comments yet."
+msgstr "Zatím žádné komentáře."
+
+#: tracker/templates/tracker/ticket_detail.html:24
+msgid "Add comment"
+msgstr "Přidat komentář"
+
+#: tracker/templates/tracker/ticket_list.html:4
+msgid "Ticket list"
+msgstr "Seznam tiketů"
+
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "ID"
+msgstr "ID"
+
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "Summary"
+msgstr "Shrnutí"
+
+#: tracker/templates/tracker/ticket_list.html:9
+msgid "Last changed"
+msgstr "Naposledy změněno"
+
+#: tracker/templates/tracker/ticket_list.html:15
+msgid "No tickets available."
+msgstr "Nejsou k dispozici žádné tikety."
+
+#: tracker/templates/tracker/ticket_list.html:17
+msgid "Create new ticket"
+msgstr "Vytvořit nový tiket"
+
+#: users/views.py:15
+#, python-format
+msgid "User %s created."
+msgstr "Vytvořen uživatel %s."
+
+#: users/templates/users/login.html:4
+msgid "Login"
+msgstr "Přihlášení"
+
+#: users/templates/users/login.html:8
+msgid "Your username and password didn't match. Please try again."
+msgstr "Přihlašovací údaje nesouhlasí. Zkuste to znovu, prosím."
+
+#: users/templates/users/login.html:14
+msgid "login"
+msgstr "přihlášení"
+
+#: users/templates/users/logout.html:4
+msgid "Logged out"
+msgstr "Odhlášeno"
+
+#: users/templates/users/logout.html:7
+msgid "Bye!"
+msgstr "Nashledanou!"
+
+#: users/templates/users/logout.html:8
+msgid "Go to index."
+msgstr "Přejít na hlavní stránku."
+
+#: users/templates/users/register.html:4
+msgid "Register"
+msgstr "Zaregistrovat"
+
+#: users/templates/users/register.html:10
+msgid "register"
+msgstr "zaregistrovat"

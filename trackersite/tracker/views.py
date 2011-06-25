@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView
+from django.utils.translation import ugettext as _
 
 from tracker.models import Ticket
 
@@ -23,6 +24,6 @@ class CreateTicketView(CreateView):
         ticket.status = 'new'
         ticket.save()
         form.save_m2m()
-        messages.success(self.request, 'Ticket %s created.' % ticket)
+        messages.success(self.request, _('Ticket %s created.') % ticket)
         return HttpResponseRedirect(ticket.get_absolute_url())
 create_ticket = login_required(CreateTicketView.as_view())

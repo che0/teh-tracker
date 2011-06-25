@@ -1,14 +1,17 @@
 {% extends "primitive_base.html" %}
+{% load i18n %}
 
 {% block head %}{{ block.super }}
 <link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
+{% block language_code %}{{ LANGUAGE_CODE }}{% endblock %}
+
 {% block fulltitle %}{% block title %}{% endblock %}{% endblock %}
 
 {% block body %}
-<div id="user">{% if user.is_authenticated %}user: {{ user.username }}; {% if user.is_staff %}<a href="{% url admin:index %}">admin</a>; {% endif%}<a href="{% url logout %}">logout</a>
-{% else %}<a href="{% url login %}">login</a>, <a href="{% url register %}">register</a>
+<div id="user">{% if user.is_authenticated %}{% trans "user" %}: {{ user.username }}; {% if user.is_staff %}<a href="{% url admin:index %}">{% trans "admin" %}</a>; {% endif%}<a href="{% url logout %}">{% trans "logout" %}</a>
+{% else %}<a href="{% url login %}">{% trans "login" %}</a>, <a href="{% url register %}">{% trans "register" %}</a>
 {% endif %}</div>
 
 {% if messages %}
