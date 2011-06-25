@@ -107,4 +107,4 @@ class TicketTests(TestCase):
                 'description': 'some desc'
             })
         self.assertEqual(200, response.status_code)
-        self.assertFormError(response, 'form', 'topic', 'Select an open topic. This ticket is not open for ticket submissions.')
+        self.assertFormError(response, 'form', 'topic', 'Select a valid choice. That choice is not one of the available choices.')

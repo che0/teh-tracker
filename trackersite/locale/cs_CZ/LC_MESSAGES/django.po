@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-25 20:12+0200\n"
+"POT-Creation-Date: 2011-06-25 20:26+0200\n"
 "PO-Revision-Date: 2011-06-25 20:00+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -94,11 +94,7 @@ msgstr "Téma"
 msgid "Topics"
 msgstr "Témata"
 
-#: tracker/views.py:16
-msgid "Select an open topic. This ticket is not open for ticket submissions."
-msgstr "Vyberte otevřené téma. Toto téma není otevřené pro nové tikety."
-
-#: tracker/views.py:36
+#: tracker/views.py:31
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."

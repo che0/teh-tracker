@@ -10,18 +10,13 @@ from django.utils.translation import ugettext as _
 from tracker.models import Ticket, Topic
 
 class CreateTicketForm(ModelForm):
-    def clean_topic(self):
-        topic = self.cleaned_data['topic']
-        if not topic.open_for_tickets:
-            raise ValidationError(_("Select an open topic. This ticket is not open for ticket submissions."))
-        return topic
+    def __init__(self, *args, **kwargs):
+        super(CreateTicketForm, self).__init__(*args, **kwargs)
+        self.fields['topic'].queryset = Topic.objects.filter(open_for_tickets=True)
     
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'requested_by', 'status')
-        widgets = {
-            'topic_id': ModelChoiceField(Topic.objects.filter(open_for_tickets=True)),
-        }
 
 class CreateTicketView(CreateView):
     form_class = CreateTicketForm
