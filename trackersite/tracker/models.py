@@ -12,7 +12,7 @@ class Ticket(models.Model):
     updated = models.DateTimeField(_('updated'))
     requested_by = models.CharField(verbose_name=_('requested by'), max_length=30, help_text=_('Person who created/requested for this ticket'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
-    topic = models.CharField(_('topic'), max_length=80, help_text=_('Project topic this ticket belongs to'))
+    topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     status = models.CharField(_('status'), max_length=20, help_text=_('Status of this ticket'))
     description = models.TextField(_('description'), help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     
@@ -33,6 +33,18 @@ class Ticket(models.Model):
         verbose_name = _('Ticket')
         verbose_name_plural = _('Tickets')
         ordering = ['-updated']
+
+class Topic(models.Model):
+    name = models.CharField(_('name'), max_length=80)
+    open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
+    
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = _('Topic')
+        verbose_name_plural = _('Topics')
+        ordering = ['name']
 
 @receiver(comment_was_posted)
 def ticket_note_comment(sender, comment, **kwargs):

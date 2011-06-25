@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.forms import ModelForm
+from django.forms import ModelForm, ModelChoiceField, ValidationError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib import messages
@@ -7,12 +7,21 @@ from django.http import HttpResponseRedirect
 from django.views.generic import CreateView
 from django.utils.translation import ugettext as _
 
-from tracker.models import Ticket
+from tracker.models import Ticket, Topic
 
 class CreateTicketForm(ModelForm):
+    def clean_topic(self):
+        topic = self.cleaned_data['topic']
+        if not topic.open_for_tickets:
+            raise ValidationError(_("Select an open topic. This ticket is not open for ticket submissions."))
+        return topic
+    
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'requested_by', 'status')
+        widgets = {
+            'topic_id': ModelChoiceField(Topic.objects.filter(open_for_tickets=True)),
+        }
 
 class CreateTicketView(CreateView):
     form_class = CreateTicketForm

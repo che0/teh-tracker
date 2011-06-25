@@ -5,14 +5,17 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from tracker.models import Ticket
+from tracker.models import Ticket, Topic
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
-        self.ticket1 = Ticket(summary='foo', requested_by='req1', topic='t1', status='init', description='foo foo')
+        self.topic = Topic(name='topic1')
+        self.topic.save()
+        
+        self.ticket1 = Ticket(summary='foo', requested_by='req1', topic=self.topic, status='init', description='foo foo')
         self.ticket1.save()
         
-        self.ticket2 = Ticket(summary='bar', requested_by='req2', topic='t2', status='init', description='bar bar')
+        self.ticket2 = Ticket(summary='bar', requested_by='req2', topic=self.topic, status='init', description='bar bar')
         self.ticket2.save()
     
     def test_ticket_timestamps(self):
@@ -46,27 +49,35 @@ class SimpleTicketTest(TestCase):
     
 class TicketTests(TestCase):
     def setUp(self):
+        self.open_topic = Topic(name='test_topic', open_for_tickets=True)
+        self.open_topic.save()
+        
         self.password = 'password'
         self.user = User(username='user')
         self.user.set_password(self.password)
         self.user.save()
+    
+    def get_client(self):
+        c = Client()
+        c.login(username=self.user.username, password=self.password)
+        return c
     
     def test_ticket_creation_denied(self):
         response = Client().get(reverse('create_ticket'))
         self.assertEqual(302, response.status_code) # redirects to login
     
     def test_ticket_creation(self):
-        c = Client()
-        c.login(username=self.user.username, password=self.password)
+        c = self.get_client()
         response = c.get(reverse('create_ticket'))
         self.assertEqual(200, response.status_code)
         
         response = c.post(reverse('create_ticket'))
         self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'form', 'summary', 'This field is required.')
         
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
-                'topic': 'some topic',
+                'topic': self.open_topic.id,
                 'description': 'some desc',
             })
         self.assertEqual(1, Ticket.objects.count())
@@ -74,3 +85,26 @@ class TicketTests(TestCase):
         self.assertEqual(self.user.username, ticket.requested_by)
         self.assertEqual('new', ticket.status)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+    
+    def test_wrong_topic_id(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': 'gogo',
+                'description': 'some desc',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'form', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
+    
+    def test_closed_topic(self):
+        closed_topic = Topic(name='closed topic', open_for_tickets=False)
+        closed_topic.save()
+        
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': closed_topic.id,
+                'description': 'some desc'
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'form', 'topic', 'Select an open topic. This ticket is not open for ticket submissions.')
