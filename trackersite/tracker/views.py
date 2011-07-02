@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 from django.forms import ModelForm, ModelChoiceField, ValidationError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -16,10 +18,11 @@ class CreateTicketForm(ModelForm):
     
     class Meta:
         model = Ticket
-        exclude = ('created', 'updated', 'requested_by', 'status')
+        exclude = ('created', 'updated', 'requested_by', 'status', 'amount_paid', 'closed')
 
 class CreateTicketView(CreateView):
     form_class = CreateTicketForm
+    initial = {'event_date': datetime.date.today()}
     template_name = 'tracker/create_ticket.html'
     
     def form_valid(self, form):
