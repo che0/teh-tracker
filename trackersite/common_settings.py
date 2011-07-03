@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, abspath, join
+from django.utils.translation import ugettext_lazy as _
 PROJECT_DIR = abspath(join(dirname(__file__), '..'))
 
 MIDDLEWARE_CLASSES = (
@@ -45,3 +46,5 @@ INSTALLED_APPS = (
 ROOT_URLCONF = 'urls'
 LOGIN_REDIRECT_URL = '/'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+
+TRACKER_CURRENCY = _('CZK')

@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 class Ticket(models.Model):
     """ One unit of tracked / paid stuff. """
@@ -17,7 +18,7 @@ class Ticket(models.Model):
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     status = models.CharField(_('status'), max_length=20, help_text=_('Status of this ticket'))
     description = models.TextField(_('description'), help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
-    amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=_('amount actually paid for this ticket (in CZK)'))
+    amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=_('Amount actually paid for this ticket (in %s)') % settings.TRACKER_CURRENCY)
     closed = models.BooleanField(_('closed'), default=False, help_text=_('Has this ticket been dealt with?'))
     
     def save(self, *args, **kwargs):
@@ -63,9 +64,9 @@ def ticket_note_comment(sender, comment, **kwargs):
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this media info belongs to'))
-    description = models.CharField(_('description'), max_length=100, help_text=_('media info item summary'))
+    description = models.CharField(_('description'), max_length=255, help_text=_('Description of this media item'))
     url = models.URLField(_('URL'), blank=True, verify_exists=False, help_text=_('URL of the related media files'))
-    count = models.PositiveIntegerField(_('count'), blank=True, null=True, help_text=_('number of media files for this item'))
+    count = models.PositiveIntegerField(_('count'), blank=True, null=True, help_text=_('Number of media files for this item'))
     
     def __unicode__(self):
         return self.description
@@ -77,8 +78,13 @@ class MediaInfo(models.Model):
 class Expediture(models.Model):
     """ Expenses related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this expediture belongs to'))
-    description = models.CharField(_('description'), max_length=100, help_text=_('media info item summary'))
-    amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=_('expediture amount in CZK'))
+    description = models.CharField(_('description'), max_length=255, help_text=_('Description of this expediture'))
+    amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=_('Expediture amount in %s')%settings.TRACKER_CURRENCY)
     
     def __unicode__(self):
-        return _('%s (%s CZK)') % (self.description, self.amount)
+        return _('%(description)s (%(amount)s %(currency)s)') % {'desctiption':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
+    
+    class Meta:
+        verbose_name = _('Ticket expediture')
+        verbose_name_plural = _('Ticket expeditures')
+
