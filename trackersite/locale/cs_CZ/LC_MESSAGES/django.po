@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-03 17:24+0200\n"
+"POT-Creation-Date: 2011-07-03 17:35+0200\n"
 "PO-Revision-Date: 2011-07-03 17:15+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -82,9 +82,8 @@ msgid "amount paid"
 msgstr "zaplacená částka"
 
 #: tracker/models.py:21
-#, python-format
-msgid "Amount actually paid for this ticket (in %s)"
-msgstr "Částka skutečně proplacená za tento tiket (v %s)"
+msgid "Amount actually paid for this ticket in"
+msgstr "Částka skutečně proplacená za tento tiket v"
 
 #: tracker/models.py:22
 msgid "closed"
@@ -173,9 +172,8 @@ msgid "amount"
 msgstr "částka"
 
 #: tracker/models.py:82
-#, python-format
-msgid "Expediture amount in %s"
-msgstr "Vydaná částka v %s"
+msgid "Expediture amount in"
+msgstr "Vydaná částka v"
 
 #: tracker/models.py:85
 #, python-format

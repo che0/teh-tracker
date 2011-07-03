@@ -5,7 +5,7 @@ from django.contrib.comments.signals import comment_was_posted
 from django.dispatch import receiver
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, string_concat
 from django.conf import settings
 
 class Ticket(models.Model):
@@ -18,7 +18,7 @@ class Ticket(models.Model):
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     status = models.CharField(_('status'), max_length=20, help_text=_('Status of this ticket'))
     description = models.TextField(_('description'), help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
-    amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=_('Amount actually paid for this ticket (in %s)') % settings.TRACKER_CURRENCY)
+    amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=string_concat(_('Amount actually paid for this ticket in'), ' ', settings.TRACKER_CURRENCY))
     closed = models.BooleanField(_('closed'), default=False, help_text=_('Has this ticket been dealt with?'))
     
     def save(self, *args, **kwargs):
@@ -79,10 +79,10 @@ class Expediture(models.Model):
     """ Expenses related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this expediture belongs to'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this expediture'))
-    amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=_('Expediture amount in %s')%settings.TRACKER_CURRENCY)
+    amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=string_concat(_('Expediture amount in'), ' ', settings.TRACKER_CURRENCY))
     
     def __unicode__(self):
-        return _('%(description)s (%(amount)s %(currency)s)') % {'desctiption':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
+        return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
     
     class Meta:
         verbose_name = _('Ticket expediture')
