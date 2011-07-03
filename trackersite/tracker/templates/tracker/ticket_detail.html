@@ -12,6 +12,32 @@
 {% trans "Status" %}: {{ ticket.status }}</p>
 
 <div>{{ ticket.description|safe|linebreaks }}</div>
+
+{% if ticket.media_count.objects > 0 %}
+<h2>{% trans "Media" %}</h2>
+<p>{% trans "Number of objects" %}: {{ ticket.media_count.objects }}<br />
+{% trans "Number of media files" %}: {{ ticket.media_count.media }}</p>
+<ul>
+{% for item in ticket.mediainfo_set.all %}
+<li>{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if ticket.expeditures.count > 0 or ticket.amount_paid > 0 %}
+<h2>{% trans "Expeditures" %}</h2>
+<table>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %} ({{ticket.currency}})</th></tr>
+{% if ticket.expeditures.count > 0 %}
+{% for item in ticket.expediture_set.all %}
+<tr><td>{{item.description}}</td><td>{{item.amount}}</td></tr>
+{% endfor %}
+<tr class="total"><td>{% trans "Total expeditures" %}</td><td>{{ticket.expeditures.amount}}</td></tr>
+{% endif %}
+<tr class="total"><td>{% trans "Total reimbursement" %}</td><td>{{ticket.amount_paid|default_if_none:"0"}}</td></tr>
+</table>
+{% endif %}
+
 {% get_comment_count for ticket as comment_count %}
 {% if comment_count %}
 <h2>{% trans "Comments" %} ({{comment_count}})</h2>

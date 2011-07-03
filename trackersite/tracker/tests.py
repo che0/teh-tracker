@@ -5,7 +5,7 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from tracker.models import Ticket, Topic
+from tracker.models import Ticket, Topic, MediaInfo, Expediture
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -46,7 +46,31 @@ class SimpleTicketTest(TestCase):
     def test_ticket_absolute_url(self):
         t = self.ticket1
         self.assertEqual(reverse('ticket_detail', kwargs={'pk':t.id}), t.get_absolute_url())
+
+class TicketSumTests(TestCase):
+    def setUp(self):
+        self.topic = Topic(name='topic')
+        self.topic.save()
+        
+    def test_empty_ticket(self):
+        empty_ticket = Ticket(topic=self.topic, requested_by='someone', summary='empty ticket', status='x')
+        empty_ticket.save()
+        
+        self.assertEqual(0, empty_ticket.media_count()['objects'])
+        self.assertEqual(0, empty_ticket.expeditures()['count'])
     
+    def test_full_ticket(self):
+        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', status='x', amount_paid=200)
+        full_ticket.save()
+        full_ticket.mediainfo_set.create(description='Vague pictures')
+        full_ticket.mediainfo_set.create(description='Counted pictures', count=15)
+        full_ticket.mediainfo_set.create(description='Even more pictures', count=16)
+        full_ticket.expediture_set.create(description='Some expense', amount=99)
+        full_ticket.expediture_set.create(description='Some other expense', amount=101)
+        
+        self.assertEqual({'objects': 3, 'media': 31}, full_ticket.media_count())
+        self.assertEqual({'count': 2, 'amount': 200}, full_ticket.expeditures())
+
 class TicketTests(TestCase):
     def setUp(self):
         self.open_topic = Topic(name='test_topic', open_for_tickets=True)

@@ -1,5 +1,7 @@
 table th, table td { padding: 0 0.2em 0 0.2em; }
-table th { border-bottom: 2px solid black; }
+table th { border-bottom: 2px solid black; padding-bottom: 2px; }
 table td { border-bottom: 1px solid black; }
 table tr:hover td { background-color: #ddd; }
 #user { text-align: right; }
+abbr[title] { border-bottom: dotted 1px black; }
+tr.total td { font-weight: bold; }

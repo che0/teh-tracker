@@ -17,9 +17,13 @@ class Ticket(models.Model):
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     status = models.CharField(_('status'), max_length=20, help_text=_('Status of this ticket'))
-    description = models.TextField(_('description'), help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
+    description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=string_concat(_('Amount actually paid for this ticket in'), ' ', settings.TRACKER_CURRENCY))
     closed = models.BooleanField(_('closed'), default=False, help_text=_('Has this ticket been dealt with?'))
+    
+    @staticmethod
+    def currency():
+        return settings.TRACKER_CURRENCY
     
     def save(self, *args, **kwargs):
         self.updated = datetime.datetime.now()
@@ -36,6 +40,12 @@ class Ticket(models.Model):
         
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})
+    
+    def media_count(self):
+        return self.mediainfo_set.aggregate(objects=models.Count('id'), media=models.Sum('count'))
+    
+    def expeditures(self):
+        return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     class Meta:
         verbose_name = _('Ticket')
