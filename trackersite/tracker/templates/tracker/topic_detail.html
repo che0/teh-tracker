@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load comments %}
+
+{% block title %}{{ topic.name }}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">index</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt;</p>
+<h1>{{ topic.name }}</h1>
+<p>{% trans "Open for new tickets" %}: {{topic.open_for_tickets|yesno:_("yes,no")}}{% if topic.open_for_tickets and user.is_authenticated %}, <a href="{% url create_ticket %}?topic={{topic.id}}">add ticket</a>{% endif %}</p>
+
+{% if topic.description %}<div>{{ topic.description|safe|linebreaks }}</div>{% endif %}
+
+{% if topic.ticket_set.all|length > 0 %}
+<h2>{% trans "Tickets" %}</h2>
+{% with topic.ticket_set.all as ticket_list %}{% include "tracker/ticket_table.html" %}{% endwith %}
+{% endif %}
+
+{% get_comment_count for topic as comment_count %}
+{% if comment_count %}
+<h2>{% trans "Comments" %} ({{comment_count}})</h2>
+{% render_comment_list for ticket %}
+{% else %}
+<h2>{% trans "Comments" %}</h2>
+<p>{% trans "There are no comments yet." %}</p>
+{% endif %}
+
+<h3>{% trans "Add comment" %}</h3>
+{% render_comment_form for topic %}
+
+{% endblock content %}

@@ -46,6 +46,20 @@ class SimpleTicketTest(TestCase):
     def test_ticket_absolute_url(self):
         t = self.ticket1
         self.assertEqual(reverse('ticket_detail', kwargs={'pk':t.id}), t.get_absolute_url())
+    
+    def test_topic_list(self):
+        response = Client().get(reverse('topic_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['topic_list']), 1)
+    
+    def test_topic_detail(self):
+        response = Client().get(reverse('topic_detail', kwargs={'pk':self.topic.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['topic'].ticket_set.all()), 2)
+    
+    def test_topic_absolute_url(self):
+        t = self.topic
+        self.assertEqual(reverse('topic_detail', kwargs={'pk':t.id}), t.get_absolute_url())
 
 class TicketSumTests(TestCase):
     def setUp(self):

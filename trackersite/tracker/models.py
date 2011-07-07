@@ -56,9 +56,13 @@ class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
     open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
+    description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     
     def __unicode__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('topic_detail', kwargs={'pk':self.id})
     
     class Meta:
         verbose_name = _('Topic')

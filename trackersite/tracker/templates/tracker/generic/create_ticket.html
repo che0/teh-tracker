@@ -4,6 +4,7 @@
 {% block title %}{% trans "Create ticket" %}{% endblock %}
 
 {% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
 <h1>{% trans "Create ticket" %}</h1>
 {% block above_form %}{% endblock %}
 <form method="post" action="{% url create_ticket %}">

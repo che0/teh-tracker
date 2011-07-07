@@ -5,13 +5,14 @@
 {% block title %}{{ ticket.summary }}{% endblock %}
 
 {% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans topics %}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <h1>{{ ticket.summary }}</h1>
 <p>{% trans "Created" %}: {{ ticket.created }}, {% trans "last changed" %}: {{ ticket.updated }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />
 {% trans "Status" %}: {{ ticket.status }}</p>
 
-<div>{{ ticket.description|safe|linebreaks }}</div>
+{% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 
 {% if ticket.media_count.objects > 0 %}
 <h2>{% trans "Media" %}</h2>

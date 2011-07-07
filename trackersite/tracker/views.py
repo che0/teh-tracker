@@ -22,8 +22,13 @@ class CreateTicketForm(ModelForm):
 
 class CreateTicketView(CreateView):
     form_class = CreateTicketForm
-    initial = {'event_date': datetime.date.today()}
     template_name = 'tracker/create_ticket.html'
+    
+    def get_initial(self):
+        initial = {'event_date': datetime.date.today()}
+        if 'topic' in self.request.GET:
+            initial['topic'] = self.request.GET['topic']
+        return initial
     
     def form_valid(self, form):
         ticket = form.save(commit=False)

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Topic list" %}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
+<h1>{% trans "Topic list" %}</h1>
+{% block above_list %}{% endblock %}
+
+{% if topic_list %}
+<ul>
+{% for topic in topic_list %}
+<li><a href="{% url topic_detail topic.id %}">{{topic.name}}</a>{% if topic.open_for_tickets %} [{% trans "open for new tickets" %}{% if user.is_authenticated %} &ndash; <a href="{% url create_ticket %}?topic={{topic.id}}">add ticket</a>{% endif %}]{% endif %}
+{% if topic.description %}<ul>{{ topic.description|safe|linebreaks }}</ul>{% endif %}
+</li>{% endfor %}
+</ul>
+{% else %}
+<p>{% trans "No topics available." %}</p>
+{% endif %}
+{% block below_list %}{% endblock %}
+
+{% endblock content %}
