@@ -8,7 +8,7 @@
 <h1>{% trans "Ticket list" %}</h1>
 {% block above_list %}{% endblock %}
 
-{% if ticket_list %}{% with "True" as link_topics %}
+{% if ticket_list %}{% with "True" as show_topics %}
 {% include "tracker/ticket_table.html" %}
 {% endwith %}{% else %}
 <p>{% trans "No tickets available." %}</p>

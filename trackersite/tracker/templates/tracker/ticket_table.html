@@ -1,11 +1,11 @@
 {% load i18n %}
 <table>
-<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th><th>{% trans "Topic" %}</th><th>{% trans "Requested by" %}</th>
+<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}<th>{% trans "Requested by" %}</th>
 {# <th><abbr title="{% trans "Item/file count" %}">{% trans "Media" %}</abbr></th><th>{% trans "Expeditures" %}</th> #}
 <th>{% trans "Status" %}</th><th>{% trans "Last changed" %}</th></tr>
 
 {% for ticket in ticket_list %}
-<tr><td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td><td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td><td>{% if link_topics %}<a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a>{% else %}{{ticket.topic}}{% endif %}</td><td>{{ticket.requested_by}}</td>
+<tr><td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td><td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>{% if show_topics %}<td><a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a></td>{% endif %}<td>{{ticket.requested_by}}</td>
 {% comment %}<td>{% if ticket.media_count.objects > 0 %}{{ticket.media_count.objects}}/{{ticket.media_count.media}}{% endif %}</td>
 <td>{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>{% endcomment %}
 <td>{{ticket.status}}</td><td>{{ticket.updated}}</td></tr>
