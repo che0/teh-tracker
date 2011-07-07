@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-07 23:28+0200\n"
-"PO-Revision-Date: 2011-07-07 23:28+0200\n"
+"POT-Creation-Date: 2011-07-07 23:42+0200\n"
+"PO-Revision-Date: 2011-07-07 23:42+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -103,7 +103,7 @@ msgstr "%s [uzavřeno]"
 msgid "Ticket"
 msgstr "Tiket"
 
-#: tracker/models.py:52 tracker/templates/tracker/topic_detail.html:15
+#: tracker/models.py:52 tracker/templates/tracker/topic_detail.html:16
 msgid "Tickets"
 msgstr "Tikety"
 
@@ -253,18 +253,18 @@ msgstr "Celkem proplaceno"
 
 #: tracker/templates/tracker/ticket_detail.html:44
 #: tracker/templates/tracker/ticket_detail.html:47
-#: tracker/templates/tracker/topic_detail.html:21
-#: tracker/templates/tracker/topic_detail.html:24
+#: tracker/templates/tracker/topic_detail.html:22
+#: tracker/templates/tracker/topic_detail.html:25
 msgid "Comments"
 msgstr "Komentáře"
 
 #: tracker/templates/tracker/ticket_detail.html:48
-#: tracker/templates/tracker/topic_detail.html:25
+#: tracker/templates/tracker/topic_detail.html:26
 msgid "There are no comments yet."
 msgstr "Zatím žádné komentáře."
 
 #: tracker/templates/tracker/ticket_detail.html:51
-#: tracker/templates/tracker/topic_detail.html:28
+#: tracker/templates/tracker/topic_detail.html:29
 msgid "Add comment"
 msgstr "Přidat komentář"
 
@@ -284,13 +284,18 @@ msgstr "Naposledy změněno"
 msgid "topics"
 msgstr "témata"
 
-#: tracker/templates/tracker/topic_detail.html:10
+#: tracker/templates/tracker/topic_detail.html:13
 msgid "Open for new tickets"
 msgstr "Otevřeno pro nové tikety"
 
-#: tracker/templates/tracker/topic_detail.html:10
+#: tracker/templates/tracker/topic_detail.html:13
 msgid "yes,no"
 msgstr "ano,ne"
+
+#: tracker/templates/tracker/topic_detail.html:13
+#: tracker/templates/tracker/generic/topic_list.html:14
+msgid "add ticket"
+msgstr "přidat tiket"
 
 #: tracker/templates/tracker/generic/create_ticket.html:4
 #: tracker/templates/tracker/generic/create_ticket.html:8
