@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-07 23:42+0200\n"
-"PO-Revision-Date: 2011-07-07 23:42+0200\n"
+"POT-Creation-Date: 2011-07-09 01:07+0200\n"
+"PO-Revision-Date: 2011-07-09 01:07+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -195,11 +195,17 @@ msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
 #: tracker/templates/tracker/ticket_detail.html:8
+#: tracker/templates/tracker/topic_detail.html:8
 #: tracker/templates/tracker/generic/create_ticket.html:7
 #: tracker/templates/tracker/generic/ticket_list.html:7
 #: tracker/templates/tracker/generic/topic_list.html:7
 msgid "index"
 msgstr "začátek"
+
+#: tracker/templates/tracker/ticket_detail.html:8
+#: tracker/templates/tracker/topic_detail.html:8
+msgid "topics"
+msgstr "témata"
 
 #: tracker/templates/tracker/ticket_detail.html:10
 msgid "Created"
@@ -280,17 +286,9 @@ msgstr "Shrnutí"
 msgid "Last changed"
 msgstr "Naposledy změněno"
 
-#: tracker/templates/tracker/topic_detail.html:8
-msgid "topics"
-msgstr "témata"
-
 #: tracker/templates/tracker/topic_detail.html:13
-msgid "Open for new tickets"
-msgstr "Otevřeno pro nové tikety"
-
-#: tracker/templates/tracker/topic_detail.html:13
-msgid "yes,no"
-msgstr "ano,ne"
+msgid "Topic is open for new tickets"
+msgstr "Téma je otevřené pro nové tikety"
 
 #: tracker/templates/tracker/topic_detail.html:13
 #: tracker/templates/tracker/generic/topic_list.html:14
@@ -368,6 +366,3 @@ msgstr "Zaregistrovat"
 #: users/templates/users/register.html:10
 msgid "register"
 msgstr "zaregistrovat"
-
-#~ msgid "Item/file count"
-#~ msgstr "Počet položek/souborů"
