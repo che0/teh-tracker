@@ -148,5 +148,62 @@ class TicketTests(TestCase):
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
 
 class TicketEditTests(TestCase):
-    def test_ticket_editing(self):
-        self.assertTrue(False, "No ticket editing tests present!")
+    def test_correct_choices(self):
+        t_closed = Topic(name='t1', open_for_tickets=False)
+        t_closed.save()
+        t_open = Topic(name='t2', open_for_tickets=True)
+        t_open.save()
+        t_assigned = Topic(name='t3', open_for_tickets=False)
+        t_assigned.save()
+        ticket = Ticket(summary='ticket', topic=t_assigned)
+        ticket.save()
+        
+        from tracker.views import get_edit_ticket_form_class
+        EditForm = get_edit_ticket_form_class(ticket)
+        choices = {t.id for t in EditForm().fields['topic'].queryset.all()}
+        wanted_choices = {t_open.id, t_assigned.id}
+        self.assertEqual(wanted_choices, choices)
+    
+    def test_ticket_edit(self):
+        topic = Topic(name='topic')
+        topic.save()
+        
+        password = 'my_password'
+        user = User(username='my_user')
+        user.set_password(password)
+        user.save()
+        
+        ticket = Ticket(summary='ticket', topic=topic, requested_by='12345', closed=True)
+        ticket.save()
+        
+        c = Client()
+        response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
+        self.assertEqual(302, response.status_code) # should be redirect to login page
+        
+        c.login(username=user.username, password=password)
+        response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
+        self.assertEqual(403, response.status_code) # denies edit of non-own ticket
+        
+        ticket.requested_by = user.username
+        ticket.save()
+        response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
+        self.assertEqual(403, response.status_code) # still deny edit, ticket locked
+        
+        ticket.closed = False
+        ticket.save()
+        response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
+        self.assertEqual(200, response.status_code) # now it should pass
+        
+        # try to submit the form
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+                'summary': 'new summary',
+                'topic': ticket.topic.id,
+                'description': 'new desc',
+            })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        
+        # check changed ticket data
+        ticket = Ticket.objects.get(id=ticket.id)
+        self.assertEqual(user.username, ticket.requested_by)
+        self.assertEqual('new summary', ticket.summary)
+        self.assertEqual('new desc', ticket.description)
