@@ -47,6 +47,10 @@ class Ticket(models.Model):
     def expeditures(self):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
+    def can_edit(self, user):
+        """ Can given user edit this ticket through a non-admin interface? """
+        return (not self.closed) and (user.username == self.requested_by)
+    
     class Meta:
         verbose_name = _('Ticket')
         verbose_name_plural = _('Tickets')

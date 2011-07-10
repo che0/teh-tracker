@@ -7,6 +7,7 @@
 {% block content %}
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <h1>{{ ticket.summary }}</h1>
+{% if user_can_edit_ticket %}<p><a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a></p>{% endif %}
 <p>{% trans "Created" %}: {{ ticket.created }}, {% trans "last changed" %}: {{ ticket.updated }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />

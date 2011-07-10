@@ -111,7 +111,7 @@ class TicketTests(TestCase):
         
         response = c.post(reverse('create_ticket'))
         self.assertEqual(200, response.status_code)
-        self.assertFormError(response, 'form', 'summary', 'This field is required.')
+        self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
         
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
@@ -132,7 +132,7 @@ class TicketTests(TestCase):
                 'description': 'some desc',
             })
         self.assertEqual(200, response.status_code)
-        self.assertFormError(response, 'form', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
+        self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
     
     def test_closed_topic(self):
         closed_topic = Topic(name='closed topic', open_for_tickets=False)
@@ -145,4 +145,8 @@ class TicketTests(TestCase):
                 'description': 'some desc'
             })
         self.assertEqual(200, response.status_code)
-        self.assertFormError(response, 'form', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
+        self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
+
+class TicketEditTests(TestCase):
+    def test_ticket_editing(self):
+        self.assertTrue(False, "No ticket editing tests present!")

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Edit" %}: {{ticket.summary}}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a> &gt;</p>
+<h1>{% trans "Edit" %}: {{ticket.summary}}</h1>
+{% block above_form %}{% endblock %}
+{% url edit_ticket ticket.id as action %}
+{% include "tracker/ticket_form.html" with submit=_("save") %}
+{% block below_form %}{% endblock %}
+{% endblock content %}

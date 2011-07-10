@@ -7,10 +7,7 @@
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
 <h1>{% trans "Create ticket" %}</h1>
 {% block above_form %}{% endblock %}
-<form method="post" action="{% url create_ticket %}">
-{{ form.as_p }}
-{% csrf_token %}
-<input type="submit" value="{% trans "submit" %}" />
-</form>
+{% url create_ticket as action %}
+{% include "tracker/ticket_form.html"%}
 {% block below_form %}{% endblock %}
 {% endblock content %}
