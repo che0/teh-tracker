@@ -1,6 +1,7 @@
 function show_hidden() {
 	$(this).hide();
 	$(this).parent().find('.hidden').show();
+	return false;
 }
 
 function process_hidden(index) {
