@@ -5,3 +5,4 @@ table tr:hover td { background-color: #ddd; }
 #user { text-align: right; }
 abbr[title] { border-bottom: dotted 1px black; }
 tr.total td { font-weight: bold; }
+.hide-switch > .unhide { display: none; }
