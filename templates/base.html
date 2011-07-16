@@ -3,7 +3,9 @@
 
 {% block head %}{{ block.super }}
 <link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
-{% endblock %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{{ADMIN_MEDIA_PREFIX|escapejs}}";</script>
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+{{form_media}}{% endblock %}
 
 {% block language_code %}{{ LANGUAGE_CODE }}{% endblock %}
 

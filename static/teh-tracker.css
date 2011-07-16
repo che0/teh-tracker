@@ -6,3 +6,14 @@ table tr:hover td { background-color: #ddd; }
 abbr[title] { border-bottom: dotted 1px black; }
 tr.total td { font-weight: bold; }
 .hide-switch > .unhide { display: none; }
+
+.helptext { display: block; font-size: smaller; color: #666; }
+
+.datetimeshortcuts img { border: none; }
+.calendarbox { background-color: white; border: 1px solid #ddd; }
+.calendarnav-next { float: right; }
+.calendarnav-previous, .calendarnav-next { padding: 0 1em 0 1em; background-color: #ddd; }
+.calendar-shortcuts { font-size: smaller; text-align: center; }
+.calendar-cancel { text-align: right; margin: 0.2em 0 0 0; }
+.calendar-cancel a { color: red; font-size: smaller; }
+.calendar-cancel a:hover { background-color: red; color: black; }

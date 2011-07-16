@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, abspath, join
 from django.utils.translation import ugettext_lazy as _
+SITE_DIR = abspath(dirname(__file__))
 PROJECT_DIR = abspath(join(dirname(__file__), '..'))
 
 MIDDLEWARE_CLASSES = (
@@ -22,12 +23,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages"
+    "django.contrib.messages.context_processors.messages",
+    "site_context_processors.admin_media_prefix",
 )
 
 STATICFILES_DIRS = (
     join(PROJECT_DIR, 'static'),
-)    
+)
+
+LOCALE_PATHS = (
+    join(SITE_DIR, 'locale'),
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

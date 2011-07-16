@@ -2,7 +2,7 @@
 import datetime
 
 from django.db.models import Q
-from django.forms import ModelForm, ModelChoiceField, ValidationError
+from django.forms import ModelForm, ModelChoiceField, ValidationError, Media
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView
+from django.contrib.admin import widgets as adminwidgets
+from django.conf import settings
 
 from tracker.models import Ticket, Topic, MediaInfo
 
@@ -33,6 +35,7 @@ class CreateTicketForm(ModelForm):
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'requested_by', 'status', 'amount_paid', 'closed')
+        widgets = {'event_date': adminwidgets.AdminDateWidget()}
 
 def get_edit_ticket_form_class(ticket):
     class EditTicketForm(CreateTicketForm):
@@ -45,6 +48,11 @@ class MediaInfoForm(ModelForm):
     class Meta:
         model = MediaInfo
         fields = ('url', 'description', 'count')
+
+adminCore = Media(js=(
+    settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js",
+    settings.ADMIN_MEDIA_PREFIX + "js/core.js",
+))
 
 @login_required
 def create_ticket(request):
@@ -70,6 +78,7 @@ def create_ticket(request):
     return render(request, 'tracker/create_ticket.html', {
         'ticketform': form,
         #'mediainfo': mediainfo,
+        'form_media': adminCore + form.media,# + mediainfo.media,
     })
 
 @login_required
@@ -91,4 +100,5 @@ def edit_ticket(request, pk):
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
+        'form_media': adminCore + ticketform.media,
     })
