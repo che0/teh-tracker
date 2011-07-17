@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-17 11:43+0200\n"
-"PO-Revision-Date: 2011-07-17 11:43+0200\n"
+"PO-Revision-Date: 2011-07-17 11:46+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -371,7 +371,7 @@ msgstr "Přihlášení"
 
 #: users/templates/users/login.html:7
 msgid "You need to log in to access the following page."
-msgstr "Pro přístup k následující stránce je vyžadováno přihlášení.s"
+msgstr "Pro přístup k následující stránce je vyžadováno přihlášení."
 
 #: users/templates/users/login.html:10
 msgid "Your username and password didn't match. Please try again."
