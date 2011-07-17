@@ -23,6 +23,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
+    "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
     "site_context_processors.admin_media_prefix",
 )
@@ -50,7 +51,10 @@ INSTALLED_APPS = (
 )
 
 ROOT_URLCONF = 'urls'
+LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = '/users/logout/'
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 TRACKER_CURRENCY = _('CZK')

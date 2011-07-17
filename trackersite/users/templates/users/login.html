@@ -4,6 +4,8 @@
 {% block title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
+{% if request.GET.next %}<p>{% trans "You need to log in to access the following page." %}</p>{% endif %}
+
 {% if form.errors %}
 <p>{% trans "Your username and password didn't match. Please try again." %}</p>
 {% endif %}
@@ -14,5 +16,9 @@
 <input type="submit" value="{% trans "login" %}" />
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
+
+<p>{% trans "Don't have an acount?" %} <a href="{% url register %}">{% trans "Register" %}</a>
+{#<br />{% trans "Forgot password?" %} <a href="{% url reset_password %}">{% trans "Reset password" %}</a>#}</p>
+
 
 {% endblock %}
