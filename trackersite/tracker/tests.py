@@ -61,6 +61,37 @@ class SimpleTicketTest(TestCase):
         t = self.topic
         self.assertEqual(reverse('topic_detail', kwargs={'pk':t.id}), t.get_absolute_url())
 
+class OldRedirectTests(TestCase):
+    def setUp(self):
+        self.topic = Topic(name='topic')
+        self.topic.save()
+        self.ticket = Ticket(summary='foo', requested_by='req', topic=self.topic, status='init', description='foo foo')
+        self.ticket.save()
+    
+    def assert301(self, *args, **kwargs):
+        kwargs['status_code'] = 301
+        self.assertRedirects(*args, **kwargs)
+    
+    def test_old_index(self):
+        response = Client().get('/old/')
+        self.assert301(response, '/', target_status_code=302) # 302 = now index is a non-permanent redirect
+    
+    def test_topic_index(self):
+        response = Client().get('/old/topics/')
+        self.assert301(response, reverse('topic_list'))
+    
+    def test_ticket(self):
+        response = Client().get('/old/ticket/%s/' % self.ticket.id)
+        self.assert301(response, self.ticket.get_absolute_url())
+    
+    def test_new_ticket(self):
+        response = Client().get('/old/ticket/new/')
+        self.assert301(response, reverse('create_ticket'), target_status_code=302) # 302 = redirect to login
+    
+    def test_topic(self):
+        response = Client().get('/old/topic/%s/' % self.topic.id)
+        self.assert301(response, self.topic.get_absolute_url())
+
 class TicketSumTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic')

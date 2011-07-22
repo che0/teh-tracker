@@ -15,8 +15,8 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('',
-    url(r'^$', RedirectView.as_view(url='old/'), name='index'),
-    url(r'^old/', include(tracker.urls)),
+    url(r'^$', RedirectView.as_view(url='tickets/', permanent=False), name='index'),
+    url(r'', include(tracker.urls)), # tracker urls are included directly in web root
     url(r'^admin/', include(admin.site.urls)),
     url(r'^users/', include(users.urls)),
     url(r'^js/i18n\.js$', 'django.views.i18n.javascript_catalog', js_info_dict),
