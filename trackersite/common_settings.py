@@ -14,7 +14,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_DIRS = (
-    join(PROJECT_DIR, 'templates'),
+    join(SITE_DIR, 'templates'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

@@ -17,8 +17,8 @@
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
-<p>{% trans "Don't have an acount?" %} <a href="{% url register %}">{% trans "Register" %}</a>
-{#<br />{% trans "Forgot password?" %} <a href="{% url reset_password %}">{% trans "Reset password" %}</a>#}</p>
+<p>{% trans "Don't have an acount?" %} <a href="{% url register %}">{% trans "Register" %}</a><br />
+{% trans "Forgot password?" %} <a href="{% url password_reset %}">{% trans "Reset password" %}</a></p>
 
 
 {% endblock %}
