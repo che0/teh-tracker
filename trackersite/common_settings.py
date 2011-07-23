@@ -25,7 +25,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
-    "site_context_processors.admin_media_prefix",
 )
 
 STATICFILES_DIRS = (

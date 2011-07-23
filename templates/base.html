@@ -1,9 +1,9 @@
 {% extends "primitive_base.html" %}
-{% load i18n %}
+{% load i18n adminmedia %}
 
 {% block head %}{{ block.super }}
 <link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript">window.__admin_media_prefix__ = "{{ADMIN_MEDIA_PREFIX|escapejs}}";</script>
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 {{form_media}}{% endblock %}
 
