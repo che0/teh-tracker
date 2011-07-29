@@ -1,13 +1,25 @@
 {% load i18n %}
 <table>
-<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}<th>{% trans "Requested by" %}</th>
-{# <th><abbr title="{% trans "Item/file count" %}">{% trans "Media" %}</abbr></th><th>{% trans "Expeditures" %}</th> #}
-<th>{% trans "Status" %}</th><th>{% trans "Last changed" %}</th></tr>
+{% if show_details %}
+<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}<th rowspan="2">{% trans "Requested by" %}
+<th colspan="3" class="uber-th">{% trans "Media" %}</th><th rowspan="2">{% trans "Expeditures" %}</th>
+<th rowspan="2">{% trans "Status" %}</th><th rowspan="2">{% trans "Last changed" %}</th></tr>
+<tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
+<th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
+{% else %}
+<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}<th>{% trans "Requested by" %}
+</th><th>{% trans "Status" %}</th><th>{% trans "Last changed" %}</th></tr>
+{% endif %}
 
 {% for ticket in ticket_list %}
 <tr><td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td><td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>{% if show_topics %}<td><a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a></td>{% endif %}<td>{{ticket.requested_by}}</td>
-{% comment %}<td>{% if ticket.media_count.objects > 0 %}{{ticket.media_count.objects}}/{{ticket.media_count.media}}{% endif %}</td>
-<td>{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>{% endcomment %}
+
+{% if show_details %}
+{# media info #}<td>{% for item in ticket.mediainfo_set.all %}{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+{# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media}}</td>{% else %}<td></td><td></td>{% endif %}
+{# expeditures #}<td>{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>
+{% endif %}
+
 <td>{{ticket.status}}</td><td>{{ticket.updated}}</td></tr>
 {% endfor %}
 </table>

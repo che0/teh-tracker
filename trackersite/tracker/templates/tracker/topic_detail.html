@@ -19,7 +19,7 @@
 
 {% if topic.ticket_set.all|length > 0 %}
 <h2>{% trans "Tickets" %}</h2>
-{% with topic.ticket_set.all as ticket_list %}{% include "tracker/ticket_table.html" %}{% endwith %}
+{% with ticket_list=topic.ticket_set.all show_details=topic.detailed_tickets %}{% include "tracker/ticket_table.html" %}{% endwith %}
 {% endif %}
 
 {% get_comment_count for topic as comment_count %}

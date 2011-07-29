@@ -15,5 +15,5 @@ class TicketAdmin(admin.ModelAdmin):
 admin.site.register(models.Ticket, TicketAdmin)
 
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ('name', 'open_for_tickets')
+    list_display = ('name', 'open_for_tickets', 'detailed_tickets')
 admin.site.register(models.Topic, TopicAdmin)
