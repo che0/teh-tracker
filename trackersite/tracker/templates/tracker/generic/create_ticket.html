@@ -9,5 +9,7 @@
 {% block above_form %}{% endblock %}
 {% url create_ticket as action %}
 {% include "tracker/ticket_form.html"%}
-{% block below_form %}{% endblock %}
+{% block below_form %}
+<p>({% trans "You'll be able to edit everything you've filled in even after submitting the form." %})</p>
+{% endblock %}
 {% endblock content %}

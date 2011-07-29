@@ -17,7 +17,7 @@ class Ticket(models.Model):
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     status = models.CharField(_('status'), max_length=100, help_text=_('Status of this ticket'))
-    description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
+    description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=string_concat(_('Amount actually paid for this ticket in'), ' ', settings.TRACKER_CURRENCY))
     closed = models.BooleanField(_('closed'), default=False, help_text=_('Has this ticket been dealt with?'))
     
