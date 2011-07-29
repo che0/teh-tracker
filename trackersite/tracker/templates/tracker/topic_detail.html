@@ -25,7 +25,7 @@
 {% get_comment_count for topic as comment_count %}
 {% if comment_count %}
 <h2>{% trans "Comments" %} ({{comment_count}})</h2>
-{% render_comment_list for ticket %}
+{% render_comment_list for topic %}
 {% else %}
 <h2>{% trans "Comments" %}</h2>
 <p>{% trans "There are no comments yet." %}</p>
