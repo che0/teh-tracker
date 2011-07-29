@@ -47,7 +47,10 @@ INSTALLED_APPS = (
     'south',
     'tracker',
     'users',
+    'customcomments',
 )
+
+COMMENTS_APP = 'customcomments'
 
 ROOT_URLCONF = 'urls'
 LOGIN_URL = '/users/login/'
