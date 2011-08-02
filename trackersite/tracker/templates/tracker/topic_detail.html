@@ -3,6 +3,7 @@
 {% load comments %}
 
 {% block head %}{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url topic_ticket_feed topic.id %}" />
 <script src="{% admin_media_prefix %}js/jquery.min.js" type="text/javascript"></script>
 <script src="{{STATIC_URL}}hiding.js" type="text/javascript"></script>
 {% endblock %}

@@ -3,6 +3,10 @@
 
 {% block title %}{% trans "Ticket list" %}{% endblock %}
 
+{% block head %}{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url ticket_list_feed %}" />
+{% endblock %}
+
 {% block content %}
 <p class="nav">{% trans "index" %}</p>
 <h1>{% trans "Ticket list" %}</h1>
