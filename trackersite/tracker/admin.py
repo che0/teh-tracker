@@ -11,6 +11,7 @@ class ExpeditureAdmin(admin.TabularInline):
 class TicketAdmin(admin.ModelAdmin):
     exclude = ('updated', )
     list_display = ('summary', 'topic', 'requested_by', 'status')
+    list_filter = ('topic', 'status')
     inlines = [MediaInfoAdmin, ExpeditureAdmin]
 admin.site.register(models.Ticket, TicketAdmin)
 
