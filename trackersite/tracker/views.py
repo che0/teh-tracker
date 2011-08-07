@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.utils.functional import curry
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView
 from django.contrib.admin import widgets as adminwidgets
@@ -51,9 +52,12 @@ adminCore = Media(js=(
     settings.ADMIN_MEDIA_PREFIX + "js/inlines.js",
 ))
 
+MEDIAINFO_FIELDS = ('url', 'description', 'count')
+mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo, fields=MEDIAINFO_FIELDS)
+
 @login_required
 def create_ticket(request):
-    MediaInfoFormSet = inlineformset_factory(Ticket, MediaInfo, extra=2)
+    MediaInfoFormSet = mediainfoformset_factory(extra=2, can_delete=False)
     
     if request.method == 'POST':
         ticketform = CreateTicketForm(request.POST)
@@ -68,13 +72,8 @@ def create_ticket(request):
             ticket.status = 'new'
             ticket.save()
             ticketform.save_m2m()
-            
             mediainfo.instance = ticket
-            for mform in mediainfo:
-                if mform.cleaned_data == {}:
-                    continue
-                if mform.is_valid():
-                    mediainfo.save_new(mform)
+            mediainfo.save()
             
             messages.success(request, _('Ticket %s created.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
@@ -98,28 +97,28 @@ def edit_ticket(request, pk):
         return HttpResponseForbidden(_('You cannot edit this ticket.'))
     TicketEditForm = get_edit_ticket_form_class(ticket)
     
-    #MediaInfoFormSet = formset_factory(MediaInfoForm, can_delete=True)
+    MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
     
     if request.method == 'POST':
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
-            pass#mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
+            mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
         except ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
         if ticketform.is_valid():# and mediainfo.is_valid():
             ticket = ticketform.save()
-            #print mediainfo.cleaned_data
-            #for mediaform in mediainfo.cleaned_data:
+            mediainfo.save()
                 
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         ticketform = TicketEditForm(instance=ticket)
-        #mediainfo = MediaInfoFormSet(prefix='mediainfo')
+        mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
     
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
-        'form_media': adminCore + ticketform.media,
+        'mediainfo': mediainfo,
+        'form_media': adminCore + ticketform.media + mediainfo.media,
     })

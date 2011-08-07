@@ -277,6 +277,9 @@ class TicketEditTests(TestCase):
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         
@@ -285,3 +288,59 @@ class TicketEditTests(TestCase):
         self.assertEqual(user.username, ticket.requested_by)
         self.assertEqual('new summary', ticket.summary)
         self.assertEqual('new desc', ticket.description)
+        
+        # add some media items
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+                'summary': 'new summary',
+                'topic': ticket.topic.id,
+                'description': 'new desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '3',
+                'mediainfo-0-count': '',
+                'mediainfo-0-description': 'image 1',
+                'mediainfo-0-url': 'http://www.example.com/image1.jpg',
+                'mediainfo-1-count': '',
+                'mediainfo-1-description': '', 
+                'mediainfo-1-url': '',
+                'mediainfo-2-count': '3',
+                'mediainfo-2-description': 'image 2 - group',
+                'mediainfo-2-url': 'http://www.example.com/imagegroup/',
+            })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        media = ticket.mediainfo_set.order_by('description')
+        self.assertEqual(2, len(media))
+        self.assertEqual('image 1', media[0].description)
+        self.assertEqual('http://www.example.com/image1.jpg', media[0].url)
+        self.assertEqual(None, media[0].count)
+        self.assertEqual('image 2 - group', media[1].description)
+        self.assertEqual('http://www.example.com/imagegroup/', media[1].url)
+        self.assertEqual(3, media[1].count)
+        
+        # edit media items
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+                'summary': 'new summary',
+                'topic': ticket.topic.id,
+                'description': 'new desc',
+                'mediainfo-INITIAL_FORMS': '2',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '3',
+                'mediainfo-0-id': media[0].id,
+                'mediainfo-0-count': '1',
+                'mediainfo-0-description': 'image 1 - edited',
+                'mediainfo-0-url': 'http://www.example.com/second.jpg',
+                'mediainfo-1-id': media[1].id,
+                'mediainfo-1-DELETE': 'on',
+                'mediainfo-1-count': '3',
+                'mediainfo-1-description': 'image 2 - group',
+                'mediainfo-1-url': 'http://www.example.com/imagegroup/',
+                'mediainfo-2-count': '',
+                'mediainfo-2-description': '', 
+                'mediainfo-2-url': '',
+            })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        media = ticket.mediainfo_set.all()
+        self.assertEqual(1, len(media))
+        self.assertEqual('image 1 - edited', media[0].description)
+        self.assertEqual('http://www.example.com/second.jpg', media[0].url)
+        self.assertEqual(1, media[0].count)
