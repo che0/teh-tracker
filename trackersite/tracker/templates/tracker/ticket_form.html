@@ -1,7 +1,18 @@
 {% load i18n %}
 <form method="post" action="{{action}}">
 {{ ticketform.as_p }}
-{{ mediainfo.as_p }}
+
+{# mediainfo formset #}
+{% include "tracker/tabular_formset.html" with formset=mediainfo %}
+
+{% comment %}
+{{ mediainfo.management_form }}
+<table>{% for form in mediainfo %}
+<div 
+{{ form }}
+{% endfor %}
+</table>
+{% endcomment %}
 {% csrf_token %}
 <input type="submit" value="{{ submit|default:_("submit") }}" />
 </form>

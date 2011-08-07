@@ -18,3 +18,5 @@ tr.total td { font-weight: bold; }
 .calendar-cancel { text-align: right; margin: 0.2em 0 0 0; }
 .calendar-cancel a { color: red; font-size: smaller; }
 .calendar-cancel a:hover { background-color: red; color: black; }
+
+.empty-form { display:none; }

@@ -141,6 +141,13 @@ class TicketTests(TestCase):
         self.assertEqual(200, response.status_code)
         
         response = c.post(reverse('create_ticket'))
+        self.assertEqual(400, response.status_code)
+        
+        response = c.post(reverse('create_ticket'), {
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '0',                
+            })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
         
@@ -148,6 +155,9 @@ class TicketTests(TestCase):
                 'summary': 'ticket',
                 'topic': self.open_topic.id,
                 'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '0',
             })
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
@@ -155,12 +165,46 @@ class TicketTests(TestCase):
         self.assertEqual('new', ticket.status)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
     
+    def test_ticket_creation_with_media(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '3',
+                'mediainfo-0-count': '',
+                'mediainfo-0-description': 'image 1',
+                'mediainfo-0-url': 'http://www.example.com/image1.jpg',
+                'mediainfo-1-count': '',
+                'mediainfo-1-description': '', 
+                'mediainfo-1-url': '',
+                'mediainfo-2-count': '3',
+                'mediainfo-2-description': 'image 2 - group',
+                'mediainfo-2-url': 'http://www.example.com/imagegroup/',
+            })
+        self.assertEqual(1, Ticket.objects.count())
+        ticket = Ticket.objects.order_by('-created')[0]
+        
+        media = ticket.mediainfo_set.order_by('description')
+        self.assertEqual(2, len(media))
+        self.assertEqual('image 1', media[0].description)
+        self.assertEqual('http://www.example.com/image1.jpg', media[0].url)
+        self.assertEqual(None, media[0].count)
+        self.assertEqual('image 2 - group', media[1].description)
+        self.assertEqual('http://www.example.com/imagegroup/', media[1].url)
+        self.assertEqual(3, media[1].count)
+    
     def test_wrong_topic_id(self):
         c = self.get_client()
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': 'gogo',
                 'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -173,7 +217,10 @@ class TicketTests(TestCase):
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': closed_topic.id,
-                'description': 'some desc'
+                'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
