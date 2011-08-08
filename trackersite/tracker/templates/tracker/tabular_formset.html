@@ -1,14 +1,14 @@
 {% load i18n adminmedia %}
-<div class="inline-group" id="{{ formset.prefix }}-group">
-  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+<div id="{{ formset.prefix }}-group">
 {{ formset.management_form }}
-<fieldset class="module">
+<fieldset>
    <h2>TODO_TITLE</h2>
    {{ formset.non_form_errors }}
    <table>
      <thead><tr>
-         <th>TODO_FIELD</th>
-     {% if formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
+         {% for field in formset.0.visible_fields %}
+             <th>{% trans field.name %}</th>
+         {% endfor %}
      </tr></thead>
 
      <tbody>
@@ -17,7 +17,7 @@
         <tr><td>{{ inline_admin_form.form.non_field_errors }}</td></tr>
         {% endif %}
         <tr id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}"{% if forloop.last %} class="empty-form"{% endif %}>
-            <td>
+            <td class="hidden">
                {% for field in inline_admin_form.hidden_fields %}{{ field }}{% endfor %}
             </td>
             {% for field in inline_admin_form.visible_fields %}
@@ -26,18 +26,16 @@
                   {{ field }}
               </td>
             {% endfor %}
-          {% if formset.can_delete %}<td class="delete">DELETE</td>{% endif %}
         </tr>
      {% endfor %}
      </tbody>
    </table>
 </fieldset>
-  </div>
 </div>
 
 <script type="text/javascript">
     $(document).ready(function() {
-        var rows = "#{{ formset.prefix }}-group .tabular.inline-related tbody tr";
+        var rows = "#{{ formset.prefix }}-group fieldset tbody tr";
         var reinitDateTimeShortCuts = function() {
             // Reinitialize the calendar and clock widgets by force
             if (typeof DateTimeShortcuts != "undefined") {

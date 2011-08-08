@@ -2,7 +2,7 @@
 import datetime
 
 from django.db.models import Q
-from django.forms import ModelForm, ModelChoiceField, ValidationError, Media
+from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -53,7 +53,13 @@ adminCore = Media(js=(
 ))
 
 MEDIAINFO_FIELDS = ('url', 'description', 'count')
-mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo, fields=MEDIAINFO_FIELDS)
+def mediainfo_formfield(f, **kwargs):
+    if f.name == 'url':
+        kwargs['widget'] = TextInput(attrs={'size':'60'})
+    elif f.name == 'count':
+        kwargs['widget'] = TextInput(attrs={'size':'4'})
+    return f.formfield(**kwargs)
+mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
 
 @login_required
 def create_ticket(request):

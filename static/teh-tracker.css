@@ -7,6 +7,7 @@ table tr:hover td { background-color: #ddd; }
 abbr[title] { border-bottom: dotted 1px black; }
 tr.total td { font-weight: bold; }
 .hide-switch > .unhide { display: none; }
+.hidden { display: none; }
 
 .helptext { display: block; font-size: smaller; color: #666; }
 
