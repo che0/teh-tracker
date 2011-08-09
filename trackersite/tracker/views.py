@@ -25,9 +25,9 @@ class TicketDetailView(DetailView):
         return context
 ticket_detail = TicketDetailView.as_view()
 
-class CreateTicketForm(ModelForm):
+class TicketForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(CreateTicketForm, self).__init__(*args, **kwargs)
+        super(TicketForm, self).__init__(*args, **kwargs)
         self.fields['topic'].queryset = self.get_topic_queryset()
     
     def get_topic_queryset(self):
@@ -36,10 +36,13 @@ class CreateTicketForm(ModelForm):
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'requested_by', 'status', 'amount_paid', 'closed')
-        widgets = {'event_date': adminwidgets.AdminDateWidget()}
+        widgets = {
+            'event_date': adminwidgets.AdminDateWidget(),
+            'summary': TextInput(attrs={'size':'40'}),
+        }
 
 def get_edit_ticket_form_class(ticket):
-    class EditTicketForm(CreateTicketForm):
+    class EditTicketForm(TicketForm):
         def get_topic_queryset(self):
             return Topic.objects.filter(Q(open_for_tickets=True) | Q(id=ticket.topic.id))
     
@@ -66,7 +69,7 @@ def create_ticket(request):
     MediaInfoFormSet = mediainfoformset_factory(extra=2, can_delete=False)
     
     if request.method == 'POST':
-        ticketform = CreateTicketForm(request.POST)
+        ticketform = TicketForm(request.POST)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
         except ValidationError, e:
@@ -87,7 +90,7 @@ def create_ticket(request):
         initial = {'event_date': datetime.date.today()}
         if 'topic' in request.GET:
             initial['topic'] = request.GET['topic']
-        ticketform = CreateTicketForm(initial=initial)
+        ticketform = TicketForm(initial=initial)
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
     
     return render(request, 'tracker/create_ticket.html', {

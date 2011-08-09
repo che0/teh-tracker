@@ -1,9 +1,13 @@
 {% load i18n %}
 <form method="post" action="{{action}}">
-{{ ticketform.as_p }}
+{{ ticketform.non_field_errors }}
+{% for field in ticketform %}
+<p><label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
+{#{% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}#}
+{% endfor %}
 
 {# mediainfo formset #}
-{% include "tracker/tabular_formset.html" with formset=mediainfo %}
+{% include "tracker/tabular_formset.html" with formset=mediainfo formset_title=_("Related files") formset_item_name=_("file") %}
 
 {% comment %}
 {{ mediainfo.management_form }}

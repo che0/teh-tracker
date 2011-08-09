@@ -83,9 +83,9 @@ def ticket_note_comment(sender, comment, **kwargs):
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this media info belongs to'))
-    description = models.CharField(_('description'), max_length=255, help_text=_('Description of this media item'))
-    url = models.URLField(_('URL'), blank=True, verify_exists=False, help_text=_('URL of the related media files'))
-    count = models.PositiveIntegerField(_('count'), blank=True, null=True, help_text=_('Number of media files for this item'))
+    description = models.CharField(_('description'), max_length=255, help_text=_('Item description to show'))
+    url = models.URLField(_('URL'), blank=True, verify_exists=False, help_text=_('Link to media files'))
+    count = models.PositiveIntegerField(_('count'), blank=True, null=True, help_text=_('Number of files'))
     
     def __unicode__(self):
         return self.description

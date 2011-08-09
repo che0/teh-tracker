@@ -2,12 +2,24 @@
 <div id="{{ formset.prefix }}-group">
 {{ formset.management_form }}
 <fieldset>
-   <h2>TODO_TITLE</h2>
+   <h2>{{ formset_title }}</h2>
    {{ formset.non_form_errors }}
    <table>
      <thead><tr>
          {% for field in formset.0.visible_fields %}
-             <th>{% trans field.name %}</th>
+             {% if field.name == "DELETE" %}
+                 <th>{% trans "delete" %}</th>
+             {% else %}
+                 <th>{% trans field.name %}</th>
+             {% endif %}
+         {% endfor %}
+     </tr><tr>
+         {% for field in formset.0.visible_fields %}
+             {% if field.name == "DELETE" %}
+                 <td class="helptext">{% trans "Delete the item" %}</td>
+             {% else %}
+                 <td class="helptext">{% trans field.help_text %}</td>
+             {% endif %}
          {% endfor %}
      </tr></thead>
 
@@ -73,7 +85,7 @@
         }
         $(rows).formset({
             prefix: "{{ formset.prefix }}",
-            addText: "Add another TODO_NAME",
+            addText: "{% blocktrans %}Add another {{ formset_item_name }}{% endblocktrans %}",
             formCssClass: "dynamic-{{ formset.prefix }}",
             deleteCssClass: "inline-deletelink",
             deleteText: "{% trans "Remove" %}",

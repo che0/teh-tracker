@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-02 20:20+0200\n"
-"PO-Revision-Date: 2011-08-02 19:42+0200\n"
+"POT-Creation-Date: 2011-08-09 22:56+0200\n"
+"PO-Revision-Date: 2011-08-09 22:56+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -218,24 +218,24 @@ msgid "Ticket this media info belongs to"
 msgstr "Tiket ke kterému patří tato média"
 
 #: tracker/models.py:86
-msgid "Description of this media item"
-msgstr "Popis tohoto média"
+msgid "Item description to show"
+msgstr "Popis položky do seznamu"
 
 #: tracker/models.py:87
 msgid "URL"
 msgstr "URL"
 
 #: tracker/models.py:87
-msgid "URL of the related media files"
-msgstr "URL souvisejících souborů"
+msgid "Link to media files"
+msgstr "Odkaz na soubory"
 
 #: tracker/models.py:88
 msgid "count"
 msgstr "počet"
 
 #: tracker/models.py:88
-msgid "Number of media files for this item"
-msgstr "Počet souborů pro tuto položku"
+msgid "Number of files"
+msgstr "Počet souborů"
 
 #: tracker/models.py:94 tracker/models.py:95
 msgid "Ticket media"
@@ -270,16 +270,16 @@ msgstr "Výdaj tiketu"
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
-#: tracker/views.py:71
+#: tracker/views.py:87
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:89
+#: tracker/views.py:106
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:96
+#: tracker/views.py:122
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
@@ -301,6 +301,15 @@ msgstr "začátek"
 #: tracker/templates/tracker/edit_ticket.html:11
 msgid "save"
 msgstr "uložit"
+
+#: tracker/templates/tracker/tabular_formset.html:80
+#, python-format
+msgid "Add another %(formset_item_name)s"
+msgstr "Přidal další %(formset_item_name)s"
+
+#: tracker/templates/tracker/tabular_formset.html:83
+msgid "Remove"
+msgstr "Odebrat"
 
 #: tracker/templates/tracker/ticket_detail.html:13
 #: tracker/templates/tracker/topic_detail.html:14
@@ -384,7 +393,15 @@ msgstr "Zatím žádné komentáře."
 msgid "Add comment"
 msgstr "Přidat komentář"
 
-#: tracker/templates/tracker/ticket_form.html:13
+#: tracker/templates/tracker/ticket_form.html:10
+msgid "Related files"
+msgstr "Odkazy na soubory"
+
+#: tracker/templates/tracker/ticket_form.html:10
+msgid "file"
+msgstr "soubor"
+
+#: tracker/templates/tracker/ticket_form.html:21
 msgid "submit"
 msgstr "odeslat"
 
@@ -669,3 +686,9 @@ msgstr "Děkujeme za používání našeho webu!"
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "Tým aplikace %(site_name)s"
+
+#~ msgid "Description of this media item"
+#~ msgstr "Popis tohoto média"
+
+#~ msgid "Number of media files for this item"
+#~ msgstr "Počet souborů pro tuto položku"

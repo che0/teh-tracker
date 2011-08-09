@@ -9,7 +9,8 @@ tr.total td { font-weight: bold; }
 .hide-switch > .unhide { display: none; }
 .hidden { display: none; }
 
-.helptext { display: block; font-size: smaller; color: #666; }
+span.helptext { display: block; }
+.helptext { font-size: smaller; color: #666; }
 
 .datetimeshortcuts img { border: none; }
 .calendarbox { background-color: white; border: 1px solid #ddd; }
