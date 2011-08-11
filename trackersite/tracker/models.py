@@ -62,6 +62,7 @@ class Topic(models.Model):
     open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
     detailed_tickets = models.BooleanField(_('detailed tickets'), help_text=_('Does this topic use detailed ticket information (like media and expenses)?'))
     description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
+    form_description = models.TextField(_('form description'), blank=True, help_text=_('Description shown to users who enter tickets for this topic'))
     
     def __unicode__(self):
         return self.name

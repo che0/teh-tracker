@@ -31,7 +31,7 @@ def topics_js(request):
     data = {}
     for t in Topic.objects.all():
         data[t.id] = {
-            'form_description': t.description,
+            'form_description': t.form_description,
             'detailed_tickets': t.detailed_tickets,
         }
     
