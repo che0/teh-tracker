@@ -16,7 +16,7 @@
 
 {% if show_details %}
 {# media info #}<td>{% for item in ticket.mediainfo_set.all %}{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-{# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media}}</td>{% else %}<td></td><td></td>{% endif %}
+{# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {# expeditures #}<td>{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>
 {% endif %}
 

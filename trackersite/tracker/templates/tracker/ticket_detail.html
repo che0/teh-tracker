@@ -22,8 +22,8 @@
 
 {% if ticket.media_count.objects > 0 %}
 <h2>{% trans "Media" %}</h2>
-<p>{% trans "Number of objects" %}: {{ ticket.media_count.objects }}<br />
-{% trans "Number of media files" %}: {{ ticket.media_count.media }}</p>
+<p>{% trans "Number of objects" %}: {{ ticket.media_count.objects }}
+{% if ticket.media_count.media %}<br />{% trans "Number of media files" %}: {{ ticket.media_count.media }}</p>{% endif %}
 <ul>
 {% for item in ticket.mediainfo_set.all %}
 <li>{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}</li>
