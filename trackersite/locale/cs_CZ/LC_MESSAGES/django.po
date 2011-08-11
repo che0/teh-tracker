@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-08-11 17:54+0200\n"
-"PO-Revision-Date: 2011-08-11 17:54+0200\n"
+"PO-Revision-Date: 2011-08-11 23:17+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -330,7 +330,7 @@ msgstr "Smazat položku"
 #: tracker/templates/tracker/tabular_formset.html:89
 #, python-format
 msgid "Add another %(formset_item_name)s"
-msgstr "Přidal další %(formset_item_name)s"
+msgstr "Přidat další %(formset_item_name)s"
 
 #: tracker/templates/tracker/tabular_formset.html:92
 msgid "Remove"
