@@ -24,7 +24,7 @@ admin.site.register(models.Ticket, TicketAdmin)
 
 class TopicAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
+        if request.user.has_perm('tracker.supervisor'):
             return ()
         else:
             return ('admin', )

@@ -2,7 +2,7 @@
 <form method="post" action="{{action}}">
 {{ ticketform.non_field_errors }}
 {% for field in ticketform %}
-<p class="field_{{field.name}} {% if field.field.required %} required{% endif %}"><label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
+<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}"><label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
 {% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 
