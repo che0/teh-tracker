@@ -12,6 +12,9 @@ tr.total td { font-weight: bold; }
 span.helptext { display: block; }
 .helptext { font-size: smaller; color: #666; }
 
+.field_topic { margin-bottom: 0; }
+#topic_desc { margin: 0 0 0 7em; font-size: smaller; color: #666; border-left: solid 2px #666; padding: 0.7em 0 0 0.3em; }
+
 p.required label { font-weight: bold; }
 p.required label:before { padding-right: 0.2em; content: '*'; color: red; }
 th.required { font-weight: bold; }

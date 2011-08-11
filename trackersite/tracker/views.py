@@ -2,7 +2,7 @@
 import datetime
 
 from django.db.models import Q
-from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput
+from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput, Textarea
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -14,6 +14,7 @@ from django.views.generic import DetailView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
+from django.core.urlresolvers import reverse
 
 from tracker.models import Ticket, Topic, MediaInfo
 
@@ -29,7 +30,10 @@ ticket_detail = TicketDetailView.as_view()
 def topics_js(request):
     data = {}
     for t in Topic.objects.all():
-        data[t.id] = {'desc': t.description, 'detailed': t.detailed_tickets}
+        data[t.id] = {
+            'form_description': t.description,
+            'detailed_tickets': t.detailed_tickets,
+        }
     
     content = 'topics_table = %s;' % json.dumps(data)
     return HttpResponse(content, content_type='text/javascript')
@@ -42,16 +46,18 @@ class TicketForm(ModelForm):
     def get_topic_queryset(self):
         return Topic.objects.filter(open_for_tickets=True)
     
+    def _media(self):
+        return super(TicketForm, self).media + Media(js=('ticketform.js', reverse('topics_js')))
+    media = property(_media)
+    
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'requested_by', 'status', 'amount_paid', 'closed')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
             'summary': TextInput(attrs={'size':'40'}),
+            'description': Textarea(attrs={'rows':'4', 'cols':'60'}),
         }
-    
-    class Media:
-        js = ('/js/topics.js', 'ticketform.js')
 
 def get_edit_ticket_form_class(ticket):
     class EditTicketForm(TicketForm):
@@ -93,8 +99,9 @@ def create_ticket(request):
             ticket.status = 'new'
             ticket.save()
             ticketform.save_m2m()
-            mediainfo.instance = ticket
-            mediainfo.save()
+            if ticket.topic.detailed_tickets:
+                mediainfo.instance = ticket
+                mediainfo.save()
             
             messages.success(request, _('Ticket %s created.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
