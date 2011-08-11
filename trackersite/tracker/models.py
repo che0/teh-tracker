@@ -63,6 +63,7 @@ class Topic(models.Model):
     detailed_tickets = models.BooleanField(_('detailed tickets'), help_text=_('Does this topic use detailed ticket information (like media and expenses)?'))
     description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     form_description = models.TextField(_('form description'), blank=True, help_text=_('Description shown to users who enter tickets for this topic'))
+    admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), help_text=_('Selected users will have administration access to this topic.'))
     
     def __unicode__(self):
         return self.name
@@ -74,6 +75,9 @@ class Topic(models.Model):
         verbose_name = _('Topic')
         verbose_name_plural = _('Topics')
         ordering = ['name']
+        permissions = (
+            ("supervisor", "Can edit all topics and tickets"),
+        )
 
 @receiver(comment_was_posted)
 def ticket_note_comment(sender, comment, **kwargs):
@@ -107,4 +111,3 @@ class Expediture(models.Model):
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
-

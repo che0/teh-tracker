@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-11 16:24+0200\n"
-"PO-Revision-Date: 2011-08-11 16:24+0200\n"
+"POT-Creation-Date: 2011-08-11 17:54+0200\n"
+"PO-Revision-Date: 2011-08-11 17:54+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -130,8 +130,8 @@ msgstr "stav"
 msgid "Status of this ticket"
 msgstr "Aktuální stav tiketu"
 
-#: tracker/models.py:20 tracker/models.py:64 tracker/models.py:87
-#: tracker/models.py:101
+#: tracker/models.py:20 tracker/models.py:64 tracker/models.py:91
+#: tracker/models.py:105
 msgid "description"
 msgstr "popis"
 
@@ -168,7 +168,7 @@ msgstr "%s [uzavřeno]"
 msgid "Ticket"
 msgstr "Tiket"
 
-#: tracker/models.py:56 tracker/templates/tracker/topic_detail.html:22
+#: tracker/models.py:56 tracker/templates/tracker/topic_detail.html:26
 msgid "Tickets"
 msgstr "Tikety"
 
@@ -207,74 +207,82 @@ msgstr "popis formuláře"
 msgid "Description shown to users who enter tickets for this topic"
 msgstr "Popis zobrazovaný uživatelům kteří do tématu zadávají nové tikety"
 
-#: tracker/models.py:74 tracker/templates/tracker/ticket_detail.html:18
+#: tracker/models.py:66
+msgid "topic administrator"
+msgstr "správce tématu"
+
+#: tracker/models.py:66
+msgid "Selected users will have administration access to this topic."
+msgstr "Zvolení uživatelé budou mít správcovský přístup k tématu."
+
+#: tracker/models.py:75 tracker/templates/tracker/ticket_detail.html:18
 #: tracker/templates/tracker/ticket_table.html:4
 #: tracker/templates/tracker/ticket_table.html:10
 msgid "Topic"
 msgstr "Téma"
 
-#: tracker/models.py:75
+#: tracker/models.py:76
 msgid "Topics"
 msgstr "Témata"
 
-#: tracker/models.py:86 tracker/models.py:100
+#: tracker/models.py:90 tracker/models.py:104
 msgid "ticket"
 msgstr "tiket"
 
-#: tracker/models.py:86
+#: tracker/models.py:90
 msgid "Ticket this media info belongs to"
 msgstr "Tiket ke kterému patří tato média"
 
-#: tracker/models.py:87
+#: tracker/models.py:91
 msgid "Item description to show"
 msgstr "Popis položky do seznamu"
 
-#: tracker/models.py:88
+#: tracker/models.py:92
 msgid "URL"
 msgstr "URL"
 
-#: tracker/models.py:88
+#: tracker/models.py:92
 msgid "Link to media files"
 msgstr "Odkaz na soubory"
 
-#: tracker/models.py:89
+#: tracker/models.py:93
 msgid "count"
 msgstr "počet"
 
-#: tracker/models.py:89
+#: tracker/models.py:93
 msgid "Number of files"
 msgstr "Počet souborů"
 
-#: tracker/models.py:95 tracker/models.py:96
+#: tracker/models.py:99 tracker/models.py:100
 msgid "Ticket media"
 msgstr "Média tiketu"
 
-#: tracker/models.py:100
+#: tracker/models.py:104
 msgid "Ticket this expediture belongs to"
 msgstr "Tiket ke kterému tento výdaj patří"
 
-#: tracker/models.py:101
+#: tracker/models.py:105
 msgid "Description of this expediture"
 msgstr "Popis tohoto výdaje"
 
-#: tracker/models.py:102
+#: tracker/models.py:106
 msgid "amount"
 msgstr "částka"
 
-#: tracker/models.py:102
+#: tracker/models.py:106
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:105
+#: tracker/models.py:109
 #, python-format
 msgid "%(description)s (%(amount)s %(currency)s)"
 msgstr "%(description)s (%(amount)s %(currency)s)"
 
-#: tracker/models.py:108
+#: tracker/models.py:112
 msgid "Ticket expediture"
 msgstr "Výdaj tiketu"
 
-#: tracker/models.py:109
+#: tracker/models.py:113
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
@@ -393,20 +401,20 @@ msgstr "Celkem proplaceno"
 
 #: tracker/templates/tracker/ticket_detail.html:50
 #: tracker/templates/tracker/ticket_detail.html:53
-#: tracker/templates/tracker/topic_detail.html:28
-#: tracker/templates/tracker/topic_detail.html:31
+#: tracker/templates/tracker/topic_detail.html:32
+#: tracker/templates/tracker/topic_detail.html:35
 msgid "Comments"
 msgstr "Komentáře"
 
 #: tracker/templates/tracker/ticket_detail.html:54
-#: tracker/templates/tracker/topic_detail.html:32
+#: tracker/templates/tracker/topic_detail.html:36
 msgid "There are no comments yet."
 msgstr "Zatím žádné komentáře."
 
 #: tracker/templates/tracker/ticket_detail.html:57
 #: tracker/templates/tracker/ticket_detail.html:59
-#: tracker/templates/tracker/topic_detail.html:35
-#: tracker/templates/tracker/topic_detail.html:37
+#: tracker/templates/tracker/topic_detail.html:39
+#: tracker/templates/tracker/topic_detail.html:41
 msgid "Add comment"
 msgstr "Přidat komentář"
 
@@ -470,6 +478,14 @@ msgstr "Téma je otevřené pro nové tikety"
 #: tracker/templates/tracker/generic/topic_list.html:14
 msgid "add ticket"
 msgstr "přidat tiket"
+
+#: tracker/templates/tracker/topic_detail.html:22
+msgid "Topic administrators"
+msgstr "Garanti tématu"
+
+#: tracker/templates/tracker/topic_detail.html:22
+msgid "Topic administrator"
+msgstr "Garant tématu"
 
 #: tracker/templates/tracker/generic/create_ticket.html:4
 #: tracker/templates/tracker/generic/create_ticket.html:8

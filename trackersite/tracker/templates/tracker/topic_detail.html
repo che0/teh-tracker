@@ -18,6 +18,10 @@
 
 {% if topic.open_for_tickets %}<p>{% trans "Topic is open for new tickets" %}{% if user.is_authenticated %}: <a href="{% url create_ticket %}?topic={{topic.id}}">{% trans "add ticket" %}</a>{% else %}.{% endif %}</p>{% endif %}
 
+{% with admins=topic.admin.all %}{% if admins %}
+<p>{% if admins.count > 1 %}{% trans "Topic administrators" %}{% else %}{% trans "Topic administrator" %}{% endif %}: {% for admin in admins %}{{ admin.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+{% endif %}{% endwith %}
+
 {% if topic.ticket_set.all|length > 0 %}
 <h2>{% trans "Tickets" %}</h2>
 {% with ticket_list=topic.ticket_set.all show_details=topic.detailed_tickets %}{% include "tracker/ticket_table.html" %}{% endwith %}
