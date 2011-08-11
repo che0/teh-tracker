@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<p class="nav">{% trans "index" %}</p>
+<p class="nav">{% trans "index" %} | <a href="{% url topic_list %}">{% trans "topics" %}</a></p>
 <h1>{% trans "Ticket list" %}</h1>
 {% block above_list %}{% endblock %}
 
