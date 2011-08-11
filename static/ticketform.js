@@ -5,6 +5,7 @@ function refresh_description()
 	{
 		$('#topic_desc').hide();
 		$('#mediainfo-group').hide();
+		return;
 	}
 
 	var topic = topics_table[topic_id];
