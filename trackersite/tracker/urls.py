@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     url(r'^topic/(?P<pk>\d+)/feed/$', TopicTicketsFeed(), name='topic_ticket_feed'),
     url(r'^comments/', include('django.contrib.comments.urls')),
     url(r'^old/(?P<url>(?:tickets?/|topics?/|)(?:\d+/|new/)?)$', RedirectView.as_view(url='/%(url)s')),
+    url(r'^js/topics\.js$', 'tracker.views.topics_js', name='topics_js'),
 )

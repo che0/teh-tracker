@@ -1,5 +1,5 @@
 table th, table td { padding: 0 0.2em 0 0.2em; }
-table th { border-bottom: 2px solid black; padding-bottom: 2px; }
+table th { font-weight: normal; background-color: #eee; border-bottom: 2px solid black; padding-bottom: 2px; }
 table th.uber-th { border-bottom: 1px dashed #ddd; }
 table td { border-bottom: 1px solid black; }
 table tr:hover td { background-color: #ddd; }
@@ -11,6 +11,11 @@ tr.total td { font-weight: bold; }
 
 span.helptext { display: block; }
 .helptext { font-size: smaller; color: #666; }
+
+p.required label { font-weight: bold; }
+p.required label:before { padding-right: 0.2em; content: '*'; color: red; }
+th.required { font-weight: bold; }
+th.required:after { padding-left: 0.2em; content: "*"; color: red; }
 
 .datetimeshortcuts img { border: none; }
 .calendarbox { background-color: white; border: 1px solid #ddd; }

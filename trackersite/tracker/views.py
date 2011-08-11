@@ -7,12 +7,13 @@ from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
-from django.utils.functional import curry
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import DetailView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
+from django.utils import simplejson as json
 
 from tracker.models import Ticket, Topic, MediaInfo
 
@@ -24,6 +25,14 @@ class TicketDetailView(DetailView):
         context['user_can_edit_ticket'] = context['ticket'].can_edit(self.request.user)
         return context
 ticket_detail = TicketDetailView.as_view()
+
+def topics_js(request):
+    data = {}
+    for t in Topic.objects.all():
+        data[t.id] = {'desc': t.description, 'detailed': t.detailed_tickets}
+    
+    content = 'topics_table = %s;' % json.dumps(data)
+    return HttpResponse(content, content_type='text/javascript')
 
 class TicketForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -40,6 +49,9 @@ class TicketForm(ModelForm):
             'event_date': adminwidgets.AdminDateWidget(),
             'summary': TextInput(attrs={'size':'40'}),
         }
+    
+    class Media:
+        js = ('/js/topics.js', 'ticketform.js')
 
 def get_edit_ticket_form_class(ticket):
     class EditTicketForm(TicketForm):

@@ -2,8 +2,8 @@
 <form method="post" action="{{action}}">
 {{ ticketform.non_field_errors }}
 {% for field in ticketform %}
-<p><label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
-{#{% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}#}
+<p{% if field.field.required %} class="required"{% endif %}><label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
+{% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 
 {# mediainfo formset #}

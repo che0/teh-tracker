@@ -10,7 +10,7 @@
              {% if field.name == "DELETE" %}
                  <th>{% trans "delete" %}</th>
              {% else %}
-                 <th>{% trans field.name %}</th>
+                 <th{% if field.field.required %} class="required"{% endif %}>{% trans field.name %}</th>
              {% endif %}
          {% endfor %}
      </tr><tr>
@@ -33,7 +33,7 @@
                {% for field in inline_admin_form.hidden_fields %}{{ field }}{% endfor %}
             </td>
             {% for field in inline_admin_form.visible_fields %}
-              <td class="{{ field.name }}">{% trans field.name %}
+              <td class="field_{{ field.name }}{% if field.field.required %} required{% endif %}">{% trans field.name %}
                   {{ field.errors.as_ul }}
                   {{ field }}
               </td>
