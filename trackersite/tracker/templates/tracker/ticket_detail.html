@@ -16,7 +16,7 @@
 <p>{% trans "Created" %}: {{ ticket.created }}, {% trans "last changed" %}: {{ ticket.updated }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />
-{% trans "Status" %}: {{ ticket.status }}</p>
+{% trans "State" %}: {{ ticket.state_str }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 

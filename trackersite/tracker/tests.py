@@ -12,10 +12,10 @@ class SimpleTicketTest(TestCase):
         self.topic = Topic(name='topic1')
         self.topic.save()
         
-        self.ticket1 = Ticket(summary='foo', requested_by='req1', topic=self.topic, status='init', description='foo foo')
+        self.ticket1 = Ticket(summary='foo', requested_by='req1', topic=self.topic, state='for consideration', description='foo foo')
         self.ticket1.save()
         
-        self.ticket2 = Ticket(summary='bar', requested_by='req2', topic=self.topic, status='init', description='bar bar')
+        self.ticket2 = Ticket(summary='bar', requested_by='req2', topic=self.topic, state='for consideration', description='bar bar')
         self.ticket2.save()
     
     def test_ticket_timestamps(self):
@@ -69,7 +69,7 @@ class OldRedirectTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic')
         self.topic.save()
-        self.ticket = Ticket(summary='foo', requested_by='req', topic=self.topic, status='init', description='foo foo')
+        self.ticket = Ticket(summary='foo', requested_by='req', topic=self.topic, state='for consideration', description='foo foo')
         self.ticket.save()
     
     def assert301(self, *args, **kwargs):
@@ -102,14 +102,14 @@ class TicketSumTests(TestCase):
         self.topic.save()
         
     def test_empty_ticket(self):
-        empty_ticket = Ticket(topic=self.topic, requested_by='someone', summary='empty ticket', status='x')
+        empty_ticket = Ticket(topic=self.topic, requested_by='someone', summary='empty ticket', state='for consideration')
         empty_ticket.save()
         
         self.assertEqual(0, empty_ticket.media_count()['objects'])
         self.assertEqual(0, empty_ticket.expeditures()['count'])
     
     def test_full_ticket(self):
-        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', status='x', amount_paid=200)
+        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', state='for consideration', amount_paid=200)
         full_ticket.save()
         full_ticket.mediainfo_set.create(description='Vague pictures')
         full_ticket.mediainfo_set.create(description='Counted pictures', count=15)
@@ -166,7 +166,7 @@ class TicketTests(TestCase):
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
         self.assertEqual(self.user.username, ticket.requested_by)
-        self.assertEqual('new', ticket.status)
+        self.assertEqual('for consideration', ticket.state)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
     
     def test_ticket_creation_with_media(self):
@@ -255,7 +255,7 @@ class TicketEditTests(TestCase):
         user.set_password(password)
         user.save()
         
-        ticket = Ticket(summary='ticket', topic=topic, requested_by='12345', closed=True)
+        ticket = Ticket(summary='ticket', topic=topic, requested_by='12345', state='closed')
         ticket.save()
         
         c = Client()
@@ -271,7 +271,7 @@ class TicketEditTests(TestCase):
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # still deny edit, ticket locked
         
-        ticket.closed = False
+        ticket.state = 'for consideration'
         ticket.save()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(200, response.status_code) # now it should pass

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-11 17:54+0200\n"
-"PO-Revision-Date: 2011-08-11 23:17+0200\n"
+"POT-Creation-Date: 2011-08-17 22:25+0200\n"
+"PO-Revision-Date: 2011-08-17 22:25+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -83,59 +83,87 @@ msgid "Recently changed tickets"
 msgstr "Naposledy změněné tikety"
 
 #: tracker/models.py:13
+msgid "draft"
+msgstr "koncept"
+
+#: tracker/models.py:14
+msgid "for consideration"
+msgstr "k posouzení"
+
+#: tracker/models.py:15
+msgid "accepted"
+msgstr "schváleno"
+
+#: tracker/models.py:16
+msgid "closed"
+msgstr "uzavřeno"
+
+#: tracker/models.py:17
+msgid "custom"
+msgstr "vlastní"
+
+#: tracker/models.py:31
 msgid "created"
 msgstr "vytvořeno"
 
-#: tracker/models.py:14
+#: tracker/models.py:32
 msgid "updated"
 msgstr "aktualizováno"
 
-#: tracker/models.py:15
+#: tracker/models.py:33
 msgid "event date"
 msgstr "datum akce"
 
-#: tracker/models.py:15
+#: tracker/models.py:33
 msgid "Date of the event this ticket is about"
 msgstr "Datum akce které se týká tento tiket"
 
-#: tracker/models.py:16 tracker/templates/feeds/ticket_description.html:3
+#: tracker/models.py:34 tracker/templates/feeds/ticket_description.html:3
 msgid "requested by"
 msgstr "žadatel"
 
-#: tracker/models.py:16
+#: tracker/models.py:34
 msgid "Person who created/requested for this ticket"
 msgstr "Osoba co vytvořila nebo žádá o tento tiket"
 
-#: tracker/models.py:17
+#: tracker/models.py:35
 msgid "summary"
 msgstr "shrnutí"
 
-#: tracker/models.py:17
+#: tracker/models.py:35
 msgid "Headline summary for the ticket"
 msgstr "Shrnutí do titulku tiketu"
 
-#: tracker/models.py:18
+#: tracker/models.py:36
 msgid "topic"
 msgstr "téma"
 
-#: tracker/models.py:18
+#: tracker/models.py:36
 msgid "Project topic this ticket belongs to"
 msgstr "Projektové téma do kterého tento tiket patří"
 
-#: tracker/models.py:19 tracker/templates/feeds/ticket_description.html:2
-msgid "status"
+#: tracker/models.py:37 tracker/models.py:69
+msgid "state"
 msgstr "stav"
 
-#: tracker/models.py:19
-msgid "Status of this ticket"
-msgstr "Aktuální stav tiketu"
+#: tracker/models.py:38
+msgid "custom state"
+msgstr "vlastní stav"
 
-#: tracker/models.py:20 tracker/models.py:64 tracker/models.py:91
-#: tracker/models.py:105
+#: tracker/models.py:39
+msgid "rating percentage"
+msgstr "ohodnocení"
+
+#: tracker/models.py:39
+msgid "Rating percentage set by topic administrator"
+msgstr "Procentuální ohodnocení stanovené garantem tématu"
+
+#: tracker/models.py:40 tracker/models.py:97 tracker/models.py:124
+#: tracker/models.py:138
 msgid "description"
 msgstr "popis"
 
-#: tracker/models.py:20
+#: tracker/models.py:40
 msgid ""
 "Space for further notes. If you're entering a trip tell us where did you go "
 "and what you did there."
@@ -143,146 +171,137 @@ msgstr ""
 "Místo pro další poznámky. Pokud zadáváte informace o cestě napište kam jste "
 "jeli a co jste tam dělali."
 
-#: tracker/models.py:21
+#: tracker/models.py:41
 msgid "amount paid"
 msgstr "zaplacená částka"
 
-#: tracker/models.py:21
+#: tracker/models.py:41
 msgid "Amount actually paid for this ticket in"
 msgstr "Částka skutečně proplacená za tento tiket v"
 
-#: tracker/models.py:22
-msgid "closed"
-msgstr "uzavřeno"
-
-#: tracker/models.py:22
-msgid "Has this ticket been dealt with?"
-msgstr "Byl tento tiket již vyřízen?"
-
-#: tracker/models.py:37
-#, python-format
-msgid "%s [closed]"
-msgstr "%s [uzavřeno]"
-
 #: tracker/models.py:55
+msgid "unknown"
+msgstr "neznámý"
+
+#: tracker/models.py:88
 msgid "Ticket"
 msgstr "Tiket"
 
-#: tracker/models.py:56 tracker/templates/tracker/topic_detail.html:26
+#: tracker/models.py:89 tracker/templates/tracker/topic_detail.html:26
 msgid "Tickets"
 msgstr "Tikety"
 
-#: tracker/models.py:61
+#: tracker/models.py:94
 msgid "name"
 msgstr "název"
 
-#: tracker/models.py:62
+#: tracker/models.py:95
 msgid "open for tickets"
 msgstr "otevřeno pro tikety"
 
-#: tracker/models.py:62
+#: tracker/models.py:95
 msgid "Is this topic open for ticket submissions from users?"
 msgstr "Je toto téma otevřené pro nové tikety od uživatelů?"
 
-#: tracker/models.py:63
+#: tracker/models.py:96
 msgid "detailed tickets"
 msgstr "detailní tikety"
 
-#: tracker/models.py:63
+#: tracker/models.py:96
 msgid ""
 "Does this topic use detailed ticket information (like media and expenses)?"
 msgstr ""
 "Používá tohle téma detailní informace u tiketů (získaná média a výdaje)?"
 
-#: tracker/models.py:64
+#: tracker/models.py:97
 msgid ""
 "Detailed description; HTML is allowed for now, line breaks are auto-parsed"
 msgstr "Detailní popis; HTML je zatím povoleno, konce řádků jsou zachovány"
 
-#: tracker/models.py:65
+#: tracker/models.py:98
 msgid "form description"
 msgstr "popis formuláře"
 
-#: tracker/models.py:65
+#: tracker/models.py:98
 msgid "Description shown to users who enter tickets for this topic"
 msgstr "Popis zobrazovaný uživatelům kteří do tématu zadávají nové tikety"
 
-#: tracker/models.py:66
+#: tracker/models.py:99
 msgid "topic administrator"
 msgstr "správce tématu"
 
-#: tracker/models.py:66
+#: tracker/models.py:99
 msgid "Selected users will have administration access to this topic."
 msgstr "Zvolení uživatelé budou mít správcovský přístup k tématu."
 
-#: tracker/models.py:75 tracker/templates/tracker/ticket_detail.html:18
+#: tracker/models.py:108 tracker/templates/tracker/ticket_detail.html:18
 #: tracker/templates/tracker/ticket_table.html:4
 #: tracker/templates/tracker/ticket_table.html:10
 msgid "Topic"
 msgstr "Téma"
 
-#: tracker/models.py:76
+#: tracker/models.py:109
 msgid "Topics"
 msgstr "Témata"
 
-#: tracker/models.py:90 tracker/models.py:104
+#: tracker/models.py:123 tracker/models.py:137
 msgid "ticket"
 msgstr "tiket"
 
-#: tracker/models.py:90
+#: tracker/models.py:123
 msgid "Ticket this media info belongs to"
 msgstr "Tiket ke kterému patří tato média"
 
-#: tracker/models.py:91
+#: tracker/models.py:124
 msgid "Item description to show"
 msgstr "Popis položky do seznamu"
 
-#: tracker/models.py:92
+#: tracker/models.py:125
 msgid "URL"
 msgstr "URL"
 
-#: tracker/models.py:92
+#: tracker/models.py:125
 msgid "Link to media files"
 msgstr "Odkaz na soubory"
 
-#: tracker/models.py:93
+#: tracker/models.py:126
 msgid "count"
 msgstr "počet"
 
-#: tracker/models.py:93
+#: tracker/models.py:126
 msgid "Number of files"
 msgstr "Počet souborů"
 
-#: tracker/models.py:99 tracker/models.py:100
+#: tracker/models.py:132 tracker/models.py:133
 msgid "Ticket media"
 msgstr "Média tiketu"
 
-#: tracker/models.py:104
+#: tracker/models.py:137
 msgid "Ticket this expediture belongs to"
 msgstr "Tiket ke kterému tento výdaj patří"
 
-#: tracker/models.py:105
+#: tracker/models.py:138
 msgid "Description of this expediture"
 msgstr "Popis tohoto výdaje"
 
-#: tracker/models.py:106
+#: tracker/models.py:139
 msgid "amount"
 msgstr "částka"
 
-#: tracker/models.py:106
+#: tracker/models.py:139
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:109
+#: tracker/models.py:142
 #, python-format
 msgid "%(description)s (%(amount)s %(currency)s)"
 msgstr "%(description)s (%(amount)s %(currency)s)"
 
-#: tracker/models.py:112
+#: tracker/models.py:145
 msgid "Ticket expediture"
 msgstr "Výdaj tiketu"
 
-#: tracker/models.py:113
+#: tracker/models.py:146
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
@@ -299,6 +318,10 @@ msgstr "Nemáte práva k úpravám tohoto tiketu."
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
+
+#: tracker/templates/feeds/ticket_description.html:2
+msgid "status"
+msgstr "stav"
 
 #: tracker/templates/tracker/edit_ticket.html:4
 #: tracker/templates/tracker/edit_ticket.html:8
@@ -338,6 +361,7 @@ msgstr "Odebrat"
 
 #: tracker/templates/tracker/ticket_detail.html:13
 #: tracker/templates/tracker/topic_detail.html:14
+#: tracker/templates/tracker/generic/ticket_list.html:11
 msgid "topics"
 msgstr "témata"
 
@@ -360,9 +384,8 @@ msgid "Requested by"
 msgstr "Žadatel"
 
 #: tracker/templates/tracker/ticket_detail.html:19
-#: tracker/templates/tracker/ticket_table.html:6
 #: tracker/templates/tracker/ticket_table.html:11
-msgid "Status"
+msgid "State"
 msgstr "Stav"
 
 #: tracker/templates/tracker/ticket_detail.html:24
@@ -444,6 +467,10 @@ msgstr "ID"
 #: tracker/templates/tracker/ticket_table.html:10
 msgid "Summary"
 msgstr "Shrnutí"
+
+#: tracker/templates/tracker/ticket_table.html:6
+msgid "Status"
+msgstr "Stav"
 
 #: tracker/templates/tracker/ticket_table.html:6
 #: tracker/templates/tracker/ticket_table.html:11
@@ -724,6 +751,15 @@ msgstr "Děkujeme za používání našeho webu!"
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "Tým aplikace %(site_name)s"
+
+#~ msgid "Status of this ticket"
+#~ msgstr "Aktuální stav tiketu"
+
+#~ msgid "Has this ticket been dealt with?"
+#~ msgstr "Byl tento tiket již vyřízen?"
+
+#~ msgid "%s [closed]"
+#~ msgstr "%s [uzavřeno]"
 
 #~ msgid "Description of this media item"
 #~ msgstr "Popis tohoto média"

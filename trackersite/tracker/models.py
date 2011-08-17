@@ -7,6 +7,24 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _, string_concat
 from django.conf import settings
+from south.modelsinspector import add_introspection_rules
+
+STATE_CHOICES = (
+    ('draft', _('draft')),
+    ('for consideration', _('for consideration')),
+    ('accepted', _('accepted')),
+    ('closed', _('closed')),
+    ('custom', _('custom')),
+)
+
+class PercentageField(models.SmallIntegerField):
+    """ Field that holds a percentage. """
+    def formfield(self, **kwargs):
+        defaults = {'min_value': 0, 'max_value':100}
+        defaults.update(kwargs)
+        return super(PercentageField, self).formfield(**defaults)
+add_introspection_rules([], ["^tracker\.models\.PercentageField"])
+
 
 class Ticket(models.Model):
     """ One unit of tracked / paid stuff. """
@@ -16,10 +34,11 @@ class Ticket(models.Model):
     requested_by = models.CharField(verbose_name=_('requested by'), max_length=30, help_text=_('Person who created/requested for this ticket'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    status = models.CharField(_('status'), max_length=100, help_text=_('Status of this ticket'))
+    state = models.CharField(_('state'), max_length=20, choices=STATE_CHOICES, help_text=('Ticket state'))
+    custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=('Custom state description'))
+    rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     amount_paid = models.DecimalField(_('amount paid'), max_digits=8, decimal_places=2, blank=True, null=True, help_text=string_concat(_('Amount actually paid for this ticket in'), ' ', settings.TRACKER_CURRENCY))
-    closed = models.BooleanField(_('closed'), default=False, help_text=_('Has this ticket been dealt with?'))
     
     @staticmethod
     def currency():
@@ -32,11 +51,25 @@ class Ticket(models.Model):
     def _note_comment(self, **kwargs):
         self.save()
     
-    def __unicode__(self):
-        if self.closed:
-            return _('%s [closed]') % self.summary
+    def state_str(self):
+        basic = _('unknown')
+        if (self.state == 'custom') and self.custom_state:
+            basic = self.custom_state
         else:
-            return self.summary
+            for choice in STATE_CHOICES:
+                if choice[0] == self.state:
+                    basic = choice[1]
+                    break
+        
+        if self.rating_percentage:
+            return '%s [%s %%]' % (basic, self.rating_percentage)
+        else:
+            return basic
+    state_str.admin_order_field = 'state'
+    state_str.short_description = _('state')
+            
+    def __unicode__(self):
+        return self.summary
         
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})
@@ -49,7 +82,7 @@ class Ticket(models.Model):
     
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
-        return (not self.closed) and (user.username == self.requested_by)
+        return (self.state != 'closed') and (user.username == self.requested_by)
     
     class Meta:
         verbose_name = _('Ticket')
