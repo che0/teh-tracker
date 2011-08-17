@@ -62,7 +62,7 @@ class Ticket(models.Model):
                     break
         
         if self.rating_percentage:
-            return '%s [%s %%]' % (basic, self.rating_percentage)
+            return '%s [%s %%]' % (unicode(basic), self.rating_percentage)
         else:
             return basic
     state_str.admin_order_field = 'state'
