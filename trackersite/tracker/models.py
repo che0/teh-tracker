@@ -93,7 +93,8 @@ class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
     open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
-    detailed_tickets = models.BooleanField(_('detailed tickets'), help_text=_('Does this topic use detailed ticket information (like media and expenses)?'))
+    ticket_media = models.BooleanField(_('ticket media'), help_text=_('Does this topic track ticket media items?'))
+    ticket_expenses = models.BooleanField(_('ticket expenses'), help_text=_('Does this topic track ticket expenses?'))
     description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     form_description = models.TextField(_('form description'), blank=True, help_text=_('Description shown to users who enter tickets for this topic'))
     admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), blank=True, help_text=_('Selected users will have administration access to this topic.'))

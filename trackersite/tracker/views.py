@@ -30,10 +30,9 @@ ticket_detail = TicketDetailView.as_view()
 def topics_js(request):
     data = {}
     for t in Topic.objects.all():
-        data[t.id] = {
-            'form_description': t.form_description,
-            'detailed_tickets': t.detailed_tickets,
-        }
+        data[t.id] = {}
+        for attr in ('form_description', 'ticket_media', 'ticket_expenses'):
+            data[t.id][attr] = getattr(t, attr)
     
     content = 'topics_table = %s;' % json.dumps(data)
     return HttpResponse(content, content_type='text/javascript')
@@ -99,7 +98,7 @@ def create_ticket(request):
             ticket.state = 'for consideration'
             ticket.save()
             ticketform.save_m2m()
-            if ticket.topic.detailed_tickets:
+            if ticket.topic.ticket_media:
                 mediainfo.instance = ticket
                 mediainfo.save()
             

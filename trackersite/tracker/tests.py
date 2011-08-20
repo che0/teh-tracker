@@ -122,7 +122,7 @@ class TicketSumTests(TestCase):
 
 class TicketTests(TestCase):
     def setUp(self):
-        self.open_topic = Topic(name='test_topic', open_for_tickets=True, detailed_tickets=True)
+        self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True)
         self.open_topic.save()
         
         self.password = 'password'
