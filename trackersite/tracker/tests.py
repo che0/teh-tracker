@@ -107,6 +107,8 @@ class TicketSumTests(TestCase):
         
         self.assertEqual(0, empty_ticket.media_count()['objects'])
         self.assertEqual(0, empty_ticket.expeditures()['count'])
+        self.assertEqual(0, self.topic.media_count()['objects'])
+        self.assertEqual(0, self.topic.expeditures()['count'])
     
     def test_full_ticket(self):
         full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', state='for consideration', amount_paid=200)
@@ -119,6 +121,8 @@ class TicketSumTests(TestCase):
         
         self.assertEqual({'objects': 3, 'media': 31}, full_ticket.media_count())
         self.assertEqual({'count': 2, 'amount': 200}, full_ticket.expeditures())
+        self.assertEqual({'objects': 3, 'media': 31}, self.topic.media_count())
+        self.assertEqual({'count': 2, 'amount': 200}, self.topic.expeditures())
 
 class TicketTests(TestCase):
     def setUp(self):

@@ -6,6 +6,7 @@ table tr:hover td { background-color: #ddd; }
 #user { text-align: right; }
 abbr[title] { border-bottom: dotted 1px black; }
 tr.total td { font-weight: bold; }
+.ticket_list tr.total td { border-top: 2px solid black; }
 .hide-switch > .unhide { display: none; }
 .hidden { display: none; }
 

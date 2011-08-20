@@ -105,6 +105,12 @@ class Topic(models.Model):
     def get_absolute_url(self):
         return reverse('topic_detail', kwargs={'pk':self.id})
     
+    def media_count(self):
+        return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+    
+    def expeditures(self):
+        return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+    
     class Meta:
         verbose_name = _('Topic')
         verbose_name_plural = _('Topics')

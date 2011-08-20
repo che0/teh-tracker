@@ -1,5 +1,5 @@
 {% load i18n %}
-<table>
+<table class="ticket_list">
 {% if show_media %}
 <tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}<th rowspan="2">{% trans "Requested by" %}
 <th colspan="3" class="uber-th">{% trans "Media" %}</th>
@@ -26,4 +26,17 @@
 
 <td>{{ticket.state_str}}</td><td>{{ticket.updated}}</td></tr>
 {% endfor %}
+
+{% if show_media or show_expenses %}{% if summary_topic and not show_topics %}
+<tr class="total">
+<td colspan="{% if show_media %}4{% else %}3{% endif %}">{% trans "Total for this topic" %}</td>
+{% if show_media %}
+	{% if summary_topic.media_count.objects > 0 %}<td>{{summary_topic.media_count.objects}}</td><td>{{summary_topic.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
+{% endif %}
+{% if show_expenses %}
+	<td>{% if summary_topic.expeditures.count > 0 %}{{summary_topic.expeditures.amount}}&nbsp;{{ticket_list.0.currency}}{% endif %}</td>
+{% endif %}
+<td colspan="2"></td>
+</tr>
+{% endif %}{% endif %}
 </table>
