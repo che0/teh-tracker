@@ -133,7 +133,7 @@ def edit_ticket(request, pk):
         except ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid():# and mediainfo.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
                 

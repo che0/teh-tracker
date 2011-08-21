@@ -297,6 +297,21 @@ class TicketEditTests(TestCase):
         self.assertEqual('new summary', ticket.summary)
         self.assertEqual('new desc', ticket.description)
         
+        # b0rked media item aborts the submit
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+                'summary': 'ticket',
+                'topic': ticket.topic.id,
+                'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-MAX_NUM_FORMS': '',
+                'mediainfo-TOTAL_FORMS': '1',
+                'mediainfo-0-count': 'foo',
+                'mediainfo-0-description': 'image 1',
+                'mediainfo-0-url': 'http://www.example.com/image1.jpg',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Enter a whole number.', response.context['mediainfo'].forms[0].errors['count'][0])
+        
         # add some media items
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
