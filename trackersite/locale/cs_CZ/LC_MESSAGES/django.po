@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-20 19:39+0200\n"
-"PO-Revision-Date: 2011-08-20 19:39+0200\n"
+"POT-Creation-Date: 2011-08-22 22:20+0200\n"
+"PO-Revision-Date: 2011-08-22 22:20+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -311,16 +311,20 @@ msgstr "Výdaj tiketu"
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
-#: tracker/views.py:105
+#: tracker/views.py:28
+msgid "Comment posted, thank you."
+msgstr "Komentář přidán, děkujeme."
+
+#: tracker/views.py:120
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:124
+#: tracker/views.py:139
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:140
+#: tracker/views.py:155
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
