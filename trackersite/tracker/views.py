@@ -18,7 +18,18 @@ from django.core.urlresolvers import reverse
 
 from tracker.models import Ticket, Topic, MediaInfo
 
-class TicketDetailView(DetailView):
+class CommentPostedCatcher(object):
+    """ 
+    View mixin that catches 'c' GET argument from comment framework
+    and turns in into a success message.
+    """
+    def get(self, request, **kwargs):
+        if 'c' in request.GET:
+            messages.success(request, _('Comment posted, thank you.'))
+            return HttpResponseRedirect(request.path)
+        return super(CommentPostedCatcher, self).get(request, **kwargs)
+
+class TicketDetailView(CommentPostedCatcher, DetailView):
     model = Ticket
     
     def get_context_data(self, **kwargs):
@@ -26,6 +37,10 @@ class TicketDetailView(DetailView):
         context['user_can_edit_ticket'] = context['ticket'].can_edit(self.request.user)
         return context
 ticket_detail = TicketDetailView.as_view()
+
+class TopicDetailView(CommentPostedCatcher, DetailView):
+    model = Topic
+topic_detail = TopicDetailView.as_view()
 
 def topics_js(request):
     data = {}

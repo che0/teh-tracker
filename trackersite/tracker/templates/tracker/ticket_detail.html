@@ -57,7 +57,7 @@
 <div class="hide-switch"><a href="#" class="unhide">{% trans "Add comment" %}</a>
 <div class="hidden">
 <h3>{% trans "Add comment" %}</h3>
-{% render_comment_form for ticket %}
+{% url ticket_detail pk=ticket.id as next %}{% render_comment_form for ticket %}
 </div></div>
 
 {% endblock content %}
