@@ -3,7 +3,7 @@ import datetime
 
 from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput, Textarea
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
@@ -16,7 +16,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo
+from tracker.models import Ticket, Topic, MediaInfo, Expediture
 
 class CommentPostedCatcher(object):
     """ 
@@ -87,6 +87,19 @@ adminCore = Media(js=(
     settings.ADMIN_MEDIA_PREFIX + "js/inlines.js",
 ))
 
+class ExtraItemFormSet(BaseInlineFormSet):
+    """
+    Inline formset class patched to always have one extra form when bound.
+    This prevents hiding of the b0rked field in the javascript-hidden area
+    when validation fails.
+    """
+    def total_form_count(self):
+        original_count = super(ExtraItemFormSet, self).total_form_count()
+        if self.is_bound:
+            return original_count + 1
+        else:
+            return original_count
+
 MEDIAINFO_FIELDS = ('url', 'description', 'count')
 def mediainfo_formfield(f, **kwargs):
     if f.name == 'url':
@@ -94,20 +107,26 @@ def mediainfo_formfield(f, **kwargs):
     elif f.name == 'count':
         kwargs['widget'] = TextInput(attrs={'size':'4'})
     return f.formfield(**kwargs)
-mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
+mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo,
+    formset=ExtraItemFormSet, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
+
+expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
+    formset=ExtraItemFormSet)
 
 @login_required
 def create_ticket(request):
     MediaInfoFormSet = mediainfoformset_factory(extra=2, can_delete=False)
+    ExpeditureFormSet = expeditureformset_factory(extra=2, can_delete=False)
     
     if request.method == 'POST':
         ticketform = TicketForm(request.POST)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
+            expeditures = ExpeditureFormSet(request.POST, prefix='expediture')
         except ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid() and mediainfo.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
             ticket = ticketform.save(commit=False)
             ticket.requested_by = request.user.username
             ticket.state = 'for consideration'
@@ -116,6 +135,9 @@ def create_ticket(request):
             if ticket.topic.ticket_media:
                 mediainfo.instance = ticket
                 mediainfo.save()
+            if ticket.topic.ticket_expenses:
+                expeditures.instance = ticket
+                expeditures.save()
             
             messages.success(request, _('Ticket %s created.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
@@ -125,11 +147,13 @@ def create_ticket(request):
             initial['topic'] = request.GET['topic']
         ticketform = TicketForm(initial=initial)
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
+        expeditures = ExpeditureFormSet(prefix='expediture')
     
     return render(request, 'tracker/create_ticket.html', {
         'ticketform': ticketform,
         'mediainfo': mediainfo,
-        'form_media': adminCore + ticketform.media + mediainfo.media,
+        'expeditures': expeditures,
+        'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })
 
 @login_required
@@ -140,27 +164,32 @@ def edit_ticket(request, pk):
     TicketEditForm = get_edit_ticket_form_class(ticket)
     
     MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
+    ExpeditureFormSet = expeditureformset_factory(extra=1, can_delete=True)
     
     if request.method == 'POST':
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
+            expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
         except ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid() and mediainfo.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
+            expeditures.save()
                 
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         ticketform = TicketEditForm(instance=ticket)
         mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
+        expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
     
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
         'mediainfo': mediainfo,
-        'form_media': adminCore + ticketform.media + mediainfo.media,
+        'expeditures': expeditures,
+        'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })

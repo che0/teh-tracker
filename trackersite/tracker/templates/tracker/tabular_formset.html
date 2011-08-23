@@ -34,7 +34,7 @@
             </td>
             {% for field in inline_admin_form.visible_fields %}
               <td class="field_{{ field.name }}{% if field.field.required %} required{% endif %}">             
-                  {% if field.name == "DELETE" %}{% trans "delete" %}{% else %}{% trans field.name %}{% endif %}
+                  {% if field.name == "DELETE" %}<span class="delete">{% trans "delete" %}{% else %}{% trans field.name %}</span>{% endif %}
                   {{ field.errors.as_ul }}
                   {{ field }}
               </td>
@@ -92,6 +92,7 @@
             deleteText: "{% trans "Remove" %}",
             emptyCssClass: "empty-form",
             added: (function(row) {
+                row.find('.field_DELETE .delete').empty();
                 initPrepopulatedFields(row);
                 reinitDateTimeShortCuts();
                 updateSelectFilter();

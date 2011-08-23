@@ -5,12 +5,14 @@ function refresh_description()
 	{
 		$('#topic_desc').hide();
 		$('#mediainfo-group').hide();
+		$('#expediture-group').hide();
 		return;
 	}
 
 	var topic = topics_table[topic_id];
 	$('#topic_desc').html(topic['form_description']).toggle(topic['form_description'] != "");
 	$('#mediainfo-group').toggle(topic['ticket_media']);
+	$('#expediture-group').toggle(topic['ticket_expenses']);
 }
 
 $(document).ready(function() {
