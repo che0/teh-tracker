@@ -153,8 +153,9 @@ class TicketTests(TestCase):
         
         response = c.post(reverse('create_ticket'), {
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
-                'mediainfo-TOTAL_FORMS': '0',                
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
@@ -164,8 +165,9 @@ class TicketTests(TestCase):
                 'topic': self.open_topic.id,
                 'description': 'some desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
@@ -180,7 +182,6 @@ class TicketTests(TestCase):
                 'topic': self.open_topic.id,
                 'description': 'some desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
                 'mediainfo-0-description': 'image 1',
@@ -191,6 +192,8 @@ class TicketTests(TestCase):
                 'mediainfo-2-count': '3',
                 'mediainfo-2-description': 'image 2 - group',
                 'mediainfo-2-url': 'http://www.example.com/imagegroup/',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
@@ -211,8 +214,9 @@ class TicketTests(TestCase):
                 'topic': 'gogo',
                 'description': 'some desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -227,8 +231,9 @@ class TicketTests(TestCase):
                 'topic': closed_topic.id,
                 'description': 'some desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -286,8 +291,9 @@ class TicketEditTests(TestCase):
                 'topic': ticket.topic.id,
                 'description': 'new desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         
@@ -303,22 +309,37 @@ class TicketEditTests(TestCase):
                 'topic': ticket.topic.id,
                 'description': 'some desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '1',
                 'mediainfo-0-count': 'foo',
                 'mediainfo-0-description': 'image 1',
                 'mediainfo-0-url': 'http://www.example.com/image1.jpg',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('Enter a whole number.', response.context['mediainfo'].forms[0].errors['count'][0])
         
-        # add some media items
+        # b0rked expediture items aborts the submit
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+                'summary': 'ticket',
+                'topic': ticket.topic.id,
+                'description': 'some desc',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '1',
+                'expediture-0-description': 'foo',
+                'expediture-0-amount': '',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('This field is required.', response.context['expeditures'].forms[0].errors['amount'][0])
+        
+        # add some inline items
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
                 'mediainfo-INITIAL_FORMS': '0',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
                 'mediainfo-0-description': 'image 1',
@@ -329,6 +350,12 @@ class TicketEditTests(TestCase):
                 'mediainfo-2-count': '3',
                 'mediainfo-2-description': 'image 2 - group',
                 'mediainfo-2-url': 'http://www.example.com/imagegroup/',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '2',
+                'expediture-0-description': 'ten fifty',
+                'expediture-0-amount': '10.50',
+                'expediture-1-description': 'hundred',
+                'expediture-1-amount': '100',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.order_by('description')
@@ -339,14 +366,19 @@ class TicketEditTests(TestCase):
         self.assertEqual('image 2 - group', media[1].description)
         self.assertEqual('http://www.example.com/imagegroup/', media[1].url)
         self.assertEqual(3, media[1].count)
+        expeditures = ticket.expediture_set.order_by('amount')
+        self.assertEqual(2, len(expeditures))
+        self.assertEqual('ten fifty', expeditures[0].description)
+        self.assertEqual(10.5, expeditures[0].amount)
+        self.assertEqual('hundred', expeditures[1].description)
+        self.assertEqual(100, expeditures[1].amount)
         
-        # edit media items
+        # edit inline items
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
                 'mediainfo-INITIAL_FORMS': '2',
-                'mediainfo-MAX_NUM_FORMS': '',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-id': media[0].id,
                 'mediainfo-0-count': '1',
@@ -360,6 +392,17 @@ class TicketEditTests(TestCase):
                 'mediainfo-2-count': '',
                 'mediainfo-2-description': '', 
                 'mediainfo-2-url': '',
+                'expediture-INITIAL_FORMS': '2',
+                'expediture-TOTAL_FORMS': '3',
+                'expediture-0-id': expeditures[0].id,
+                'expediture-0-description': 'ten fifty',
+                'expediture-0-amount': '10.50',
+                'expediture-0-DELETE': 'on',
+                'expediture-1-id': expeditures[1].id,
+                'expediture-1-description': 'hundred+1',
+                'expediture-1-amount': '101',
+                'expediture-2-description': '',
+                'expediture-2-amount': '',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.all()
@@ -367,3 +410,7 @@ class TicketEditTests(TestCase):
         self.assertEqual('image 1 - edited', media[0].description)
         self.assertEqual('http://www.example.com/second.jpg', media[0].url)
         self.assertEqual(1, media[0].count)
+        expeditures = ticket.expediture_set.order_by('amount')
+        self.assertEqual(1, len(expeditures))
+        self.assertEqual('hundred+1', expeditures[0].description)
+        self.assertEqual(101, expeditures[0].amount)

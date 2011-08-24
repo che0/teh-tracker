@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-22 22:20+0200\n"
-"PO-Revision-Date: 2011-08-22 22:20+0200\n"
+"POT-Creation-Date: 2011-08-24 08:09+0200\n"
+"PO-Revision-Date: 2011-08-24 08:09+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -315,16 +315,16 @@ msgstr "Výdaje tiketu"
 msgid "Comment posted, thank you."
 msgstr "Komentář přidán, děkujeme."
 
-#: tracker/views.py:120
+#: tracker/views.py:142
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:139
+#: tracker/views.py:163
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:155
+#: tracker/views.py:182
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
@@ -412,6 +412,7 @@ msgid "Number of media files"
 msgstr "Počet souborů"
 
 #: tracker/templates/tracker/ticket_detail.html:35
+#: tracker/templates/tracker/ticket_form.html:13
 #: tracker/templates/tracker/ticket_table.html:6
 #: tracker/templates/tracker/ticket_table.html:12
 msgid "Expeditures"
@@ -461,10 +462,14 @@ msgid "file"
 msgstr "soubor"
 
 #: tracker/templates/tracker/ticket_form.html:13
+msgid "expediture"
+msgstr "výdaj"
+
+#: tracker/templates/tracker/ticket_form.html:16
 msgid "submit"
 msgstr "odeslat"
 
-#: tracker/templates/tracker/ticket_form.html:14
+#: tracker/templates/tracker/ticket_form.html:17
 #, python-format
 msgid "Fields marked with %(mark)s are required."
 msgstr "Pole označená %(mark)s jsou povinná."
