@@ -31,7 +31,8 @@ class Ticket(models.Model):
     created = models.DateTimeField(_('created'), auto_now_add=True)
     updated = models.DateTimeField(_('updated'))
     event_date = models.DateField(_('event date'), blank=True, null=True, help_text=_('Date of the event this ticket is about'))
-    requested_by = models.CharField(verbose_name=_('requested by'), max_length=30, help_text=_('Person who created/requested for this ticket'))
+    requested_user = models.ForeignKey('auth.User', verbose_name=_('requested by'), blank=True, null=True, help_text=_('User who created/requested for this ticket'))
+    requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     state = models.CharField(_('state'), max_length=20, choices=STATE_CHOICES, help_text=('Ticket state'))
@@ -69,7 +70,14 @@ class Ticket(models.Model):
             
     def __unicode__(self):
         return self.summary
-        
+    
+    def requested_by(self):
+        if self.requested_user != None:
+            return self.requested_user.username
+        else:
+            return self.requested_text
+    requested_by.short_description = _('requested by')
+    
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})
     
@@ -81,7 +89,7 @@ class Ticket(models.Model):
     
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
-        return (self.state != 'closed') and (user.username == self.requested_by)
+        return (self.state != 'closed') and (user == self.requested_user)
     
     class Meta:
         verbose_name = _('Ticket')

@@ -12,10 +12,10 @@ class SimpleTicketTest(TestCase):
         self.topic = Topic(name='topic1')
         self.topic.save()
         
-        self.ticket1 = Ticket(summary='foo', requested_by='req1', topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, state='for consideration', description='foo foo')
         self.ticket1.save()
         
-        self.ticket2 = Ticket(summary='bar', requested_by='req2', topic=self.topic, state='for consideration', description='bar bar')
+        self.ticket2 = Ticket(summary='bar', requested_text='req2', topic=self.topic, state='for consideration', description='bar bar')
         self.ticket2.save()
     
     def test_ticket_timestamps(self):
@@ -69,7 +69,7 @@ class OldRedirectTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic')
         self.topic.save()
-        self.ticket = Ticket(summary='foo', requested_by='req', topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, state='for consideration', description='foo foo')
         self.ticket.save()
     
     def assert301(self, *args, **kwargs):
@@ -102,7 +102,7 @@ class TicketSumTests(TestCase):
         self.topic.save()
         
     def test_empty_ticket(self):
-        empty_ticket = Ticket(topic=self.topic, requested_by='someone', summary='empty ticket', state='for consideration')
+        empty_ticket = Ticket(topic=self.topic, requested_text='someone', summary='empty ticket', state='for consideration')
         empty_ticket.save()
         
         self.assertEqual(0, empty_ticket.media_count()['objects'])
@@ -111,7 +111,7 @@ class TicketSumTests(TestCase):
         self.assertEqual(0, self.topic.expeditures()['count'])
     
     def test_full_ticket(self):
-        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', state='for consideration')
+        full_ticket = Ticket(topic=self.topic, requested_text='someone', summary='full ticket', state='for consideration')
         full_ticket.save()
         full_ticket.mediainfo_set.create(description='Vague pictures')
         full_ticket.mediainfo_set.create(description='Counted pictures', count=15)
@@ -171,7 +171,8 @@ class TicketTests(TestCase):
             })
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
-        self.assertEqual(self.user.username, ticket.requested_by)
+        self.assertEqual(self.user, ticket.requested_user)
+        self.assertEqual(self.user.username, ticket.requested_by())
         self.assertEqual('for consideration', ticket.state)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
     
@@ -264,7 +265,7 @@ class TicketEditTests(TestCase):
         user.set_password(password)
         user.save()
         
-        ticket = Ticket(summary='ticket', topic=topic, requested_by='12345', state='closed')
+        ticket = Ticket(summary='ticket', topic=topic, requested_user=None, requested_text='foo', state='closed')
         ticket.save()
         
         c = Client()
@@ -275,7 +276,8 @@ class TicketEditTests(TestCase):
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # denies edit of non-own ticket
         
-        ticket.requested_by = user.username
+        ticket.requested_user = user
+        ticket.requested_text = ''
         ticket.save()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # still deny edit, ticket locked
@@ -299,7 +301,7 @@ class TicketEditTests(TestCase):
         
         # check changed ticket data
         ticket = Ticket.objects.get(id=ticket.id)
-        self.assertEqual(user.username, ticket.requested_by)
+        self.assertEqual(user, ticket.requested_user)
         self.assertEqual('new summary', ticket.summary)
         self.assertEqual('new desc', ticket.description)
         

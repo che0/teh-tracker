@@ -66,7 +66,8 @@ class TicketForm(ModelForm):
     
     class Meta:
         model = Ticket
-        exclude = ('created', 'updated', 'requested_by', 'state', 'custom_state', 'rating_percentage', 'amount_paid')
+        exclude = ('created', 'updated', 'requested_user', 'requested_text', 'state',
+            'custom_state', 'rating_percentage', 'amount_paid')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
             'summary': TextInput(attrs={'size':'40'}),
@@ -129,7 +130,7 @@ def create_ticket(request):
         
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
             ticket = ticketform.save(commit=False)
-            ticket.requested_by = request.user.username
+            ticket.requested_user = request.user
             ticket.state = 'for consideration'
             ticket.save()
             ticketform.save_m2m()
