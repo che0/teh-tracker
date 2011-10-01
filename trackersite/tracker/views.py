@@ -110,8 +110,9 @@ def mediainfo_formfield(f, **kwargs):
 mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo,
     formset=ExtraItemFormSet, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
 
+EXPEDITURE_FIELDS = ('description', 'amount')
 expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
-    formset=ExtraItemFormSet)
+    formset=ExtraItemFormSet, fields=EXPEDITURE_FIELDS)
 
 @login_required
 def create_ticket(request):

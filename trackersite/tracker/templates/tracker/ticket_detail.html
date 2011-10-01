@@ -36,14 +36,14 @@
 {% if ticket.expeditures.count > 0 or ticket.amount_paid > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %} ({{ticket.currency}})</th></tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %} ({{ticket.currency}})</th><th>{% trans "Accounting info" %}</tr>
 {% if ticket.expeditures.count > 0 %}
 {% for item in ticket.expediture_set.all %}
-<tr><td>{{item.description}}</td><td>{{item.amount}}</td></tr>
+<tr><td>{{item.description}}</td><td>{{item.amount}}</td><td>{{item.accounting_info}}</td></tr>
 {% endfor %}
-<tr class="total"><td>{% trans "Total expeditures" %}</td><td>{{ticket.expeditures.amount}}</td></tr>
+<tr class="total"><td>{% trans "Total expeditures" %}</td><td>{{ticket.expeditures.amount}}</td><td></td></tr>
 {% endif %}
-<tr class="total"><td>{% trans "Total reimbursement" %}</td><td>{{ticket.amount_paid|default_if_none:"0"}}</td></tr>
+<tr class="total"><td>{% trans "Total reimbursement" %}</td><td>{{ticket.amount_paid|default_if_none:"0"}}</td><td></td></tr>
 </table>
 {% endif %}
 

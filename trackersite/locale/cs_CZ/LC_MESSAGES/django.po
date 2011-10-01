@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-01 13:07+0200\n"
-"PO-Revision-Date: 2011-10-01 13:07+0200\n"
+"POT-Creation-Date: 2011-10-01 14:07+0200\n"
+"PO-Revision-Date: 2011-10-01 14:07+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -298,16 +298,24 @@ msgstr "částka"
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:149
+#: tracker/models.py:147
+msgid "accounting info"
+msgstr "účetní údaje"
+
+#: tracker/models.py:147
+msgid "Accounting info, this is editable only through admin field"
+msgstr "Účetní poznámky; toto pole lze editovat jen v administraci"
+
+#: tracker/models.py:150
 #, python-format
 msgid "%(description)s (%(amount)s %(currency)s)"
 msgstr "%(description)s (%(amount)s %(currency)s)"
 
-#: tracker/models.py:152
+#: tracker/models.py:153
 msgid "Ticket expediture"
 msgstr "Výdaj tiketu"
 
-#: tracker/models.py:153
+#: tracker/models.py:154
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
@@ -315,16 +323,16 @@ msgstr "Výdaje tiketu"
 msgid "Comment posted, thank you."
 msgstr "Komentář přidán, děkujeme."
 
-#: tracker/views.py:142
+#: tracker/views.py:143
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:163
+#: tracker/views.py:164
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:182
+#: tracker/views.py:183
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
@@ -435,6 +443,10 @@ msgstr "Položka"
 #: tracker/templates/tracker/ticket_detail.html:39
 msgid "Amount"
 msgstr "Částka"
+
+#: tracker/templates/tracker/ticket_detail.html:39
+msgid "Accounting info"
+msgstr "Účetní údaje"
 
 #: tracker/templates/tracker/ticket_detail.html:44
 msgid "Total expeditures"
