@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{{ user }}{% endblock %}
+{% block title %}{{ user_obj }}{% endblock %}
+{# note: "user" is used to identify user session, so "user_obj" is the user we're looking at #}
 
 {% block content %}
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; {% trans "users" %}</a> &gt;</p>
-<h1>{{ user }}</h1>
+<h1>{{ user_obj }}</h1>
 
 {% if ticket_list %}
 {% include "tracker/ticket_table.html" with show_topics="True" show_media="True" show_expenses="True" %}

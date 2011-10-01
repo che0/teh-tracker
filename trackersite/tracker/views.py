@@ -201,6 +201,7 @@ def user_detail(request, username):
     user = get_object_or_404(User, username=username)
     
     return render(request, 'tracker/user_detail.html', {
-        'user': user,
+        'user_obj': user,
+        # ^ NOTE 'user' means session user in the template, so we're using user_obj
         'ticket_list': user.ticket_set.all(),
     })
