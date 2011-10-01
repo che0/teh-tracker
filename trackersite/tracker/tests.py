@@ -111,7 +111,7 @@ class TicketSumTests(TestCase):
         self.assertEqual(0, self.topic.expeditures()['count'])
     
     def test_full_ticket(self):
-        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', state='for consideration', amount_paid=200)
+        full_ticket = Ticket(topic=self.topic, requested_by='someone', summary='full ticket', state='for consideration')
         full_ticket.save()
         full_ticket.mediainfo_set.create(description='Vague pictures')
         full_ticket.mediainfo_set.create(description='Counted pictures', count=15)
