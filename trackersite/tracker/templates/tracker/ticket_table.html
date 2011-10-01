@@ -1,20 +1,25 @@
 {% load i18n %}
 <table class="ticket_list">
 {% if show_media %}
-<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}<th rowspan="2">{% trans "Requested by" %}
+<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Date" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}<th rowspan="2">{% trans "Requested by" %}
 <th colspan="3" class="uber-th">{% trans "Media" %}</th>
 {% if show_expenses %}<th rowspan="2">{% trans "Expeditures" %}</th>{% endif %}
 <th rowspan="2">{% trans "Status" %}</th><th rowspan="2">{% trans "Last changed" %}</th></tr>
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
-<tr><th>{% trans "ID" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}<th>{% trans "Requested by" %}</th>
+<tr><th>{% trans "ID" %}</th><th>{% trans "Date" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}<th>{% trans "Requested by" %}</th>
 {% if show_expenses %}<th>{% trans "Expeditures" %}</th>{% endif %}
 <th>{% trans "State" %}</th><th>{% trans "Last changed" %}</th></tr>
 {% endif %}
 
 {% for ticket in ticket_list %}
-<tr><td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td><td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>{% if show_topics %}<td><a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a></td>{% endif %}<td>{{ticket.requested_by}}</td>
+<tr>
+<td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td>
+<td>{{ticket.event_date|default_if_none:""}}</td>
+<td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>
+{% if show_topics %}<td><a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a></td>{% endif %}
+<td>{{ticket.requested_by}}</td>
 
 {% if show_media %}
 {# media info #}<td>{% for item in ticket.mediainfo_set.all %}{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
@@ -29,7 +34,7 @@
 
 {% if show_media or show_expenses %}{% if summary_topic and not show_topics %}
 <tr class="total">
-<td colspan="{% if show_media %}4{% else %}3{% endif %}">{% trans "Total for this topic" %}</td>
+<td colspan="{% if show_media %}5{% else %}4{% endif %}">{% trans "Total for this topic" %}</td>
 {% if show_media %}
 	{% if summary_topic.media_count.objects > 0 %}<td>{{summary_topic.media_count.objects}}</td><td>{{summary_topic.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
