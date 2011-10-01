@@ -16,7 +16,7 @@
 <p>{% trans "Created" %}: {{ ticket.created }}<br />
 {% trans "Last changed" %}: {{ ticket.updated }}<br />
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
-{% trans "Requested by" %}: {{ ticket.requested_by }}<br />
+{% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />
 {% trans "State" %}: {{ ticket.state_str }}</p>
 

@@ -6,6 +6,8 @@ from django.dispatch import receiver
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _, string_concat
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.conf import settings
 from south.modelsinspector import add_introspection_rules
 
@@ -77,6 +79,13 @@ class Ticket(models.Model):
         else:
             return self.requested_text
     requested_by.short_description = _('requested by')
+    
+    def requested_by_html(self):
+        if self.requested_user != None:
+            out = '<a href="%s">%s</a>' % (self.requested_user.get_absolute_url(), escape(unicode(self.requested_user)))
+            return mark_safe(out)
+        else:
+            return escape(self.requested_text)
     
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})

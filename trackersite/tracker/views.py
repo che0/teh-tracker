@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput, Textarea
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
@@ -194,4 +195,12 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+    })
+
+def user_detail(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    return render(request, 'tracker/user_detail.html', {
+        'user': user,
+        'ticket_list': user.ticket_set.all(),
     })

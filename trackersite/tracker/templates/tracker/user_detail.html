@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ user }}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; {% trans "users" %}</a> &gt;</p>
+<h1>{{ user }}</h1>
+
+{% if ticket_list %}
+{% include "tracker/ticket_table.html" with show_topics="True" show_media="True" show_expenses="True" %}
+{% else %}
+<p>{% trans "No tickets available." %}</p>
+{% endif %}
+
+{% endblock content %}

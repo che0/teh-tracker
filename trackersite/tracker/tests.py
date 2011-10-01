@@ -416,3 +416,20 @@ class TicketEditTests(TestCase):
         self.assertEqual(1, len(expeditures))
         self.assertEqual('hundred+1', expeditures[0].description)
         self.assertEqual(101, expeditures[0].amount)
+
+class UserDetailsTest(TestCase):
+    def setUp(self):
+        self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True)
+        self.topic.save()
+        
+        self.user = User(username='user')
+        self.user.save()
+        
+        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket.save()
+    
+    def test_user_details(self):
+        c = Client()
+        response = c.get(self.user.get_absolute_url())
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(self.ticket, response.context['ticket_list'][0])
