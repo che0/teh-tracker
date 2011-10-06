@@ -6,6 +6,7 @@ table tr:hover td { background-color: #ddd; }
 #user { text-align: right; }
 abbr[title] { border-bottom: dotted 1px black; }
 tr.total td { font-weight: bold; }
+tr.first_total td { border-top: 2px solid black; }
 .ticket_list tr.total td { border-top: 2px solid black; }
 .hide-switch > .unhide { display: none; }
 .hidden { display: none; }
@@ -31,3 +32,4 @@ th.required:after { padding-left: 0.2em; content: "*"; color: red; }
 .calendar-cancel a:hover { background-color: red; color: black; }
 
 .empty-form { display:none; }
+td.money { text-align:right; }

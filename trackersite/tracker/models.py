@@ -2,6 +2,7 @@
 import datetime
 
 from django.contrib.comments.signals import comment_was_posted
+from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -15,6 +16,7 @@ STATE_CHOICES = (
     ('draft', _('draft')),
     ('for consideration', _('for consideration')),
     ('accepted', _('accepted')),
+    ('expenses filed', _('expenses filed')),
     ('closed', _('closed')),
     ('custom', _('custom')),
 )
@@ -96,9 +98,16 @@ class Ticket(models.Model):
     def expeditures(self):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
+    def accepted_expeditures(self):
+        if (self.state != 'expenses filed') or (self.rating_percentage == None):
+            return 0
+        else:
+            total = sum([x.amount for x in self.expediture_set.all()])
+            return total * self.rating_percentage / 100
+    
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
-        return (self.state != 'closed') and (user == self.requested_user)
+        return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
     
     class Meta:
         verbose_name = _('Ticket')
@@ -126,6 +135,9 @@ class Topic(models.Model):
     
     def expeditures(self):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+    
+    def accepted_expeditures(self):
+        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
     
     class Meta:
         verbose_name = _('Topic')
@@ -168,3 +180,22 @@ class Expediture(models.Model):
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
+
+from django.contrib.auth.models import User
+
+class TrackerUser(User):
+    class Meta:
+        proxy = True
+    
+    def get_absolute_url(self):
+        return reverse('user_detail', kwargs={'username':self.username})
+    
+    def media_count(self):
+        return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+    
+    def expeditures(self):
+        return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    def accepted_expeditures(self):
+        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
+

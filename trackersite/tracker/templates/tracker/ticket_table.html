@@ -4,13 +4,17 @@
 <tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Date" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}{% if show_requester %}<th rowspan="2">{% trans "Requested by" %}</th>{% endif %}
 <th colspan="3" class="uber-th">{% trans "Media" %}</th>
 {% if show_expenses %}<th rowspan="2">{% trans "Expeditures" %}</th>{% endif %}
-<th rowspan="2">{% trans "Status" %}</th><th rowspan="2">{% trans "Last changed" %}</th></tr>
+<th rowspan="2">{% trans "Status" %}</th>
+{% if show_expenses %}<th rowspan="2">{% trans "Accepted expeditures" %}</th>{% endif %}
+<th rowspan="2">{% trans "Last changed" %}</th></tr>
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
 <tr><th>{% trans "ID" %}</th><th>{% trans "Date" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}{% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
 {% if show_expenses %}<th>{% trans "Expeditures" %}</th>{% endif %}
-<th>{% trans "State" %}</th><th>{% trans "Last changed" %}</th></tr>
+<th>{% trans "State" %}</th>
+{% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th>{% endif %}
+<th>{% trans "Last changed" %}</th></tr>
 {% endif %}
 
 {% for ticket in ticket_list %}
@@ -26,22 +30,32 @@
 {# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-{# expeditures #}<td>{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>
+{# expeditures #}<td class="money">{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>
 {% endif %}
 
-<td>{{ticket.state_str}}</td><td>{{ticket.updated}}</td></tr>
+<td>{{ticket.state_str}}</td>
+{% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
+<td class="money">{% if accepted > 0 %}{{accepted}}&nbsp;{{ticket.currency}}{% endif %}</td>
+{% endwith %}{% endif %}
+
+
+<td>{{ticket.updated}}</td></tr>
 {% endfor %}
 
-{% if show_media or show_expenses %}{% if summary_topic and not show_topics %}
+{% if show_media or show_expenses %}{% if summary_item %}
 <tr class="total">
-<td colspan="{% if show_media %}5{% else %}4{% endif %}">{% trans "Total for this topic" %}</td>
+<td colspan="{% if show_media %}5{% else %}4{% endif %}">{{total_desc}}</td>
 {% if show_media %}
-	{% if summary_topic.media_count.objects > 0 %}<td>{{summary_topic.media_count.objects}}</td><td>{{summary_topic.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
+	{% if summary_item.media_count.objects > 0 %}<td>{{summary_item.media_count.objects}}</td><td>{{summary_item.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-	<td>{% if summary_topic.expeditures.count > 0 %}{{summary_topic.expeditures.amount}}&nbsp;{{ticket_list.0.currency}}{% endif %}</td>
+	<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.expeditures.amount}}&nbsp;{{ticket_list.0.currency}}{% endif %}</td>
+	<td></td>
+	<td class="money">{{summary_item.accepted_expeditures}}&nbsp;{{ticket_list.0.currency}}</td>
+	<td></td>
+{% else %}
+	<td colspan="3"></td>
 {% endif %}
-<td colspan="2"></td>
 </tr>
 {% endif %}{% endif %}
 </table>

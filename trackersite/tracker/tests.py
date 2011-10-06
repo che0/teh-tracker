@@ -5,7 +5,7 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -433,3 +433,51 @@ class UserDetailsTest(TestCase):
         response = c.get(self.user.get_absolute_url())
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.ticket, response.context['ticket_list'][0])
+
+class SummaryTest(TestCase):
+    def setUp(self):
+        self.user = TrackerUser(username='user')
+        self.user.save()
+        
+        self.topic = Topic(name='test_topic', ticket_expenses=True)
+        self.topic.save()
+        
+        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='expenses filed', rating_percentage=50)
+        self.ticket.save()
+        self.ticket.expediture_set.create(description='foo', amount=200)
+        self.ticket.expediture_set.create(description='foo', amount=100)
+        self.ticket.mediainfo_set.create(description='foo', count=5)
+        
+        self.ticket2 = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='expenses filed', rating_percentage=100)
+        self.ticket2.save()
+        self.ticket2.expediture_set.create(description='foo', amount=600)
+        self.ticket2.expediture_set.create(description='foo', amount=10)
+        self.ticket2.mediainfo_set.create(description='foo', count=5)
+        self.ticket2.mediainfo_set.create(description='foo', count=3)
+
+    def test_ticket_summary(self):
+        self.ticket.state = 'for consideration'
+        self.ticket.rating_percentage = None
+        self.ticket.save()
+        
+        self.assertEqual({'objects':1, 'media':5}, self.ticket.media_count())
+        self.assertEqual({'count':2, 'amount':300}, self.ticket.expeditures())
+        self.assertEqual(0, self.ticket.accepted_expeditures())
+        
+        self.ticket.rating_percentage = 50
+        self.ticket.save()
+        self.assertEqual(0, self.ticket.accepted_expeditures())
+        
+        self.ticket.state = 'expenses filed'
+        self.ticket.save()
+        self.assertEqual(150, self.ticket.accepted_expeditures())
+
+    def test_topic_summary(self):
+        self.assertEqual({'objects':3, 'media':13}, self.topic.media_count())
+        self.assertEqual({'count':4, 'amount':910}, self.topic.expeditures())
+        self.assertEqual(150 + 610, self.topic.accepted_expeditures())
+    
+    def test_user_summary(self):
+        self.assertEqual({'objects':3, 'media':13}, self.user.media_count())
+        self.assertEqual({'count':4, 'amount':910}, self.user.expeditures())
+        self.assertEqual(150 + 610, self.user.accepted_expeditures())

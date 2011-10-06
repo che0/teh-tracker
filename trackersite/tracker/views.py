@@ -17,7 +17,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser
 
 class CommentPostedCatcher(object):
     """ 
@@ -198,7 +198,7 @@ def edit_ticket(request, pk):
     })
 
 def user_detail(request, username):
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(TrackerUser, username=username)
     
     return render(request, 'tracker/user_detail.html', {
         'user_obj': user,
