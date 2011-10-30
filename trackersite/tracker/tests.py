@@ -481,3 +481,5 @@ class SummaryTest(TestCase):
         self.assertEqual({'objects':3, 'media':13}, self.user.media_count())
         self.assertEqual({'count':4, 'amount':910}, self.user.expeditures())
         self.assertEqual(150 + 610, self.user.accepted_expeditures())
+        self.assertEqual({'count':0, 'amount':None}, self.user.transactions())
+
