@@ -38,3 +38,5 @@ class TopicAdmin(admin.ModelAdmin):
     list_display = ('name', 'open_for_tickets', 'ticket_media', 'ticket_expenses')
     filter_horizontal = ('admin', )
 admin.site.register(models.Topic, TopicAdmin)
+
+admin.site.register(models.Transaction)

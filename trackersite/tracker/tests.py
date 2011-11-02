@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
@@ -482,4 +484,19 @@ class SummaryTest(TestCase):
         self.assertEqual({'count':4, 'amount':910}, self.user.expeditures())
         self.assertEqual(150 + 610, self.user.accepted_expeditures())
         self.assertEqual({'count':0, 'amount':None}, self.user.transactions())
+        self.assertEqual(150 + 610, self.user.balance())
+    
+    def test_transaction_summary(self):
+        def add_trans(amount):
+            self.user.transaction_set.create(date=datetime.date.today(), amount=amount, description='foo')
+        
+        add_trans(500)
+        self.assertEqual({'count':1, 'amount':500}, self.user.transactions())
+        self.assertEqual(150 + 610 - 500, self.user.balance())
+        
+        add_trans(self.user.balance())
+        self.assertEqual(0, self.user.balance())
+        
+        add_trans(300)
+        self.assertEqual(-300, self.user.balance())
 

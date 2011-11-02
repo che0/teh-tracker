@@ -201,6 +201,13 @@ class TrackerUser(User):
     
     def transactions(self):
         return Transaction.objects.filter(other=self).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+    
+    def balance(self):
+        """ User's financial balance towards us. Positive amount means we owe him money. """
+        transaction_total = self.transactions()['amount']
+        if transaction_total == None:
+            transaction_total = 0
+        return self.accepted_expeditures() - transaction_total
 
 class Transaction(models.Model):
     """ One payment to or from the user. """
@@ -215,3 +222,7 @@ class Transaction(models.Model):
         if self.description != None:
            out += ': ' + self.description 
         return out
+    
+    class Meta:
+        verbose_name = _('Transaction')
+        verbose_name_plural = _('Transactions')
