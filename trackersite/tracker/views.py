@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from django.db import models
 from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput, Textarea
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
@@ -17,7 +18,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction
 
 class CommentPostedCatcher(object):
     """ 
@@ -195,6 +196,23 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+    })
+
+def user_list(request):
+    totals = {
+        'ticket_count': Ticket.objects.count(),
+        'media': MediaInfo.objects.aggregate(objects=models.Count('id'), media=models.Sum('count')),
+        'expeditures': {
+            'total': Expediture.objects.aggregate(amount=models.Sum('amount'))['amount'],
+            'accepted': sum([t.accepted_expeditures() for t in Ticket.objects.filter(state='expenses filed', rating_percentage__gt=0)]),
+        },
+        'transactions': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
+    }
+    
+    return render(request, 'tracker/user_list.html', {
+        'user_list': TrackerUser.objects.all(),
+        'currency': settings.TRACKER_CURRENCY,
+        'totals': totals,
     })
 
 def user_detail(request, username):
