@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Transaction list" %}{% endblock %}
+
+{% block head %}{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest transactions' %}" href="{% url transactions_feed %}" />
+{% endblock %}
+
+{% block content %}
+<p class="nav">TODO navigation</p>
+<h1>{% trans "Transaction list" %}</h1>
+
+{% if transaction_list %}
+<table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th><td>
+{% for t in transaction_list %}
+<tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}<td><td>{{t.accounting_info}}</td></tr>
+{% endfor %}
+{% else %}
+<p>{% trans "No transactions available." %}</p>
+{% endif %}
+{% endblock content %}

@@ -223,7 +223,11 @@ class Transaction(models.Model):
            out += ': ' + self.description 
         return out
     
+    @staticmethod
+    def currency():
+        return settings.TRACKER_CURRENCY
+    
     class Meta:
         verbose_name = _('Transaction')
         verbose_name_plural = _('Transactions')
-        ordering = ['date']
+        ordering = ['-date']
