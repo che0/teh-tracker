@@ -198,6 +198,13 @@ def edit_ticket(request, pk):
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })
 
+def transaction_list(request):
+    return render(request, 'tracker/transaction_list.html', {
+        'currency': settings.TRACKER_CURRENCY,
+        'transaction_list': Transaction.objects.all(),
+        'total': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
+    })
+
 def user_list(request):
     totals = {
         'ticket_count': Ticket.objects.count(),
