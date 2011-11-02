@@ -39,4 +39,7 @@ class TopicAdmin(admin.ModelAdmin):
     filter_horizontal = ('admin', )
 admin.site.register(models.Topic, TopicAdmin)
 
-admin.site.register(models.Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = ('date', 'other', 'amount', 'description', 'accounting_info')
+    list_display_links = ('amount', 'description')
+admin.site.register(models.Transaction, TransactionAdmin)

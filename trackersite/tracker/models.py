@@ -218,7 +218,7 @@ class Transaction(models.Model):
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info'))
     
     def __unicode__(self):
-        out = '%s, %s %s' % (self.date, self.amount, settings.TRACKER_CURRENCY)
+        out = '%s, %s %s' % (self.date, self.amount, unicode(settings.TRACKER_CURRENCY))
         if self.description != None:
            out += ': ' + self.description 
         return out
@@ -226,3 +226,4 @@ class Transaction(models.Model):
     class Meta:
         verbose_name = _('Transaction')
         verbose_name_plural = _('Transactions')
+        ordering = ['date']

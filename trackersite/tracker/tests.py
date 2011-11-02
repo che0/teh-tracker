@@ -6,8 +6,9 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.conf import settings
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -500,3 +501,13 @@ class SummaryTest(TestCase):
         add_trans(300)
         self.assertEqual(-300, self.user.balance())
 
+class TransactionTest(TestCase):
+    
+    def test_transaction_string(self):
+        user = TrackerUser(username='user')
+        user.save()
+        
+        tr = Transaction(date=datetime.date(2011, 12, 24), amount=500, other=user, description='some desc')
+        tr.save()
+        
+        self.assertEqual("%s 500 %s: some desc" % (tr.date, settings.TRACKER_CURRENCY), unicode(tr))
