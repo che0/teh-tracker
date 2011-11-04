@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-04 14:01+0100\n"
-"PO-Revision-Date: 2011-11-04 14:01+0100\n"
+"PO-Revision-Date: 2011-11-04 14:09+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -632,7 +632,7 @@ msgstr "Celkem za toto téma"
 #: tracker/templates/tracker/transaction_list.html:4
 #: tracker/templates/tracker/transaction_list.html:12
 msgid "Transaction list"
-msgstr "Sezanm plateb"
+msgstr "Seznam plateb"
 
 #: tracker/templates/tracker/transaction_list.html:7
 msgid "Latest transactions"
