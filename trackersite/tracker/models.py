@@ -39,8 +39,8 @@ class Ticket(models.Model):
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    state = models.CharField(_('state'), max_length=20, choices=STATE_CHOICES, help_text=('Ticket state'))
-    custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=('Custom state description'))
+    state = models.CharField(_('state'), max_length=20, choices=STATE_CHOICES, help_text=_('Ticket state'))
+    custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=_('Custom state description'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     

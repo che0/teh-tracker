@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-04 14:01+0100\n"
-"PO-Revision-Date: 2011-11-04 14:09+0100\n"
+"POT-Creation-Date: 2011-11-04 15:11+0100\n"
+"PO-Revision-Date: 2011-11-04 15:11+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -161,9 +161,17 @@ msgstr "Projektové téma do kterého tento tiket patří"
 msgid "state"
 msgstr "stav"
 
+#: tracker/models.py:42
+msgid "Ticket state"
+msgstr "Stav tiketu"
+
 #: tracker/models.py:43
 msgid "custom state"
 msgstr "vlastní stav"
+
+#: tracker/models.py:43
+msgid "Custom state description"
+msgstr "Vlastní popis stavu"
 
 #: tracker/models.py:44
 msgid "rating percentage"
