@@ -503,11 +503,39 @@ class SummaryTest(TestCase):
 
 class TransactionTest(TestCase):
     
-    def test_transaction_string(self):
-        user = TrackerUser(username='user')
-        user.save()
+    def setUp(self):
+        self.user = TrackerUser.objects.create(username='user')
+        self.tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=500, other=self.user, description='some desc')
         
-        tr = Transaction(date=datetime.date(2011, 12, 24), amount=500, other=user, description='some desc')
-        tr.save()
+        # more transactions
+        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=-200, other=self.user, description='other')
+        self.user2 = TrackerUser.objects.create(username='user2')
+        Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=300, other=self.user2, description='user2')
+    
+    def test_transaction_string(self):        
+        self.assertEqual(u"%s, 500 %s: some desc" % (self.tr.date, settings.TRACKER_CURRENCY), unicode(self.tr))
+    
+    def test_transaction_list(self):
+        c = Client()
+        response = c.get(reverse('transaction_list'))
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(600, response.context['total'])
+    
+    def test_user_list(self):
+        topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
+        ticket = Ticket.objects.create(summary='foo', requested_user=self.user2, topic=topic, state='expenses filed', rating_percentage=100)
+        ticket.expediture_set.create(description='exp', amount=300)
+        ticket.mediainfo_set.create(description='media', count=5)
         
-        self.assertEqual("%s 500 %s: some desc" % (tr.date, settings.TRACKER_CURRENCY), unicode(tr))
+        c = Client()
+        response = c.get(reverse('user_list'))
+        self.assertEqual(200, response.status_code)
+        
+        expected_totals = {
+            'ticket_count': 1,
+            'media': {'objects':1, 'media':5},
+            'expeditures': {'total': 300, 'accepted': 300},
+            'transactions': 600,
+        }
+        self.assertEqual(expected_totals, response.context['totals'])
+        
