@@ -216,8 +216,20 @@ def user_list(request):
         'transactions': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     }
     
+    userless = Ticket.objects.filter(requested_user=None)
+    if userless.count() > 0:
+        unassigned = {
+            'ticket_count': userless.count(),
+            'media': MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id is null)']).aggregate(objects=models.Count('id'), media=models.Sum('count')),
+            'total_expeditures': Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id is null)']).aggregate(amount=models.Sum('amount'))['amount'],
+            'accepted_expeditures': sum([t.accepted_expeditures() for i in Ticket.objects.filter(state='expenses filed', requested_user=None)]),
+        }
+    else:
+        unassigned = None
+    
     return render(request, 'tracker/user_list.html', {
         'user_list': TrackerUser.objects.all(),
+        'unassigned': unassigned,
         'currency': settings.TRACKER_CURRENCY,
         'totals': totals,
     })

@@ -527,15 +527,25 @@ class TransactionTest(TestCase):
         ticket.expediture_set.create(description='exp', amount=300)
         ticket.mediainfo_set.create(description='media', count=5)
         
+        unt = Ticket.objects.create(summary='anon', topic=topic, state='custom')
+        unt.mediainfo_set.create(description='media', count=3)
+        
         c = Client()
         response = c.get(reverse('user_list'))
         self.assertEqual(200, response.status_code)
         
         expected_totals = {
-            'ticket_count': 1,
-            'media': {'objects':1, 'media':5},
+            'ticket_count': 2,
+            'media': {'objects':2, 'media':8},
             'expeditures': {'total': 300, 'accepted': 300},
             'transactions': 600,
         }
         self.assertEqual(expected_totals, response.context['totals'])
         
+        expected_unassigned = {
+            'ticket_count': 1,
+            'media': {'objects':1, 'media':3},
+            'total_expeditures': None,
+            'accepted_expeditures': 0,
+        }
+        self.assertEqual(expected_unassigned, response.context['unassigned'])

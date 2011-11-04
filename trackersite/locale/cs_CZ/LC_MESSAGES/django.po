@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-04 13:36+0100\n"
-"PO-Revision-Date: 2011-11-04 13:34+0100\n"
+"POT-Creation-Date: 2011-11-04 14:01+0100\n"
+"PO-Revision-Date: 2011-11-04 14:01+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -343,8 +343,9 @@ msgstr "Druhá strana převodu: uživatel který poslal nebo dostal platbu"
 msgid ""
 "Payment amount; Positive value means transaction to the user, negative is a "
 "transaction from the user"
-msgstr "Převedená částka. Kladná hodnota znamená platbu uživateli, záporná"
-"že uživatel dal peníze nám"
+msgstr ""
+"Převedená částka. Kladná hodnota znamená platbu uživateli, záporná že "
+"uživatel dal peníze nám"
 
 #: tracker/models.py:217
 msgid "Description of this transaction"
@@ -676,7 +677,7 @@ msgid "User list"
 msgstr "Seznam uživatelů"
 
 #: tracker/templates/tracker/user_list.html:12
-#: tracker/templates/tracker/user_list.html:18
+#: tracker/templates/tracker/user_list.html:22
 msgid "Total"
 msgstr "Celkem"
 
@@ -684,9 +685,13 @@ msgstr "Celkem"
 msgid "Accepted"
 msgstr "Přijaté"
 
-#: tracker/templates/tracker/user_list.html:22
-msgid "Including tickets not assigned to any user"
-msgstr "Včetně tiketů nepřiřazených žádnému uživateli"
+#: tracker/templates/tracker/user_list.html:19
+msgid "Tickets not assigned to any tracker user"
+msgstr "Tikety nepřiřazené žádnému uživateli trackeru"
+
+#: tracker/templates/tracker/user_list.html:19
+msgid "unassigned"
+msgstr "neurčen"
 
 #: tracker/templates/tracker/generic/create_ticket.html:4
 #: tracker/templates/tracker/generic/create_ticket.html:8

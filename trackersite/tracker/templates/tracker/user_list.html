@@ -15,9 +15,11 @@
 <tr><td><a href="{{u.get_absolute_url}}">{{u}}</a></td><td>{{u.ticket_set.count|default:""}}</td><td>{{u.media_count.objects|default:""}}</td><td>{{u.media_count.media|default:""}}</td><td>{% if u.expeditures.amount %}{{u.expeditures.amount}} {{currency}}{% endif %}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td>{% if u.transactions.amount %}{{u.transactions.amount}} {{currency}}{% endif %}</td><td>{% if u.balance != 0 %}{{u.balance}} {{currency}}{% endif %}</td></tr>
 {% endfor %}
 
-<tr class="total first_total"><td>{% trans "Total" %}&nbsp;¹</td><td>{{totals.ticket_count}}</td><td>{{totals.media.objects}}</td><td>{{totals.media.media}}</td><td>{{totals.expeditures.total}} {{currency}}</td><td>{{totals.expeditures.accepted}} {{currency}}</td><td>{{totals.transactions}} {{currency}}</td><td></td></tr>
+{% if unassigned %}{% with u=unassigned %}
+<tr><td><abbr title="{% trans "Tickets not assigned to any tracker user" %}">{% trans "unassigned" %}</abbr></td><td>{{u.ticket_count}}</td><td>{{u.media.objects|default:""}}</td><td>{{u.media.media|default:""}}</td><td>{% if u.total_expeditures %}{{u.total_expeditures}} {{currency}}{% endif %}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td></td><td></td></tr>
+{% endwith %}{% endif %}
+
+<tr class="total first_total"><td>{% trans "Total" %}</td><td>{{totals.ticket_count}}</td><td>{{totals.media.objects}}</td><td>{{totals.media.media}}</td><td>{{totals.expeditures.total}} {{currency}}</td><td>{{totals.expeditures.accepted}} {{currency}}</td><td>{{totals.transactions}} {{currency}}</td><td></td></tr>
 
 </table>
-
-<p>¹&nbsp;{% trans "Including tickets not assigned to any user" %}</p>
 {% endblock content %}
