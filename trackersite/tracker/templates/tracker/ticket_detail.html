@@ -13,7 +13,8 @@
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <h1>{{ ticket.summary }}</h1>
 {% if user_can_edit_ticket %}<p><a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a></p>{% endif %}
-<p>{% trans "Created" %}: {{ ticket.created }}<br />
+<p>{% trans "Ticket ID" %}: {{ ticket.id }}<br />
+{% trans "Created" %}: {{ ticket.created }}<br />
 {% trans "Last changed" %}: {{ ticket.updated }}<br />
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
@@ -21,6 +22,8 @@
 {% trans "State" %}: {{ ticket.state_str }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
+
+{% if ticket.supervisor_notes %}<h2>{% trans "Supervisor notes" %}</h2><div>{{ ticket.supervisor_notes|safe|linebreaks }}</div>{% endif %}
 
 {% if ticket.media_count.objects > 0 %}
 <h2>{% trans "Media" %}</h2>

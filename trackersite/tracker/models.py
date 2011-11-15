@@ -43,6 +43,7 @@ class Ticket(models.Model):
     custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=_('Custom state description'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
+    supervisor_notes = models.TextField(_('supervisor notes'), blank=True, help_text=_("This space is for notes of project supervisors and accounting staff."))
     
     @staticmethod
     def currency():
