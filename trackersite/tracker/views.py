@@ -68,8 +68,8 @@ class TicketForm(ModelForm):
     
     class Meta:
         model = Ticket
-        exclude = ('created', 'updated', 'requested_user', 'requested_text', 'state',
-            'custom_state', 'rating_percentage', 'amount_paid')
+        exclude = ('created', 'updated', 'sort_date', 'requested_user', 'requested_text',
+            'state', 'custom_state', 'rating_percentage', 'amount_paid')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
             'summary': TextInput(attrs={'size':'40'}),

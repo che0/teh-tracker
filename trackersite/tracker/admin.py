@@ -16,10 +16,11 @@ class TicketAdmin(admin.ModelAdmin):
         else:
             return qs.extra(where=['topic_id in (select topic_id from tracker_topic_admin where user_id = %s)'], params=[request.user.id])
     
-    exclude = ('updated', )
-    list_display = ('id', 'summary', 'topic', 'requested_by', 'state_str')
+    exclude = ('updated', 'sort_date')
+    list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
     list_display_links = ('summary',)
     list_filter = ('topic', 'state')
+    date_hierarchy = 'sort_date'
     inlines = [MediaInfoAdmin, ExpeditureAdmin]
 admin.site.register(models.Ticket, TicketAdmin)
 

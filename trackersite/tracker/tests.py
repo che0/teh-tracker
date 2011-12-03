@@ -21,6 +21,18 @@ class SimpleTicketTest(TestCase):
         self.ticket2 = Ticket(summary='bar', requested_text='req2', topic=self.topic, state='for consideration', description='bar bar')
         self.ticket2.save()
     
+    def test_ticket_sort_date(self):
+        # sort date is equal to event date (when applicable) and default to creation date
+        self.assertEqual(self.ticket1.created.date(), self.ticket1.sort_date)
+        
+        self.ticket1.event_date = datetime.date(2011, 10, 13)
+        self.ticket1.save()
+        self.assertEqual(datetime.date(2011, 10, 13), self.ticket1.sort_date)
+        
+        self.ticket1.event_date = None
+        self.ticket1.save()
+        self.assertEqual(self.ticket1.created.date(), self.ticket1.sort_date)
+    
     def test_ticket_timestamps(self):
         self.assertTrue(self.ticket2.created > self.ticket1.created) # check ticket 2 is newer
         

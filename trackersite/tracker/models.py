@@ -34,6 +34,7 @@ class Ticket(models.Model):
     """ One unit of tracked / paid stuff. """
     created = models.DateTimeField(_('created'), auto_now_add=True)
     updated = models.DateTimeField(_('updated'))
+    sort_date = models.DateField(_('sort date'))
     event_date = models.DateField(_('event date'), blank=True, null=True, help_text=_('Date of the event this ticket is about'))
     requested_user = models.ForeignKey('auth.User', verbose_name=_('requested by'), blank=True, null=True, help_text=_('User who created/requested for this ticket'))
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
@@ -51,6 +52,14 @@ class Ticket(models.Model):
     
     def save(self, *args, **kwargs):
         self.updated = datetime.datetime.now()
+        
+        if self.event_date != None:
+            self.sort_date = self.event_date
+        elif self.created != None:
+            self.sort_date = self.created.date()
+        else:
+            self.sort_date = datetime.date.today()
+        
         super(Ticket, self).save(*args, **kwargs)
     
     def _note_comment(self, **kwargs):
@@ -113,7 +122,7 @@ class Ticket(models.Model):
     class Meta:
         verbose_name = _('Ticket')
         verbose_name_plural = _('Tickets')
-        ordering = ['-updated']
+        ordering = ['-sort_date']
 
 class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
