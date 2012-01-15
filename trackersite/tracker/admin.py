@@ -42,6 +42,7 @@ class TopicAdmin(admin.ModelAdmin):
 admin.site.register(models.Topic, TopicAdmin)
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('date', 'other', 'amount', 'description', 'accounting_info')
+    list_display = ('date', 'other', 'amount', 'description', 'ticket_ids', 'accounting_info')
     list_display_links = ('amount', 'description')
+    filter_vertical = ('tickets', )
 admin.site.register(models.Transaction, TransactionAdmin)

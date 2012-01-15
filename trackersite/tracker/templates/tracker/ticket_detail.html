@@ -49,6 +49,15 @@
 </table>
 {% endif %}
 
+{% if ticket.transaction_set.all.count > 0 %}
+<h2>{% trans "Transactions" %}</h2>
+<table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th></tr>
+{% for t in ticket.transaction_set.all %}
+<tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
 {% get_comment_count for ticket as comment_count %}
 {% if comment_count %}
 <h2>{% trans "Comments" %} ({{comment_count}})</h2>

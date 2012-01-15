@@ -83,7 +83,7 @@ class Ticket(models.Model):
     state_str.short_description = _('state')
             
     def __unicode__(self):
-        return self.summary
+        return '%s: %s' % (self.id , self.summary)
     
     def requested_by(self):
         if self.requested_user != None:
@@ -226,12 +226,19 @@ class Transaction(models.Model):
     amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=_('Payment amount; Positive value means transaction to the user, negative is a transaction from the user'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this transaction'))
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info'))
+    tickets = models.ManyToManyField(Ticket, verbose_name=_('related tickets'), blank=True, help_text=_('Tickets this trackaction is related to'))
     
     def __unicode__(self):
         out = u'%s, %s %s' % (self.date, self.amount, settings.TRACKER_CURRENCY)
         if self.description != None:
            out += ': ' + self.description 
         return out
+    
+    def ticket_ids(self):
+        return u', '.join([unicode(t.id) for t in self.tickets.order_by('id')])
+    
+    def tickets_by_id(self):
+        return self.tickets.order_by('id')
     
     @staticmethod
     def currency():
