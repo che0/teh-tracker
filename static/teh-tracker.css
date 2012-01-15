@@ -33,3 +33,13 @@ th.required:after { padding-left: 0.2em; content: "*"; color: red; }
 
 .empty-form { display:none; }
 td.money { text-align:right; }
+
+#ticket_id { display:none; }
+
+@media print {
+	#user, .nav { display:none; }
+	#ticket_id { font-size:26pt; font-weight:bold; text-align:right; display:block !important;}
+	#media_list li { list-style-type:none; display:inline; }
+	#media_list li:after { content:";"; }
+	.comments_empty, .comments_add { display:none; }
+}

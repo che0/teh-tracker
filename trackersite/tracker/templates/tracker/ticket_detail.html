@@ -11,6 +11,7 @@
 
 {% block content %}
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
+<div id="ticket_id">{{ticket.id}}</div>
 <h1>{{ ticket.summary }}</h1>
 {% if user_can_edit_ticket %}<p><a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a></p>{% endif %}
 <p>{% trans "Ticket ID" %}: {{ ticket.id }}<br />
@@ -29,7 +30,7 @@
 <h2>{% trans "Media" %}</h2>
 <p>{% trans "Number of objects" %}: {{ ticket.media_count.objects }}
 {% if ticket.media_count.media %}<br />{% trans "Number of media files" %}: {{ ticket.media_count.media }}</p>{% endif %}
-<ul>
+<ul id="media_list">
 {% for item in ticket.mediainfo_set.all %}
 <li>{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}</li>
 {% endfor %}
@@ -53,14 +54,17 @@
 <h2>{% trans "Comments" %} ({{comment_count}})</h2>
 {% render_comment_list for ticket %}
 {% else %}
+<div class="comments_empty">
 <h2>{% trans "Comments" %}</h2>
 <p>{% trans "There are no comments yet." %}</p>
+</div>
 {% endif %}
 
+<div class="comments_add">
 <div class="hide-switch"><a href="#" class="unhide">{% trans "Add comment" %}</a>
 <div class="hidden">
 <h3>{% trans "Add comment" %}</h3>
 {% url ticket_detail pk=ticket.id as next %}{% render_comment_form for ticket %}
-</div></div>
+</div></div></div>
 
 {% endblock content %}
