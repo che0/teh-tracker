@@ -21,6 +21,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_display_links = ('summary',)
     list_filter = ('topic', 'state')
     date_hierarchy = 'sort_date'
+    search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
     inlines = [MediaInfoAdmin, ExpeditureAdmin]
 admin.site.register(models.Ticket, TicketAdmin)
 
