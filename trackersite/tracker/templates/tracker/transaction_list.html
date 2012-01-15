@@ -18,7 +18,7 @@
 <td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 <td>{{t.accounting_info}}</td></tr>
 {% endfor %}
-<tr class="total first_total"><td colspan="3">{% trans "Transactions total" %}</td><td>{{total}} {{currency}}</td><td></td><td></td></tr></table>
+<tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td>{{total}} {{currency}}</td><td></td><td></td><td></td></tr></table>
 {% else %}
 <p>{% trans "No transactions available." %}</p>
 {% endif %}
