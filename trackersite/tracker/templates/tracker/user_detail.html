@@ -16,12 +16,14 @@
 
 {% if user_obj.transaction_set.count > 0 %}{% with currency=user_obj.transaction_set.all.0.currency %}
 <h2>{% trans "Transactions" %}</h2>
-<table><tr><th>{% trans "Date" %}</th><th>{% trans "Description" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th></tr>
+<table><tr><th>{% trans "Date" %}</th><th>{% trans "Description" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for item in user_obj.transaction_set.all %}
-<tr><td>{{item.date}}</td><td>{{item.description}}</td><td>{{item.amount}} {{currency}}</td><td>{{item.accounting_info}}</td></tr>{% endfor %}
-<tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td>{{user_obj.transactions.amount}}  {{currency}}</td><td></td></tr>
-<tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td>{{user_obj.accepted_expeditures}} {{currency}}</td><td></td></tr>
-<tr class="total first_total"><td colspan="2">{% trans "Balance" %}</td><td>{{user_obj.balance}} {{currency}}</td><td></td></tr>
+<tr><td>{{item.date}}</td><td>{{item.description}}</td><td>{{item.amount}} {{currency}}</td>
+<td>{% for ticket in item.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+<td>{{item.accounting_info}}</td></tr>{% endfor %}
+<tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td>{{user_obj.transactions.amount}}  {{currency}}</td><td></td><td></td></tr>
+<tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td>{{user_obj.accepted_expeditures}} {{currency}}</td><td></td><td></td></tr>
+<tr class="total first_total"><td colspan="2">{% trans "Balance" %}</td><td>{{user_obj.balance}} {{currency}}</td><td></td><td></td></tr>
 </table>
 {% endwith %}{% endif %}
 
