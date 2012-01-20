@@ -7,12 +7,12 @@
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 {{form_media}}{% endblock %}
 
-{% block language_code %}{{ LANGUAGE_CODE }}{% endblock %}
+{% block language_code %}{{LANGUAGE_CODE}}{% endblock %}
 
 {% block fulltitle %}{% block title %}{% endblock %}{% endblock %}
 
 {% block body %}
-<div id="user">{% if user.is_authenticated %}{% trans "user" %}: <a href="{{user.get_absolute_url}}">{{user.username}}</a> (<a href="{% url password_change %}">{% trans "change password" %}</a>); {% if user.is_staff %}<a href="{% url admin:index %}">{% trans "admin" %}</a>; {% endif%}<a href="{% url logout %}">{% trans "logout" %}</a>
+<div id="user">{% if user.is_authenticated %}{% trans "user" %}: <a href="{{user.get_absolute_url}}">{{user.username}}</a> (<a href="{% url password_change %}">{% trans "change password" %}</a>); {% if user.is_staff %}<a href="{% url admin:index %}">{% trans "admin" %}</a>; {% endif%}<a href="{% url choose_language %}">change language</a>; <a href="{% url logout %}">{% trans "logout" %}</a>
 {% else %}<a href="{% url login %}">{% trans "login" %}</a>, <a href="{% url register %}">{% trans "register" %}</a>
 {% endif %}</div>
 

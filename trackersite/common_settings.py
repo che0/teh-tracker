@@ -60,3 +60,8 @@ LOGOUT_URL = '/users/logout/'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
 TRACKER_CURRENCY = _('CZK')
+
+LANGUAGES = (
+    ('en', _('English')),
+    ('cs', _('Czech')),
+)
