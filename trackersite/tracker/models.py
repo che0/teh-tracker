@@ -45,6 +45,7 @@ class Ticket(models.Model):
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     supervisor_notes = models.TextField(_('supervisor notes'), blank=True, help_text=_("This space is for notes of project supervisors and accounting staff."))
+    cluster = models.ForeignKey('Cluster', blank=True, null=True)
     
     @staticmethod
     def currency():
@@ -227,6 +228,7 @@ class Transaction(models.Model):
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this transaction'))
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info'))
     tickets = models.ManyToManyField(Ticket, verbose_name=_('related tickets'), blank=True, help_text=_('Tickets this trackaction is related to'))
+    cluster = models.ForeignKey('Cluster', blank=True, null=True)
     
     def __unicode__(self):
         out = u'%s, %s %s' % (self.date, self.amount, settings.TRACKER_CURRENCY)
@@ -248,3 +250,8 @@ class Transaction(models.Model):
         verbose_name = _('Transaction')
         verbose_name_plural = _('Transactions')
         ordering = ['-date']
+
+class Cluster(models.Model):
+    """ This is an auxiliary/cache model used to track relationships between tickets and payments. """
+    id = models.IntegerField(primary_key=True) # cluster ID is always the id of its lowest-numbered ticket
+    more_tickets = models.BooleanField() # does this cluster have more tickets?

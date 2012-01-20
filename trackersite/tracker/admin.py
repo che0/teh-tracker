@@ -16,7 +16,7 @@ class TicketAdmin(admin.ModelAdmin):
         else:
             return qs.extra(where=['topic_id in (select topic_id from tracker_topic_admin where user_id = %s)'], params=[request.user.id])
     
-    exclude = ('updated', 'sort_date')
+    exclude = ('updated', 'sort_date', 'cluster')
     list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
     list_display_links = ('summary',)
     list_filter = ('topic', 'state')
@@ -46,4 +46,5 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = ('date', 'other', 'amount', 'description', 'ticket_ids', 'accounting_info')
     list_display_links = ('amount', 'description')
     filter_vertical = ('tickets', )
+    exclude = ('cluster', )
 admin.site.register(models.Transaction, TransactionAdmin)
