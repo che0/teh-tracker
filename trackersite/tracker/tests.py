@@ -568,7 +568,7 @@ class ClusterTest(TestCase):
         self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
         
     
-    def simple_ticket(self):
+    def test_simple_ticket(self):
         ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='expenses filed', rating_percentage=100)
         self.assertEqual(None, ticket.payment_status)
         tid = ticket.id
@@ -592,5 +592,27 @@ class ClusterTest(TestCase):
         self.assertEqual(tid, c.id)
         self.assertEqual(False, c.more_tickets)
     
-    def real_cluster(self):
-        pass #TODO
+    def test_real_cluster(self):
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses files', rating_percentage=100)
+        tid1 = ticket1.id
+        Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
+        
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses files', rating_percentage=100)
+        tid2 = ticket2.id
+        Expediture.objects.create(ticket_id=tid2, description='exp', amount=200)
+        
+        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
+        tr1.tickets.add(ticket1)
+        tr1.tickets.add(ticket2)
+        
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        cid = min(tid1, tid2)
+        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
+        self.assertEqual(True, Ticket.objects.get(id=tid1).cluster.more_tickets)
+        
+        #TODO
+        #complete payment
+        #separate tickets
