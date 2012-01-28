@@ -561,3 +561,36 @@ class TransactionTest(TestCase):
             'accepted_expeditures': 0,
         }
         self.assertEqual(expected_unassigned, response.context['unassigned'])
+
+class ClusterTest(TestCase):
+    def setUp(self):
+        self.user = TrackerUser.objects.create(username='user')
+        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
+        
+    
+    def simple_ticket(self):
+        ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='expenses filed', rating_percentage=100)
+        self.assertEqual(None, ticket.payment_status)
+        tid = ticket.id
+        
+        Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
+        self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=50, other=self.user, description='part one')
+        tr.tickets.add(ticket)
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=50, other=self.user, description='part one')
+        tr.tickets.add(ticket)
+        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=50, other=self.user, description='overkill')
+        tr.tickets.add(ticket)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        c = Ticket.objects.get(id=tid).cluster
+        self.assertEqual(tid, c.id)
+        self.assertEqual(False, c.more_tickets)
+    
+    def real_cluster(self):
+        pass #TODO
