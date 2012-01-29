@@ -107,3 +107,9 @@ class ClusterUpdate(object):
             else: # transactions
                 seed.transactions.add(update.big_todo.transactions.pop())
             update._make_one_cluster(seed)
+    
+    @staticmethod
+    def refresh_all():
+        ticket_ids = set([t.id for t in tracker.models.Ticket.objects.all().only('id')])
+        transaction_ids = set([t.id for t in tracker.models.Transaction.objects.all().only('id')])
+        ClusterUpdate.perform(ticket_ids, transaction_ids)
