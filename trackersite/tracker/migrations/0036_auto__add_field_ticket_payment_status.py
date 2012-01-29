@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Ticket.payment_status'
-        db.add_column('tracker_ticket', 'payment_status', self.gf('django.db.models.fields.CharField')(default='', max_length=20, blank=True), keep_default=False)
+        db.add_column('tracker_ticket', 'payment_status', self.gf('django.db.models.fields.CharField')(max_length=20, null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
@@ -84,7 +84,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'event_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'payment_status': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
+            'payment_status': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
             'rating_percentage': ('tracker.models.PercentageField', [], {'null': 'True', 'blank': 'True'}),
             'requested_text': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'requested_user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
