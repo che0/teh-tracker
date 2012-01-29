@@ -593,11 +593,11 @@ class ClusterTest(TestCase):
         self.assertEqual(False, c.more_tickets)
     
     def test_real_cluster(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses files', rating_percentage=100)
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
         tid1 = ticket1.id
         Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
         
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses files', rating_percentage=100)
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
         tid2 = ticket2.id
         Expediture.objects.create(ticket_id=tid2, description='exp', amount=200)
         
@@ -605,14 +605,54 @@ class ClusterTest(TestCase):
         tr1.tickets.add(ticket1)
         tr1.tickets.add(ticket2)
         
-        self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('partially paid', Ticket.objects.get(id=tid2).payment_status)
-        
+        # check there is a correct cluster
         cid = min(tid1, tid2)
         self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
         self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
         self.assertEqual(True, Ticket.objects.get(id=tid1).cluster.more_tickets)
         
-        #TODO
-        #complete payment
-        #separate tickets
+        # check status
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # complete payment
+        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=200, other=self.user, description='pay2')
+        tr2.tickets.add(ticket2)
+        
+        # check cluster
+        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
+        self.assertEqual(cid, Transaction.objects.get(id=tr1.id).cluster.id)
+        self.assertEqual(cid, Transaction.objects.get(id=tr2.id).cluster.id)
+        self.assertEqual(True, Transaction.objects.get(id=tr2.id).cluster.more_tickets)
+        
+        # check status
+        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # overpay ticket1
+        tr1p = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=5, other=self.user, description='pay1plus')
+        tr1p.tickets.add(ticket1)
+        
+        self.assertEqual(cid, Transaction.objects.get(id=tr1p.id).cluster.id)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # separate clusters
+        tr1.tickets.remove(ticket2)
+        
+        self.assertEqual(tid1, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(tid1, Transaction.objects.get(id=tr1.id).cluster.id)
+        self.assertEqual(tid1, Transaction.objects.get(id=tr1p.id).cluster.id)
+        self.assertEqual(tid2, Ticket.objects.get(id=tid2).cluster.id)
+        self.assertEqual(tid2, Transaction.objects.get(id=tr2.id).cluster.id)
+        
+        self.assertEqual(False, Ticket.objects.get(id=tid1).cluster.more_tickets)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
+        
+        self.assertEqual(False, Ticket.objects.get(id=tid2).cluster.more_tickets)
+        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # reconnect make ticket2 overpaid again
+        tr1.tickets.add(ticket2)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)

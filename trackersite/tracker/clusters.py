@@ -27,20 +27,25 @@ class ClusterUpdate(object):
     def _reset_item_cluster(self, item):
         """
         Takes cluster-item (Ticket or Transaction), destroy its cluster, and queue
-        all its members for update in big_todo (unless they're already in big_done.
+        all its members for update in big_todo (unless they already are in big_done).
         """
-        if item.cluster == None:
-            return # good, already empty
+        try:
+            cluster = item.cluster
+        except tracker.models.Cluster.DoesNotExist:
+            return # reference failure from earlier delete, we'll fix that later
         
-        for ticket in item.cluster.ticket_set.all():
+        if cluster == None:
+            return # done all right
+        
+        for ticket in cluster.ticket_set.all():
             if ticket.id not in self.big_done.tickets:
                 self.big_todo.tickets.add(ticket.id)
         
-        for transaction in item.cluster.transaction_set.all():
+        for transaction in cluster.transaction_set.all():
             if transaction.id not in self.big_done.transactions:
                 self.big_todo.transactions.add(transaction.id)
         
-        item.cluster.delete()
+        cluster.delete()
     
     def _make_one_cluster(self, seed):
         """ Make one cluster from seed item, updating the "big picture" """
@@ -55,7 +60,7 @@ class ClusterUpdate(object):
                 for transaction in ticket.transaction_set.all():
                     if transaction.id not in precluster.transactions:
                         seed.transactions.add(transaction.id)
-                        self.big_todo.discard(transaction.id)
+                        self.big_todo.transactions.discard(transaction.id)
                 precluster.tickets.add(ticket_id)
             else: # there must be a transaction
                 transaction_id = seed.transactions.pop()
@@ -63,7 +68,7 @@ class ClusterUpdate(object):
                 for ticket in transaction.tickets.all():
                     if ticket.id not in precluster.tickets:
                         seed.tickets.add(ticket.id)
-                        self.big_todo.discard(ticket.id)
+                        self.big_todo.tickets.discard(ticket.id)
                 precluster.transactions.add(transaction_id)
         
         # we have a completed cluster

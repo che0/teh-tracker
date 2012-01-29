@@ -282,7 +282,7 @@ class Cluster(models.Model):
         total_transactions = self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
         
         if total_transactions < total_tickets:
-            if total_transactions == 0:
+            if total_transactions in (0, None):
                 return 'unpaid'
             else:
                 return 'partially paid'
@@ -300,3 +300,8 @@ class Cluster(models.Model):
         for t in self.ticket_set.all():
             t.payment_status = status
             t.save(cluster_update_only=True)
+
+@receiver(models.signals.m2m_changed)
+def cluster_note_transaction_link(sender, instance, action, **kwargs):
+    if type(instance) == Transaction and action in ('post_add', 'post_remove', 'post_clear'):
+        ClusterUpdate.perform(transaction_ids=set([instance.id]))
