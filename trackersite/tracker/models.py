@@ -203,6 +203,12 @@ class Expediture(models.Model):
     def __unicode__(self):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
     
+    def save(self, *args, **kwargs):
+        cluster_update_only = kwargs.pop('cluster_update_only', False)
+        super(Expediture, self).save(*args, **kwargs)
+        if not cluster_update_only:
+            ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
+    
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
@@ -279,18 +285,23 @@ class Cluster(models.Model):
     total_tickets = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     total_transactions = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     
+    def get_absolute_url(self):
+        return None # TODO
+    
     def get_status(self):
-        if self.total_transactions < self.total_tickets:
-            if self.total_transactions in (0, None):
+        paid = self.total_transactions or 0
+        tickets = self.total_tickets or 0
+        if paid < tickets:
+            if paid == 0:
                 return 'unpaid'
             else:
                 return 'partially paid'
-        elif self.total_transactions == self.total_tickets:
-            if self.total_tickets == 0:
+        elif paid == tickets:
+            if tickets == 0:
                 return None
             else:
                 return 'paid'
-        else: # total_transactions > total_tickets
+        else: # paid > tickets
             return 'overpaid'
     
     def update_status(self):
