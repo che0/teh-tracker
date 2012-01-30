@@ -591,6 +591,8 @@ class ClusterTest(TestCase):
         c = Ticket.objects.get(id=tid).cluster
         self.assertEqual(tid, c.id)
         self.assertEqual(False, c.more_tickets)
+        self.assertEqual(100, c.total_tickets)
+        self.assertEqual(150, c.total_transactions)
     
     def test_real_cluster(self):
         ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
@@ -609,7 +611,10 @@ class ClusterTest(TestCase):
         cid = min(tid1, tid2)
         self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
         self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
-        self.assertEqual(True, Ticket.objects.get(id=tid1).cluster.more_tickets)
+        c = Ticket.objects.get(id=tid1).cluster
+        self.assertEqual(True, c.more_tickets)
+        self.assertEqual(300, c.total_tickets)
+        self.assertEqual(100, c.total_transactions)
         
         # check status
         self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
@@ -624,7 +629,10 @@ class ClusterTest(TestCase):
         self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
         self.assertEqual(cid, Transaction.objects.get(id=tr1.id).cluster.id)
         self.assertEqual(cid, Transaction.objects.get(id=tr2.id).cluster.id)
-        self.assertEqual(True, Transaction.objects.get(id=tr2.id).cluster.more_tickets)
+        c = Transaction.objects.get(id=tr2.id).cluster
+        self.assertEqual(True, c.more_tickets)
+        self.assertEqual(300, c.total_tickets)
+        self.assertEqual(300, c.total_transactions)
         
         # check status
         self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)

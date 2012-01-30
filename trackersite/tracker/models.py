@@ -276,18 +276,17 @@ class Cluster(models.Model):
     """ This is an auxiliary/cache model used to track relationships between tickets and payments. """
     id = models.IntegerField(primary_key=True) # cluster ID is always the id of its lowest-numbered ticket
     more_tickets = models.BooleanField() # does this cluster have more tickets?
+    total_tickets = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
+    total_transactions = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     
     def get_status(self):
-        total_tickets = sum([t.accepted_expeditures() for t in self.ticket_set.all()])
-        total_transactions = self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
-        
-        if total_transactions < total_tickets:
-            if total_transactions in (0, None):
+        if self.total_transactions < self.total_tickets:
+            if self.total_transactions in (0, None):
                 return 'unpaid'
             else:
                 return 'partially paid'
-        elif total_transactions == total_tickets:
-            if total_tickets == 0:
+        elif self.total_transactions == self.total_tickets:
+            if self.total_tickets == 0:
                 return None
             else:
                 return 'paid'
@@ -296,10 +295,13 @@ class Cluster(models.Model):
     
     def update_status(self):
         """ Recounts all the summaries and updates payment status in tickets. """
+        self.total_tickets = sum([t.accepted_expeditures() for t in self.ticket_set.all()])
+        self.total_transactions = self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
         status = self.get_status()
         for t in self.ticket_set.all():
             t.payment_status = status
             t.save(cluster_update_only=True)
+        self.save()
 
 @receiver(models.signals.m2m_changed)
 def cluster_note_transaction_link(sender, instance, action, **kwargs):
