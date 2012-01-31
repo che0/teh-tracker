@@ -18,7 +18,7 @@
 {% endif %}
 
 {% for ticket in ticket_list %}
-<tr>
+<tr class="payment_class_{{ticket.get_payment_status_class}}">
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td>
 <td>{{ticket.sort_date}}</td>
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>
@@ -36,7 +36,7 @@
 <td>{{ticket.state_str}}</td>
 {% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
 <td class="money">{% if accepted > 0 %}{{accepted}}&nbsp;{{ticket.currency}}{% endif %}</td>
-<td>{{ticket.payment_status}}</td>
+<td class="payment_status">{{ticket.get_payment_status_display}}</td>
 {% endwith %}{% endif %}
 
 

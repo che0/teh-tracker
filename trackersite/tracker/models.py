@@ -136,6 +136,10 @@ class Ticket(models.Model):
         """ Can given user edit this ticket through a non-admin interface? """
         return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
     
+    def get_payment_status_class(self):
+        classes = {'n/a':'na', 'unpaid':'unpaid', 'partially paid':'partially_paid', 'paid':'paid', 'overpaid':'overpaid'}
+        return classes.get(self.payment_status, 'unknown')
+    
     class Meta:
         verbose_name = _('Ticket')
         verbose_name_plural = _('Tickets')
