@@ -20,7 +20,8 @@
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />
-{% trans "State" %}: {{ ticket.state_str }}</p>
+{% trans "State" %}: {{ ticket.state_str }}<br />
+{% trans "Payment status" %}: {% trans ticket.payment_status %}{% if ticket.cluster.more_tickets %} ({% blocktrans with c_id=ticket.cluster.id c_link=ticket.cluster.get_absolute_url cr=ticket.currency total_tickets=ticket.cluster.total_tickets total_transactions=ticket.cluster.total_transactions %}part of <a href="{{c_link}}">cluster {{c_id}}</a>: total tickets {{total_tickets}}&nbsp;{{cr}}, total transactions {{total_transactions}}&nbsp;{{cr}}{% endblocktrans %}){% endif %}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 
