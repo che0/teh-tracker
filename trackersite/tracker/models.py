@@ -291,7 +291,7 @@ class Cluster(models.Model):
     total_transactions = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     
     def get_absolute_url(self):
-        return None # TODO
+        return reverse('cluster_detail', kwargs={'pk':self.id})
     
     def get_status(self):
         paid = self.total_transactions or 0

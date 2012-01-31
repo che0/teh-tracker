@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% blocktrans with cid=cluster.id %}Cluster {{cid}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url transaction_list %}">{% trans "transactions" %}</a> &gt;</p>
+<h1>{% blocktrans with cid=cluster.id %}Cluster {{cid}}{% endblocktrans %}</h1>
+
+<p>{% trans "Payment status" %}: {% trans cluster.ticket_set.all.0.get_payment_status_display %}</p>
+
+<h2>{% trans "Tickets" %}</h2>
+{% with ticket_list=cluster.ticket_set.all %}
+{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" %}
+{% endwith %}
+
+{% if cluster.transaction_set.all.count > 0 %}
+<h2>{% trans "Transactions" %}</h2>
+<table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
+{% for t in cluster.transaction_set.all %}
+<tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td>
+<td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+<td>{{t.accounting_info}}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% endblock content %}
+
