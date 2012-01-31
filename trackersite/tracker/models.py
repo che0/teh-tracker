@@ -24,6 +24,7 @@ STATE_CHOICES = (
 )
 
 PAYMENT_STATUS_CHOICES = (
+    ('n/a', _('n/a')),
     ('unpaid', _('unpaid')),
     ('partially paid', _('partially paid')),
     ('paid', _('paid')),
@@ -55,7 +56,7 @@ class Ticket(models.Model):
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     supervisor_notes = models.TextField(_('supervisor notes'), blank=True, help_text=_("This space is for notes of project supervisors and accounting staff."))
     cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)
-    payment_status = models.CharField(_('payment status'), max_length=20, blank=True, null=True, choices=PAYMENT_STATUS_CHOICES)
+    payment_status = models.CharField(_('payment status'), max_length=20, default='n/a', choices=PAYMENT_STATUS_CHOICES)
     
     @staticmethod
     def currency():
@@ -298,7 +299,7 @@ class Cluster(models.Model):
                 return 'partially paid'
         elif paid == tickets:
             if tickets == 0:
-                return None
+                return 'n/a'
             else:
                 return 'paid'
         else: # paid > tickets
