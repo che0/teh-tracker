@@ -12,6 +12,8 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 from south.modelsinspector import add_introspection_rules
 
+from tracker.clusters import ClusterUpdate
+
 STATE_CHOICES = (
     ('draft', _('draft')),
     ('for consideration', _('for consideration')),
@@ -19,6 +21,14 @@ STATE_CHOICES = (
     ('expenses filed', _('expenses filed')),
     ('closed', _('closed')),
     ('custom', _('custom')),
+)
+
+PAYMENT_STATUS_CHOICES = (
+    ('n/a', _('n/a')),
+    ('unpaid', _('unpaid')),
+    ('partially paid', _('partially paid')),
+    ('paid', _('paid')),
+    ('overpaid', _('overpaid')),
 )
 
 class PercentageField(models.SmallIntegerField):
@@ -45,13 +55,17 @@ class Ticket(models.Model):
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     supervisor_notes = models.TextField(_('supervisor notes'), blank=True, help_text=_("This space is for notes of project supervisors and accounting staff."))
+    cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)
+    payment_status = models.CharField(_('payment status'), max_length=20, default='n/a', choices=PAYMENT_STATUS_CHOICES)
     
     @staticmethod
     def currency():
         return settings.TRACKER_CURRENCY
     
     def save(self, *args, **kwargs):
-        self.updated = datetime.datetime.now()
+        cluster_update_only = kwargs.pop('cluster_update_only', False)
+        if not cluster_update_only:
+            self.updated = datetime.datetime.now()
         
         if self.event_date != None:
             self.sort_date = self.event_date
@@ -61,6 +75,9 @@ class Ticket(models.Model):
             self.sort_date = datetime.date.today()
         
         super(Ticket, self).save(*args, **kwargs)
+        
+        if not cluster_update_only:
+            ClusterUpdate.perform(ticket_ids=set([self.id]))
     
     def _note_comment(self, **kwargs):
         self.save()
@@ -118,6 +135,13 @@ class Ticket(models.Model):
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
         return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
+    
+    def get_payment_status_class(self):
+        classes = {'n/a':'na', 'unpaid':'unpaid', 'partially paid':'partially_paid', 'paid':'paid', 'overpaid':'overpaid'}
+        return classes.get(self.payment_status, 'unknown')
+    
+    def associated_transactions_total(self):
+        return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
     
     class Meta:
         verbose_name = _('Ticket')
@@ -187,6 +211,12 @@ class Expediture(models.Model):
     def __unicode__(self):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
     
+    def save(self, *args, **kwargs):
+        cluster_update_only = kwargs.pop('cluster_update_only', False)
+        super(Expediture, self).save(*args, **kwargs)
+        if not cluster_update_only:
+            ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
+    
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
@@ -227,6 +257,7 @@ class Transaction(models.Model):
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this transaction'))
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info'))
     tickets = models.ManyToManyField(Ticket, verbose_name=_('related tickets'), blank=True, help_text=_('Tickets this trackaction is related to'))
+    cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)
     
     def __unicode__(self):
         out = u'%s, %s %s' % (self.date, self.amount, settings.TRACKER_CURRENCY)
@@ -240,6 +271,12 @@ class Transaction(models.Model):
     def tickets_by_id(self):
         return self.tickets.order_by('id')
     
+    def save(self, *args, **kwargs):
+        cluster_update_only = kwargs.pop('cluster_update_only', False)
+        super(Transaction, self).save(*args, **kwargs)
+        if not cluster_update_only:
+            ClusterUpdate.perform(transaction_ids=set([self.id]))
+    
     @staticmethod
     def currency():
         return settings.TRACKER_CURRENCY
@@ -248,3 +285,44 @@ class Transaction(models.Model):
         verbose_name = _('Transaction')
         verbose_name_plural = _('Transactions')
         ordering = ['-date']
+
+class Cluster(models.Model):
+    """ This is an auxiliary/cache model used to track relationships between tickets and payments. """
+    id = models.IntegerField(primary_key=True) # cluster ID is always the id of its lowest-numbered ticket
+    more_tickets = models.BooleanField() # does this cluster have more tickets?
+    total_tickets = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
+    total_transactions = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
+    
+    def get_absolute_url(self):
+        return reverse('cluster_detail', kwargs={'pk':self.id})
+    
+    def get_status(self):
+        paid = self.total_transactions or 0
+        tickets = self.total_tickets or 0
+        if paid < tickets:
+            if paid == 0:
+                return 'unpaid'
+            else:
+                return 'partially paid'
+        elif paid == tickets:
+            if tickets == 0:
+                return 'n/a'
+            else:
+                return 'paid'
+        else: # paid > tickets
+            return 'overpaid'
+    
+    def update_status(self):
+        """ Recounts all the summaries and updates payment status in tickets. """
+        self.total_tickets = sum([t.accepted_expeditures() for t in self.ticket_set.all()])
+        self.total_transactions = self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
+        status = self.get_status()
+        for t in self.ticket_set.all():
+            t.payment_status = status
+            t.save(cluster_update_only=True)
+        self.save()
+
+@receiver(models.signals.m2m_changed)
+def cluster_note_transaction_link(sender, instance, action, **kwargs):
+    if type(instance) == Transaction and action in ('post_add', 'post_remove', 'post_clear'):
+        ClusterUpdate.perform(transaction_ids=set([instance.id]))

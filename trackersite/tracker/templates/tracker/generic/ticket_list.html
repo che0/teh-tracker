@@ -13,7 +13,7 @@
 {% block above_list %}{% endblock %}
 
 {% if ticket_list %}
-{% include "tracker/ticket_table.html" with show_topics="True" show_requester="True" %}
+{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" %}
 {% else %}
 <p>{% trans "No tickets available." %}</p>
 {% endif %}

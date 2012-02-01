@@ -20,7 +20,8 @@
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
 {% trans "Topic" %}: {{ ticket.topic }}<br />
-{% trans "State" %}: {{ ticket.state_str }}</p>
+{% trans "State" %}: {{ ticket.state_str }}<br />
+{% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 
@@ -40,21 +41,27 @@
 {% if ticket.expeditures.count > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %} ({{ticket.currency}})</th><th>{% trans "Accounting info" %}</tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</tr>
 {% for item in ticket.expediture_set.all %}
-<tr><td>{{item.description}}</td><td class="money">{{item.amount}}</td><td>{{item.accounting_info}}</td></tr>
+<tr><td>{{item.description}}</td><td class="money">{{item.amount}}&nbsp;{{ticket.currency}}</td><td>{{item.accounting_info}}</td></tr>
 {% endfor %}
-<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount}}</td><td></td></tr>
-<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures}}</td><td></td></tr>
+<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}</td><td></td></tr>
+<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures}}&nbsp;{{ticket.currency}}</td><td></td></tr>
 </table>
 {% endif %}
 
 {% if ticket.transaction_set.all.count > 0 %}
 <h2>{% trans "Transactions" %}</h2>
+<p>{% trans "Payment status" %}: {{ticket.get_payment_status_display}}{% if ticket.cluster.more_tickets %} ({% blocktrans with c_id=ticket.cluster.id c_link=ticket.cluster.get_absolute_url cr=ticket.currency total_tickets=ticket.cluster.total_tickets total_transactions=ticket.cluster.total_transactions %}part of <a href="{{c_link}}">cluster {{c_id}}</a>: total tickets {{total_tickets}}&nbsp;{{cr}}, total transactions {{total_transactions}}&nbsp;{{cr}}{% endblocktrans %}){% endif %}</p>
 <table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for t in ticket.transaction_set.all %}
 <tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
 {% endfor %}
+<tr class="total first_total">
+<td colspan="2">{% trans "Associated transactions total" %}</td>
+<td class="money">{{ticket.associated_transactions_total}}&nbsp;{{ticket.currency}}</td>
+<td colspan="2">
+</tr>
 </table>
 {% endif %}
 

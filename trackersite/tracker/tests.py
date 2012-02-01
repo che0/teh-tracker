@@ -561,3 +561,110 @@ class TransactionTest(TestCase):
             'accepted_expeditures': 0,
         }
         self.assertEqual(expected_unassigned, response.context['unassigned'])
+
+class ClusterTest(TestCase):
+    def setUp(self):
+        self.user = TrackerUser.objects.create(username='user')
+        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
+        
+    
+    def test_simple_ticket(self):
+        ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='accepted', rating_percentage=100)
+        tid = ticket.id
+        self.assertEqual(None, Ticket.objects.get(id=tid).payment_status)
+        
+        ticket.state = 'expenses filed'
+        ticket.save()
+        self.assertEqual(None, Ticket.objects.get(id=tid).payment_status)
+        
+        Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
+        self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=50, other=self.user, description='part one')
+        tr.tickets.add(ticket)
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=50, other=self.user, description='part one')
+        tr.tickets.add(ticket)
+        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=50, other=self.user, description='overkill')
+        tr.tickets.add(ticket)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        c = Ticket.objects.get(id=tid).cluster
+        self.assertEqual(tid, c.id)
+        self.assertEqual(False, c.more_tickets)
+        self.assertEqual(100, c.total_tickets)
+        self.assertEqual(150, c.total_transactions)
+    
+    def test_real_cluster(self):
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        tid1 = ticket1.id
+        Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
+        
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
+        tid2 = ticket2.id
+        Expediture.objects.create(ticket_id=tid2, description='exp', amount=200)
+        
+        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
+        tr1.tickets.add(ticket1)
+        tr1.tickets.add(ticket2)
+        
+        # check there is a correct cluster
+        cid = min(tid1, tid2)
+        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
+        c = Ticket.objects.get(id=tid1).cluster
+        self.assertEqual(True, c.more_tickets)
+        self.assertEqual(300, c.total_tickets)
+        self.assertEqual(100, c.total_transactions)
+        
+        # check status
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('partially paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # complete payment
+        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=200, other=self.user, description='pay2')
+        tr2.tickets.add(ticket2)
+        
+        # check cluster
+        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
+        self.assertEqual(cid, Transaction.objects.get(id=tr1.id).cluster.id)
+        self.assertEqual(cid, Transaction.objects.get(id=tr2.id).cluster.id)
+        c = Transaction.objects.get(id=tr2.id).cluster
+        self.assertEqual(True, c.more_tickets)
+        self.assertEqual(300, c.total_tickets)
+        self.assertEqual(300, c.total_transactions)
+        
+        # check status
+        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # overpay ticket1
+        tr1p = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=5, other=self.user, description='pay1plus')
+        tr1p.tickets.add(ticket1)
+        
+        self.assertEqual(cid, Transaction.objects.get(id=tr1p.id).cluster.id)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # separate clusters
+        tr1.tickets.remove(ticket2)
+        
+        self.assertEqual(tid1, Ticket.objects.get(id=tid1).cluster.id)
+        self.assertEqual(tid1, Transaction.objects.get(id=tr1.id).cluster.id)
+        self.assertEqual(tid1, Transaction.objects.get(id=tr1p.id).cluster.id)
+        self.assertEqual(tid2, Ticket.objects.get(id=tid2).cluster.id)
+        self.assertEqual(tid2, Transaction.objects.get(id=tr2.id).cluster.id)
+        
+        self.assertEqual(False, Ticket.objects.get(id=tid1).cluster.more_tickets)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
+        
+        self.assertEqual(False, Ticket.objects.get(id=tid2).cluster.more_tickets)
+        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
+        
+        # reconnect make ticket2 overpaid again
+        tr1.tickets.add(ticket2)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
