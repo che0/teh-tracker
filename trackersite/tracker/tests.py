@@ -571,11 +571,11 @@ class ClusterTest(TestCase):
     def test_simple_ticket(self):
         ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='accepted', rating_percentage=100)
         tid = ticket.id
-        self.assertEqual(None, Ticket.objects.get(id=tid).payment_status)
+        self.assertEqual('n/a', Ticket.objects.get(id=tid).payment_status)
         
         ticket.state = 'expenses filed'
         ticket.save()
-        self.assertEqual(None, Ticket.objects.get(id=tid).payment_status)
+        self.assertEqual('n/a', Ticket.objects.get(id=tid).payment_status)
         
         Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
         self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
