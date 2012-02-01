@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction, Cluster
 
 class CommentPostedCatcher(object):
     """ 
@@ -242,3 +242,12 @@ def user_detail(request, username):
         # ^ NOTE 'user' means session user in the template, so we're using user_obj
         'ticket_list': user.ticket_set.all(),
     })
+
+class ClusterDetailView(DetailView):
+    model = Cluster
+        
+    def get_context_data(self, **kwargs):
+            context = super(ClusterDetailView, self).get_context_data(**kwargs)
+            context['ticket_summary'] = {'accepted_expeditures': context['cluster'].total_tickets}
+            return context
+cluster_detail = ClusterDetailView.as_view()

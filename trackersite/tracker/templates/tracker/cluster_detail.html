@@ -11,7 +11,7 @@
 
 <h2>{% trans "Tickets" %}</h2>
 {% with ticket_list=cluster.ticket_set.all %}
-{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" %}
+{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" summary_item=ticket_summary total_desc=_("Total tickets") %}
 {% endwith %}
 
 {% if cluster.transaction_set.all.count > 0 %}
@@ -22,6 +22,11 @@
 <td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 <td>{{t.accounting_info}}</td></tr>
 {% endfor %}
+<tr class="total first_total">
+<td colspan="2">{% trans "Total transactions" %}</td>
+<td class="money">{{cluster.total_transactions}}&nbsp;{{cluster.ticket_set.all.0.currency}}</td>
+<td colspan="3"></td>
+</tr>
 </table>
 {% endif %}
 

@@ -140,6 +140,9 @@ class Ticket(models.Model):
         classes = {'n/a':'na', 'unpaid':'unpaid', 'partially paid':'partially_paid', 'paid':'paid', 'overpaid':'overpaid'}
         return classes.get(self.payment_status, 'unknown')
     
+    def associated_transactions_total(self):
+        return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
+    
     class Meta:
         verbose_name = _('Ticket')
         verbose_name_plural = _('Tickets')

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls.defaults import patterns, include, url
-from django.views.generic import ListView, DetailView, RedirectView
+from django.views.generic import ListView, RedirectView
 
-from tracker.models import Ticket, Topic, Cluster
+from tracker.models import Ticket, Topic
 from tracker.feeds import LatestTicketsFeed, TopicTicketsFeed, TransactionsFeed
 
 urlpatterns = patterns('',
@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^users/(?P<username>[^/]+)/$', 'tracker.views.user_detail', name='user_detail'),
     url(r'^transactions/$', 'tracker.views.transaction_list', name='transaction_list'),
     url(r'^transactions/feed/$', TransactionsFeed(), name='transactions_feed'),
-    url(r'^cluster/(?P<pk>\d+)/$', DetailView.as_view(model=Cluster), name='cluster_detail'),
+    url(r'^cluster/(?P<pk>\d+)/$', 'tracker.views.cluster_detail', name='cluster_detail'),
     url(r'^comments/', include('django.contrib.comments.urls')),
     url(r'^old/(?P<url>(?:tickets?/|topics?/|)(?:\d+/|new/)?)$', RedirectView.as_view(url='/%(url)s')),
     url(r'^js/topics\.js$', 'tracker.views.topics_js', name='topics_js'),
