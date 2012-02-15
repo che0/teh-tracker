@@ -7,8 +7,7 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from tracker.clusters import ClusterUpdate
-        ClusterUpdate.refresh_all()
+        pass
 
     def backwards(self, orm):
         pass
