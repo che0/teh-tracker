@@ -24,9 +24,9 @@ STATE_CHOICES = (
 )
 
 PAYMENT_STATUS_CHOICES = (
-    ('n/a', _('n/a')),
+    ('n_a', _('n/a')),
     ('unpaid', _('unpaid')),
-    ('partially paid', _('partially paid')),
+    ('partially_paid', _('partially paid')),
     ('paid', _('paid')),
     ('overpaid', _('overpaid')),
 )
@@ -136,10 +136,6 @@ class Ticket(models.Model):
         """ Can given user edit this ticket through a non-admin interface? """
         return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
     
-    def get_payment_status_class(self):
-        classes = {'n/a':'na', 'unpaid':'unpaid', 'partially paid':'partially_paid', 'paid':'paid', 'overpaid':'overpaid'}
-        return classes.get(self.payment_status, 'unknown')
-    
     def associated_transactions_total(self):
         return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
     
@@ -178,10 +174,6 @@ class Topic(models.Model):
         out = {}
         for s in self.ticket_set.values('payment_status').annotate(models.Count('payment_status')):
             out[s['payment_status']] = s['payment_status__count']
-        if 'n/a' in out:
-            out['na'] = out['n/a']
-        if 'partially paid' in out:
-            out['partially_paid'] = out['partially paid']
         return out
     
     class Meta:
@@ -333,10 +325,10 @@ class Cluster(models.Model):
             if paid == 0:
                 return 'unpaid'
             else:
-                return 'partially paid'
+                return 'partially_paid'
         elif paid == tickets:
             if tickets == 0:
-                return 'n/a'
+                return 'n_a'
             else:
                 return 'paid'
         else: # paid > tickets

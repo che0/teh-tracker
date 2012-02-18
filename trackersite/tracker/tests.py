@@ -578,18 +578,18 @@ class ClusterTest(TestCase):
     def test_simple_ticket(self):
         ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='accepted', rating_percentage=100)
         tid = ticket.id
-        self.assertEqual('n/a', Ticket.objects.get(id=tid).payment_status)
+        self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
         
         ticket.state = 'expenses filed'
         ticket.save()
-        self.assertEqual('n/a', Ticket.objects.get(id=tid).payment_status)
+        self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
         
         Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
         self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=50, other=self.user, description='part one')
         tr.tickets.add(ticket)
-        self.assertEqual('partially paid', Ticket.objects.get(id=tid).payment_status)
+        self.assertEqual('partially_paid', Ticket.objects.get(id=tid).payment_status)
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=50, other=self.user, description='part one')
         tr.tickets.add(ticket)
@@ -628,8 +628,8 @@ class ClusterTest(TestCase):
         self.assertEqual(100, c.total_transactions)
         
         # check status
-        self.assertEqual('partially paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('partially paid', Ticket.objects.get(id=tid2).payment_status)
+        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('partially_paid', Ticket.objects.get(id=tid2).payment_status)
         
         # complete payment
         tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=200, other=self.user, description='pay2')

@@ -24,7 +24,7 @@
 {% endif %}
 
 {% for ticket in ticket_list %}
-<tr class="payment_class_{{ticket.get_payment_status_class}}">
+<tr class="payment_class_{{ticket.payment_status}}">
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td>
 <td>{{ticket.sort_date}}</td>
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>
