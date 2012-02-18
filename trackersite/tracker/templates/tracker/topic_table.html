@@ -18,7 +18,7 @@
 <td><a href="{% url topic_detail topic.id %}">{{topic.name}}</a></td>
 {% if show_grants %}<td><a href="{{topic.grant.get_absolute_url}}" title="{{topic.grant.full_name}}">{{topic.grant.short_name}}</a></td>{% endif %}
 <td>{{topic.ticket_set.count}}</td>
-<td{% if tpps.na %} class="payment_cell na" {% endif %}>{{tpps.na}}</td>
+<td{% if tpps.n_a %} class="payment_cell n_a" {% endif %}>{{tpps.n_a}}</td>
 <td{% if tpps.unpaid %} class="payment_cell unpaid"{% endif %}>{{tpps.unpaid}}</td>
 <td{% if tpps.partially_paid %} class="payment_cell partially_paid"{% endif %}>{{tpps.partially_paid}}</td>
 <td{% if tpps.paid %} class="payment_cell paid"{% endif %}>{{tpps.paid}}</td>

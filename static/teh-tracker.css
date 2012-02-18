@@ -38,7 +38,7 @@ td.money { text-align:right; }
 
 #ticket_id { display:none; }
 
-.payment_class_na .payment_status, .payment_cell.na	 { color: #999; }
+.payment_class_n_a .payment_status, .payment_cell.n_a { color: #999; }
 .payment_class_unpaid .payment_status, .payment_class_partially_paid td.payment_status, .payment_cell.unpaid, .payment_cell.partially_paid { background-color: #feffc5; }
 .payment_class_paid .payment_status, .payment_cell.paid { background-color: #96fd7e; }
 .payment_class_overpaid .payment_status, .payment_cell.overpaid { background-color: #ff7878; }
