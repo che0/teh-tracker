@@ -10,7 +10,7 @@
 {% block title %}{{ ticket.summary }}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{{ticket.topic.grant.get_absolute_url}}">{{ticket.topic.grant.short_name}}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <div id="ticket_id">{{ticket.id}}</div>
 <h1>{{ ticket.summary }}</h1>
 {% if user_can_edit_ticket %}<p><a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a></p>{% endif %}
@@ -19,7 +19,7 @@
 {% trans "Last changed" %}: {{ ticket.updated }}<br />
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
-{% trans "Topic" %}: {{ ticket.topic }}<br />
+{% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
 {% trans "State" %}: {{ ticket.state_str }}<br />
 {% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 

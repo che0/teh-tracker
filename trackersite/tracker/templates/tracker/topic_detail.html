@@ -11,7 +11,7 @@
 {% block title %}{{ topic.name }}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt;</p>
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{{topic.grant.get_absolute_url}}">{{topic.grant.short_name}}</a> &gt;</p>
 <h1>{{ topic.name }}</h1>
 
 {% if topic.description %}<div>{{ topic.description|safe|linebreaks }}</div>{% endif %}

@@ -151,6 +151,7 @@ class Ticket(models.Model):
 class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
+    grant = models.ForeignKey('tracker.Grant', verbose_name=_('grant'), help_text=_('Grant project where this topic belongs'))
     open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
     ticket_media = models.BooleanField(_('ticket media'), help_text=_('Does this topic track ticket media items?'))
     ticket_expenses = models.BooleanField(_('ticket expenses'), help_text=_('Does this topic track ticket expenses?'))
@@ -173,6 +174,16 @@ class Topic(models.Model):
     def accepted_expeditures(self):
         return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
     
+    def tickets_per_payment_status(self):
+        out = {}
+        for s in self.ticket_set.values('payment_status').annotate(models.Count('payment_status')):
+            out[s['payment_status']] = s['payment_status__count']
+        if 'n/a' in out:
+            out['na'] = out['n/a']
+        if 'partially paid' in out:
+            out['partially_paid'] = out['partially paid']
+        return out
+    
     class Meta:
         verbose_name = _('Topic')
         verbose_name_plural = _('Topics')
@@ -180,6 +191,25 @@ class Topic(models.Model):
         permissions = (
             ("supervisor", "Can edit all topics and tickets"),
         )
+
+class Grant(models.Model):
+    """ Grant is the bigger thing above topics """
+    full_name = models.CharField(_('full name'), max_length=80, help_text=_('Full name for headlines and such'))
+    short_name = models.CharField(_('short name'), max_length=16, help_text=_('Shorter name for use in tables'))
+    slug = models.SlugField(_('slug'), help_text=_('Shortcut for usage in URLs'))
+    description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
+    
+    def __unicode__(self):
+        return self.full_name
+    
+    def get_absolute_url(self):
+        return reverse('grant_detail', kwargs={'slug':self.slug})
+    
+    class Meta:
+        verbose_name = _('Grant')
+        verbose_name_plural = _('Grants')
+        ordering = ['full_name']
+
 
 @receiver(comment_was_posted)
 def ticket_note_comment(sender, comment, **kwargs):

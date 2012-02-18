@@ -14,6 +14,8 @@ tr.first_total td { border-top: 2px solid black; }
 span.helptext { display: block; }
 .helptext { font-size: smaller; color: #666; }
 
+.smaller { font-size: smaller; }
+
 .field_topic { margin-bottom: 0; }
 #topic_desc { margin: 0 0 0 7em; font-size: smaller; color: #666; border-left: solid 2px #666; padding: 0.7em 0 0 0.3em; }
 
@@ -36,10 +38,10 @@ td.money { text-align:right; }
 
 #ticket_id { display:none; }
 
-.payment_class_na .payment_status { color: #999; }
-.payment_class_unpaid .payment_status, .payment_class_partially_paid td.payment_status { background-color: #feffc5; }
-.payment_class_paid .payment_status { background-color: #96fd7e; }
-.payment_class_overpaid .payment_status { background-color: #ff7878; }
+.payment_class_na .payment_status, .payment_cell.na	 { color: #999; }
+.payment_class_unpaid .payment_status, .payment_class_partially_paid td.payment_status, .payment_cell.unpaid, .payment_cell.partially_paid { background-color: #feffc5; }
+.payment_class_paid .payment_status, .payment_cell.paid { background-color: #96fd7e; }
+.payment_class_overpaid .payment_status, .payment_cell.overpaid { background-color: #ff7878; }
 
 @media print {
 	#user, .nav { display:none; }

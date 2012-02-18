@@ -1,0 +1,33 @@
+{% load i18n %}
+{% if topic_list %}
+<table><tr>
+<th rowspan="2">{% trans "Topic" %}</th>
+{% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
+<th rowspan="2">{% trans "Tickets" %}</th>
+<th colspan="5" class="smaller">{% trans "Tickets per payment status" %}</th>
+<th rowspan="2">{% trans "Administrators" %}</th>
+</tr>
+<th><abbr title="{% trans "no payment required" %}">{% trans "n/a" %}</abbr></th>
+<th><abbr title="{% trans "unpaid" %}">0</abbr></th>
+<th><abbr title="{% trans "partially paid"}">&lt;</abbr></th>
+<th><abbr title="{% trans "paid" %}">=</abbr></th>
+<th><abbr title="{% trans "overpaid" %}">&gt;</abbr></th>
+</tr>
+{% for topic in topic_list %}{% with tpps=topic.tickets_per_payment_status %}
+<tr>
+<td><a href="{% url topic_detail topic.id %}">{{topic.name}}</a></td>
+{% if show_grants %}<td><a href="{{topic.grant.get_absolute_url}}" title="{{topic.grant.full_name}}">{{topic.grant.short_name}}</a></td>{% endif %}
+<td>{{topic.ticket_set.count}}</td>
+<td{% if tpps.na %} class="payment_cell na" {% endif %}>{{tpps.na}}</td>
+<td{% if tpps.unpaid %} class="payment_cell unpaid"{% endif %}>{{tpps.unpaid}}</td>
+<td{% if tpps.partially_paid %} class="payment_cell partially_paid"{% endif %}>{{tpps.partially_paid}}</td>
+<td{% if tpps.paid %} class="payment_cell paid"{% endif %}>{{tpps.paid}}</td>
+<td{% if tpps.overpaid %} class="payment_cell overpaid"{% endif %}>{{tpps.overpaid}}</td>
+<td>{% for admin in topic.admin.all %}{{ admin.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+</tr>
+{% endwith %}{% endfor %}
+</table>
+
+{% else %}
+<p>{% trans "No topics available." %}</p>
+{% endif %}

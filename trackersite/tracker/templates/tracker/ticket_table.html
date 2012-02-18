@@ -1,7 +1,10 @@
 {% load i18n %}
 <table class="ticket_list">
 {% if show_media %}
-<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Date" %}</th><th rowspan="2">{% trans "Summary" %}</th>{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}{% if show_requester %}<th rowspan="2">{% trans "Requested by" %}</th>{% endif %}
+<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Date" %}</th><th rowspan="2">{% trans "Summary" %}</th>
+{% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
+{% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}
+{% if show_requester %}<th rowspan="2">{% trans "Requested by" %}</th>{% endif %}
 <th colspan="3" class="uber-th">{% trans "Media" %}</th>
 {% if show_expenses %}<th rowspan="2">{% trans "Expeditures" %}</th>{% endif %}
 <th rowspan="2">{% trans "Status" %}</th>
@@ -10,7 +13,10 @@
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
-<tr><th>{% trans "ID" %}</th><th>{% trans "Date" %}</th><th>{% trans "Summary" %}</th>{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}{% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
+<tr><th>{% trans "ID" %}</th><th>{% trans "Date" %}</th><th>{% trans "Summary" %}</th>
+{% if show_grants %}<th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
+{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}
+{% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
 {% if show_expenses %}<th>{% trans "Expeditures" %}</th>{% endif %}
 <th>{% trans "State" %}</th>
 {% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th><th>{% trans "Payment status" %}</th>{% endif %}
@@ -22,7 +28,8 @@
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.id}}</a></a></td>
 <td>{{ticket.sort_date}}</td>
 <td><a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a></td>
-{% if show_topics %}<td><a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a></td>{% endif %}
+{% if show_grants %}<td><a href="{{ticket.topic.grant.get_absolute_url}}" title="{{ticket.topic.grant.full_name}}">{{ticket.topic.grant.short_name}}</a></td>{% endif %}
+{% if show_topics %}<td><a href="{{ticket.topic.get_absolute_url}}">{{ticket.topic}}</a></td>{% endif %}
 {% if show_requester %}<td>{{ticket.requested_by_html}}</td>{% endif %}
 
 {% if show_media %}

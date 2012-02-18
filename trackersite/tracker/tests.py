@@ -8,11 +8,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction
+from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, TrackerUser, Transaction
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic1')
+        self.topic = Topic(name='topic1', grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
         self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, state='for consideration', description='foo foo')
@@ -82,7 +82,7 @@ class SimpleTicketTest(TestCase):
 
 class OldRedirectTests(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic')
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, state='for consideration', description='foo foo')
         self.ticket.save()
@@ -113,7 +113,7 @@ class OldRedirectTests(TestCase):
 
 class TicketSumTests(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic')
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
     def test_empty_ticket(self):
@@ -141,7 +141,7 @@ class TicketSumTests(TestCase):
 
 class TicketTests(TestCase):
     def setUp(self):
-        self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True)
+        self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         self.open_topic.save()
         
         self.password = 'password'
@@ -238,7 +238,7 @@ class TicketTests(TestCase):
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
     
     def test_closed_topic(self):
-        closed_topic = Topic(name='closed topic', open_for_tickets=False)
+        closed_topic = Topic(name='closed topic', open_for_tickets=False, grant=Grant.objects.create(full_name='g', short_name='g'))
         closed_topic.save()
         
         c = self.get_client()
@@ -256,11 +256,12 @@ class TicketTests(TestCase):
 
 class TicketEditTests(TestCase):
     def test_correct_choices(self):
-        t_closed = Topic(name='t1', open_for_tickets=False)
+        grant = Grant.objects.create(full_name='g', short_name='g')
+        t_closed = Topic(name='t1', open_for_tickets=False, grant=grant)
         t_closed.save()
-        t_open = Topic(name='t2', open_for_tickets=True)
+        t_open = Topic(name='t2', open_for_tickets=True, grant=grant)
         t_open.save()
-        t_assigned = Topic(name='t3', open_for_tickets=False)
+        t_assigned = Topic(name='t3', open_for_tickets=False, grant=grant)
         t_assigned.save()
         ticket = Ticket(summary='ticket', topic=t_assigned)
         ticket.save()
@@ -272,7 +273,7 @@ class TicketEditTests(TestCase):
         self.assertEqual(wanted_choices, choices)
     
     def test_ticket_edit(self):
-        topic = Topic(name='topic')
+        topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
         topic.save()
         
         password = 'my_password'
@@ -434,7 +435,7 @@ class TicketEditTests(TestCase):
 
 class UserDetailsTest(TestCase):
     def setUp(self):
-        self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True)
+        self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
         self.user = User(username='user')
@@ -454,7 +455,7 @@ class SummaryTest(TestCase):
         self.user = TrackerUser(username='user')
         self.user.save()
         
-        self.topic = Topic(name='test_topic', ticket_expenses=True)
+        self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
         self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='expenses filed', rating_percentage=50)
@@ -469,6 +470,12 @@ class SummaryTest(TestCase):
         self.ticket2.expediture_set.create(description='foo', amount=10)
         self.ticket2.mediainfo_set.create(description='foo', count=5)
         self.ticket2.mediainfo_set.create(description='foo', count=3)
+    
+    def test_topic_ticket_counts(self):
+        self.assertEqual({'unpaid':2}, self.topic.tickets_per_payment_status())
+        trans = Transaction.objects.create(date=datetime.date.today(), other=self.user, amount=150)
+        trans.tickets.add(self.ticket)
+        self.assertEqual({'unpaid':1, 'paid':1}, self.topic.tickets_per_payment_status())
 
     def test_ticket_summary(self):
         self.ticket.state = 'for consideration'
@@ -534,7 +541,7 @@ class TransactionTest(TestCase):
         self.assertEqual(600, response.context['total'])
     
     def test_user_list(self):
-        topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
+        topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         ticket = Ticket.objects.create(summary='foo', requested_user=self.user2, topic=topic, state='expenses filed', rating_percentage=100)
         ticket.expediture_set.create(description='exp', amount=300)
         ticket.mediainfo_set.create(description='media', count=5)
@@ -565,7 +572,7 @@ class TransactionTest(TestCase):
 class ClusterTest(TestCase):
     def setUp(self):
         self.user = TrackerUser.objects.create(username='user')
-        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True)
+        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         
     
     def test_simple_ticket(self):

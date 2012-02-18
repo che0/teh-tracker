@@ -31,7 +31,7 @@ class TopicAdmin(admin.ModelAdmin):
         if request.user.has_perm('tracker.supervisor'):
             return ()
         else:
-            return ('admin', )
+            return ('admin', 'grant')
     
     def queryset(self, request):
         if request.user.has_perm('tracker.supervisor'):
@@ -39,9 +39,14 @@ class TopicAdmin(admin.ModelAdmin):
         else:
             return request.user.topic_set.all()
     
-    list_display = ('name', 'open_for_tickets', 'ticket_media', 'ticket_expenses')
+    list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses')
+    list_filter = ('grant', )
     filter_horizontal = ('admin', )
 admin.site.register(models.Topic, TopicAdmin)
+
+class GrantAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('short_name',)}
+admin.site.register(models.Grant, GrantAdmin)
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('date', 'other', 'amount', 'description', 'ticket_ids', 'accounting_info')

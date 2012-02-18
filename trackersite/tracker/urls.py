@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls.defaults import patterns, include, url
-from django.views.generic import ListView, RedirectView
+from django.views.generic import DetailView, ListView, RedirectView
 
-from tracker.models import Ticket, Topic
+from tracker.models import Ticket, Topic, Grant
 from tracker.feeds import LatestTicketsFeed, TopicTicketsFeed, TransactionsFeed
 
 urlpatterns = patterns('',
@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^topics/$', ListView.as_view(model=Topic), name='topic_list'),
     url(r'^topic/(?P<pk>\d+)/$', 'tracker.views.topic_detail', name='topic_detail'),
     url(r'^topic/(?P<pk>\d+)/feed/$', TopicTicketsFeed(), name='topic_ticket_feed'),
+    url(r'^grant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Grant), name='grant_detail'),
     url(r'^users/$', 'tracker.views.user_list', name='user_list'),
     url(r'^users/(?P<username>[^/]+)/$', 'tracker.views.user_detail', name='user_detail'),
     url(r'^transactions/$', 'tracker.views.transaction_list', name='transaction_list'),
