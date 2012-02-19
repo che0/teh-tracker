@@ -236,7 +236,7 @@ class Expediture(models.Model):
     def save(self, *args, **kwargs):
         cluster_update_only = kwargs.pop('cluster_update_only', False)
         super(Expediture, self).save(*args, **kwargs)
-        if not cluster_update_only:
+        if not cluster_update_only and self.ticket.id != None:
             ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
     
     class Meta:

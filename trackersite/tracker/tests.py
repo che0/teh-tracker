@@ -184,6 +184,7 @@ class TicketTests(TestCase):
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
             })
+        self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
         self.assertEqual(self.user, ticket.requested_user)
@@ -211,6 +212,7 @@ class TicketTests(TestCase):
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
             })
+        self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
         
