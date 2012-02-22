@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-18 01:12+0100\n"
-"PO-Revision-Date: 2012-02-18 01:12+0100\n"
+"POT-Creation-Date: 2012-02-23 00:46+0100\n"
+"PO-Revision-Date: 2012-02-23 00:46+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -122,7 +122,7 @@ msgstr "n/a"
 msgid "unpaid"
 msgstr "neplaceno"
 
-#: tracker/models.py:29
+#: tracker/models.py:29 tracker/templates/tracker/topic_table.html:12
 msgid "partially paid"
 msgstr "částečně proplaceno"
 
@@ -214,7 +214,7 @@ msgid "Rating percentage set by topic administrator"
 msgstr "Procentuální ohodnocení stanovené garantem tématu"
 
 #: tracker/models.py:56 tracker/models.py:154 tracker/models.py:192
-#: tracker/models.py:215 tracker/models.py:229 tracker/models.py:279
+#: tracker/models.py:215 tracker/models.py:229 tracker/models.py:280
 msgid "description"
 msgstr "popis"
 
@@ -398,7 +398,7 @@ msgstr "Tiket ke kterému tento výdaj patří"
 msgid "Description of this expediture"
 msgstr "Popis tohoto výdaje"
 
-#: tracker/models.py:230 tracker/models.py:278
+#: tracker/models.py:230 tracker/models.py:279
 msgid "amount"
 msgstr "částka"
 
@@ -406,7 +406,7 @@ msgstr "částka"
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:231 tracker/models.py:280
+#: tracker/models.py:231 tracker/models.py:281
 msgid "accounting info"
 msgstr "účetní údaje"
 
@@ -431,7 +431,7 @@ msgstr "Výdaje tiketu"
 msgid "date"
 msgstr "datum"
 
-#: tracker/models.py:277
+#: tracker/models.py:277 tracker/models.py:296
 msgid "other party"
 msgstr "druhá strana"
 
@@ -440,6 +440,14 @@ msgid "The other party; user who sent or received the payment"
 msgstr "Druhá strana převodu: uživatel který poslal nebo dostal platbu"
 
 #: tracker/models.py:278
+msgid "other party (text)"
+msgstr "druhá strana (text)"
+
+#: tracker/models.py:278
+msgid "The other party; this text is used when user is not selected"
+msgstr "Druhá strana převodu; tento text je použit není-li vyplněn uživatel"
+
+#: tracker/models.py:279
 msgid ""
 "Payment amount; Positive value means transaction to the user, negative is a "
 "transaction from the user"
@@ -447,11 +455,11 @@ msgstr ""
 "Převedená částka. Kladná hodnota znamená platbu uživateli, záporná že "
 "uživatel dal peníze nám"
 
-#: tracker/models.py:279
+#: tracker/models.py:280
 msgid "Description of this transaction"
 msgstr "Popis převodu"
 
-#: tracker/models.py:280
+#: tracker/models.py:281
 #: tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_detail.html:44
@@ -461,19 +469,19 @@ msgstr "Popis převodu"
 msgid "Accounting info"
 msgstr "Účetní údaje"
 
-#: tracker/models.py:281
+#: tracker/models.py:282
 msgid "related tickets"
 msgstr "související tikety"
 
-#: tracker/models.py:281
+#: tracker/models.py:282
 msgid "Tickets this trackaction is related to"
 msgstr "Tikety ke kterým se tato platba vztahuje"
 
-#: tracker/models.py:307
+#: tracker/models.py:322
 msgid "Transaction"
 msgstr "Platba"
 
-#: tracker/models.py:308 tracker/templates/tracker/cluster_detail.html:18
+#: tracker/models.py:323 tracker/templates/tracker/cluster_detail.html:18
 #: tracker/templates/tracker/ticket_detail.html:54
 #: tracker/templates/tracker/user_detail.html:18
 msgid "Transactions"
