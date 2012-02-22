@@ -49,7 +49,7 @@ class GrantAdmin(admin.ModelAdmin):
 admin.site.register(models.Grant, GrantAdmin)
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('date', 'other', 'amount', 'description', 'ticket_ids', 'accounting_info')
+    list_display = ('date', 'other_party', 'amount', 'description', 'ticket_ids', 'accounting_info')
     list_display_links = ('amount', 'description')
     filter_vertical = ('tickets', )
     exclude = ('cluster', )

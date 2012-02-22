@@ -55,7 +55,7 @@
 <p>{% trans "Payment status" %}: {{ticket.get_payment_status_display}}{% if ticket.cluster.more_tickets %} ({% blocktrans with c_id=ticket.cluster.id c_link=ticket.cluster.get_absolute_url cr=ticket.currency total_tickets=ticket.cluster.total_tickets total_transactions=ticket.cluster.total_transactions %}part of <a href="{{c_link}}">cluster {{c_id}}</a>: total tickets {{total_tickets}}&nbsp;{{cr}}, total transactions {{total_transactions}}&nbsp;{{cr}}{% endblocktrans %}){% endif %}</p>
 <table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for t in ticket.transaction_set.all %}
-<tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
+<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
 {% endfor %}
 <tr class="total first_total">
 <td colspan="2">{% trans "Associated transactions total" %}</td>

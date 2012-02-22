@@ -274,7 +274,8 @@ class TrackerUser(User):
 class Transaction(models.Model):
     """ One payment to or from the user. """
     date = models.DateField(_('date'))
-    other = models.ForeignKey('auth.User', verbose_name=_('other party'), help_text=_('The other party; user who sent or received the payment'))
+    other = models.ForeignKey('auth.User', verbose_name=_('other party'), blank=True, null=True, help_text=_('The other party; user who sent or received the payment'))
+    other_text = models.CharField(_('other party (text)'), max_length=60, blank=True, help_text=_('The other party; this text is used when user is not selected'))
     amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=_('Payment amount; Positive value means transaction to the user, negative is a transaction from the user'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this transaction'))
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info'))
@@ -286,6 +287,20 @@ class Transaction(models.Model):
         if self.description != None:
            out += ': ' + self.description 
         return out
+    
+    def other_party(self):
+        if self.other != None:
+            return self.other.username
+        else:
+            return self.other_text
+    other_party.short_description = _('other party')
+    
+    def other_party_html(self):
+        if self.other != None:
+            out = '<a href="%s">%s</a>' % (self.other.get_absolute_url(), escape(unicode(self.other)))
+            return mark_safe(out)
+        else:
+            return escape(self.other_text)
     
     def ticket_ids(self):
         return u', '.join([unicode(t.id) for t in self.tickets.order_by('id')])

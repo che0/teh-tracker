@@ -14,7 +14,7 @@
 {% if transaction_list %}
 <table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for t in transaction_list %}
-<tr><td>{{t.date}}</td><td><a href="{% url user_detail t.other.username %}">{{t.other}}</a></td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td>
+<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td>
 <td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 <td>{{t.accounting_info}}</td></tr>
 {% endfor %}
