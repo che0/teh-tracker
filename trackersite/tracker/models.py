@@ -308,6 +308,9 @@ class Transaction(models.Model):
     def tickets_by_id(self):
         return self.tickets.order_by('id')
     
+    def grant_set(self):
+        return Grant.objects.extra(where=['id in (select grant_id from tracker_topic topic where topic.id in (select topic_id from tracker_ticket ticket where ticket.id in (select ticket_id from tracker_transaction_tickets where transaction_id = %s)))'], params=[self.id]).order_by('id')
+    
     def save(self, *args, **kwargs):
         cluster_update_only = kwargs.pop('cluster_update_only', False)
         super(Transaction, self).save(*args, **kwargs)
