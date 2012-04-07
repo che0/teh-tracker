@@ -364,5 +364,17 @@ class Cluster(models.Model):
 
 @receiver(models.signals.m2m_changed)
 def cluster_note_transaction_link(sender, instance, action, **kwargs):
-    if type(instance) == Transaction and action in ('post_add', 'post_remove', 'post_clear'):
+    if action not in ('post_add', 'post_remove', 'post_clear'):
+        return
+    
+    if type(instance) == Transaction:
         ClusterUpdate.perform(transaction_ids=set([instance.id]))
+    elif type(instance) == Ticket:
+        ClusterUpdate.perform(ticket_ids=set([instance.id]))
+
+@receiver(models.signals.pre_delete)
+def cluster_member_delete(sender, instance, **kwargs):
+    if sender == Transaction:
+        instance.tickets.clear()
+    elif sender == Ticket:
+        instance.transaction_set.clear()

@@ -677,3 +677,42 @@ class ClusterTest(TestCase):
         # reconnect make ticket2 overpaid again
         tr1.tickets.add(ticket2)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
+
+    def test_cluster_transaction_delete(self):
+        ticket = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        tid = ticket.id
+        Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
+        
+        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
+        tr1.tickets.add(ticket)
+        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=5, other=self.user, description='pay1plus')
+        tr2.tickets.add(ticket)
+        self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        # delete tr2 to make ticket 'paid' again
+        tr2.delete()
+        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
+    
+    def test_cluster_ticket_delete(self):
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        tid1 = ticket1.id
+        Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
+        
+        # pay ticket with one transaction
+        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=100, other=self.user, description='pay1')
+        tr1.tickets.add(ticket1)
+        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
+        
+        # add another ticket to the transaction cluster
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
+        tid2 = ticket2.id
+        Expediture.objects.create(ticket_id=tid2, description='exp', amount=50)
+        tr1.tickets.add(ticket2)
+        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
+        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
+        
+        # delete tr2 to make ticket 'paid' again
+        ticket2.delete()
+        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
