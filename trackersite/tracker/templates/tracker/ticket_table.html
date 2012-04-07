@@ -52,7 +52,7 @@
 
 {% if show_media or show_expenses %}{% if summary_item %}
 <tr class="total">
-<td colspan="{% if show_media and show_requester %}6{% else %}{% if show_media or show_requester %}5{% else %}4{% endif %}{% endif %}">{{total_desc}}</td>
+<td colspan="{{total_colspan}}">{{total_desc}}</td>
 {% if show_media %}
 	{% if summary_item.media_count.objects > 0 %}<td>{{summary_item.media_count.objects}}</td><td>{{summary_item.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}

@@ -11,7 +11,7 @@
 
 <h2>{% trans "Tickets" %}</h2>
 {% with ticket_list=cluster.ticket_set.all %}
-{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" summary_item=ticket_summary total_desc=_("Total tickets") %}
+{% include "tracker/ticket_table.html" with show_expenses="True" show_topics="True" show_requester="True" summary_item=ticket_summary total_desc=_("Total tickets") total_colspan=5 %}
 {% endwith %}
 
 {% if cluster.transaction_set.all.count > 0 %}
