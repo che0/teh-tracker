@@ -503,10 +503,8 @@ class SummaryTest(TestCase):
     
     def test_user_summary(self):
         self.assertEqual({'objects':3, 'media':13}, self.user.media_count())
-        self.assertEqual({'count':4, 'amount':910}, self.user.expeditures())
         self.assertEqual(150 + 610, self.user.accepted_expeditures())
         self.assertEqual({'count':0, 'amount':None}, self.user.transactions())
-        self.assertEqual(150 + 610, self.user.balance())
     
     def test_transaction_summary(self):
         def add_trans(amount):
@@ -514,13 +512,6 @@ class SummaryTest(TestCase):
         
         add_trans(500)
         self.assertEqual({'count':1, 'amount':500}, self.user.transactions())
-        self.assertEqual(150 + 610 - 500, self.user.balance())
-        
-        add_trans(self.user.balance())
-        self.assertEqual(0, self.user.balance())
-        
-        add_trans(300)
-        self.assertEqual(-300, self.user.balance())
 
 class TransactionTest(TestCase):
     
@@ -558,7 +549,7 @@ class TransactionTest(TestCase):
         expected_totals = {
             'ticket_count': 2,
             'media': {'objects':2, 'media':8},
-            'expeditures': {'total': 300, 'accepted': 300},
+            'accepted_expeditures': 300,
             'transactions': 600,
         }
         self.assertEqual(expected_totals, response.context['totals'])
@@ -566,7 +557,6 @@ class TransactionTest(TestCase):
         expected_unassigned = {
             'ticket_count': 1,
             'media': {'objects':1, 'media':3},
-            'total_expeditures': None,
             'accepted_expeditures': 0,
         }
         self.assertEqual(expected_unassigned, response.context['unassigned'])

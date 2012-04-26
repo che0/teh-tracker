@@ -8,18 +8,18 @@
 <h1>{% trans "User list" %}</h1>
 
 <table>
-<tr><th rowspan="2">{% trans "User" %}</th><th rowspan="2">{% trans "Tickets" %}<th colspan="2">{% trans "Media" %}</th><th colspan="2">{% trans "Expeditures" %}</th><th rowspan="2">{% trans "Transactions total" %}</th><th rowspan="2">{% trans "Balance" %}</th></tr>
-<tr><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th><th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th><th>{% trans "Total" %}</th><th>{% trans "Accepted" %}</th></tr>
+<tr><th rowspan="2">{% trans "User" %}</th><th rowspan="2">{% trans "Tickets" %}<th colspan="2">{% trans "Media" %}</th><th rowspan="2">{% trans "Accepted expeditures" %}</th><th rowspan="2">{% trans "Transactions total" %}</th></tr>
+<tr><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th><th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 
 {% for u in user_list %}
-<tr><td><a href="{{u.get_absolute_url}}">{{u}}</a></td><td>{{u.ticket_set.count|default:""}}</td><td>{{u.media_count.objects|default:""}}</td><td>{{u.media_count.media|default:""}}</td><td>{% if u.expeditures.amount %}{{u.expeditures.amount}} {{currency}}{% endif %}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td>{% if u.transactions.amount %}{{u.transactions.amount}} {{currency}}{% endif %}</td><td>{% if u.balance != 0 %}{{u.balance}} {{currency}}{% endif %}</td></tr>
+<tr><td><a href="{{u.get_absolute_url}}">{{u}}</a></td><td>{{u.ticket_set.count|default:""}}</td><td>{{u.media_count.objects|default:""}}</td><td>{{u.media_count.media|default:""}}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td>{% if u.transactions.amount %}{{u.transactions.amount}} {{currency}}{% endif %}</td></tr>
 {% endfor %}
 
 {% if unassigned %}{% with u=unassigned %}
-<tr><td><abbr title="{% trans "Tickets not assigned to any tracker user" %}">{% trans "unassigned" %}</abbr></td><td>{{u.ticket_count}}</td><td>{{u.media.objects|default:""}}</td><td>{{u.media.media|default:""}}</td><td>{% if u.total_expeditures %}{{u.total_expeditures}} {{currency}}{% endif %}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td></td><td></td></tr>
+<tr><td><abbr title="{% trans "Tickets not assigned to any tracker user" %}">{% trans "unassigned" %}</abbr></td><td>{{u.ticket_count}}</td><td>{{u.media.objects|default:""}}</td><td>{{u.media.media|default:""}}</td><td>{% if u.accepted_expeditures %}{{u.accepted_expeditures}} {{currency}}{% endif %}</td><td></td></tr>
 {% endwith %}{% endif %}
 
-<tr class="total first_total"><td>{% trans "Total" %}</td><td>{{totals.ticket_count}}</td><td>{{totals.media.objects}}</td><td>{{totals.media.media}}</td><td>{{totals.expeditures.total|default:0}} {{currency}}</td><td>{{totals.expeditures.accepted|default:0}} {{currency}}</td><td>{{totals.transactions|default:0}} {{currency}}</td><td></td></tr>
+<tr class="total first_total"><td>{% trans "Total" %}</td><td>{{totals.ticket_count}}</td><td>{{totals.media.objects}}</td><td>{{totals.media.media}}</td><td>{{totals.accepted_expeditures|default:0}} {{currency}}</td><td>{{totals.transactions|default:0}} {{currency}}</td></tr>
 
 </table>
 {% endblock content %}

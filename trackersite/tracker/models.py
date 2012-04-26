@@ -255,21 +255,11 @@ class TrackerUser(User):
     def media_count(self):
         return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
     
-    def expeditures(self):
-        return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
-
     def accepted_expeditures(self):
         return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
     
     def transactions(self):
         return Transaction.objects.filter(other=self).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
-    
-    def balance(self):
-        """ User's financial balance towards us. Positive amount means we owe him money. """
-        transaction_total = self.transactions()['amount']
-        if transaction_total == None:
-            transaction_total = 0
-        return self.accepted_expeditures() - transaction_total
 
 class Transaction(models.Model):
     """ One payment to or from the user. """

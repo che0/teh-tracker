@@ -209,10 +209,7 @@ def user_list(request):
     totals = {
         'ticket_count': Ticket.objects.count(),
         'media': MediaInfo.objects.aggregate(objects=models.Count('id'), media=models.Sum('count')),
-        'expeditures': {
-            'total': Expediture.objects.aggregate(amount=models.Sum('amount'))['amount'],
-            'accepted': sum([t.accepted_expeditures() for t in Ticket.objects.filter(state='expenses filed', rating_percentage__gt=0)]),
-        },
+        'accepted_expeditures': sum([t.accepted_expeditures() for t in Ticket.objects.filter(state='expenses filed', rating_percentage__gt=0)]),
         'transactions': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     }
     
@@ -221,7 +218,6 @@ def user_list(request):
         unassigned = {
             'ticket_count': userless.count(),
             'media': MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id is null)']).aggregate(objects=models.Count('id'), media=models.Sum('count')),
-            'total_expeditures': Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id is null)']).aggregate(amount=models.Sum('amount'))['amount'],
             'accepted_expeditures': sum([t.accepted_expeditures() for i in Ticket.objects.filter(state='expenses filed', requested_user=None)]),
         }
     else:
