@@ -5,10 +5,10 @@ import datetime
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, SiteProfileNotAvailable
 from django.conf import settings
 
-from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, TrackerUser, Transaction
+from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, Transaction, UserProfile
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -454,7 +454,7 @@ class UserDetailsTest(TestCase):
 
 class SummaryTest(TestCase):
     def setUp(self):
-        self.user = TrackerUser(username='user')
+        self.user = User(username='user')
         self.user.save()
         
         self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
@@ -502,26 +502,27 @@ class SummaryTest(TestCase):
         self.assertEqual(150 + 610, self.topic.accepted_expeditures())
     
     def test_user_summary(self):
-        self.assertEqual({'objects':3, 'media':13}, self.user.media_count())
-        self.assertEqual(150 + 610, self.user.accepted_expeditures())
-        self.assertEqual({'count':0, 'amount':None}, self.user.transactions())
+        profile = self.user.get_profile()
+        self.assertEqual({'objects':3, 'media':13}, profile.media_count())
+        self.assertEqual(150 + 610, profile.accepted_expeditures())
+        self.assertEqual({'count':0, 'amount':None}, profile.transactions())
     
     def test_transaction_summary(self):
         def add_trans(amount):
             self.user.transaction_set.create(date=datetime.date.today(), amount=amount, description='foo')
         
         add_trans(500)
-        self.assertEqual({'count':1, 'amount':500}, self.user.transactions())
+        self.assertEqual({'count':1, 'amount':500}, self.user.get_profile().transactions())
 
 class TransactionTest(TestCase):
     
     def setUp(self):
-        self.user = TrackerUser.objects.create(username='user')
+        self.user = User.objects.create(username='user')
         self.tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=500, other=self.user, description='some desc')
         
         # more transactions
         tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=-200, other=self.user, description='other')
-        self.user2 = TrackerUser.objects.create(username='user2')
+        self.user2 = User.objects.create(username='user2')
         Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=300, other=self.user2, description='user2')
     
     def test_transaction_string(self):        
@@ -563,7 +564,7 @@ class TransactionTest(TestCase):
 
 class ClusterTest(TestCase):
     def setUp(self):
-        self.user = TrackerUser.objects.create(username='user')
+        self.user = User.objects.create(username='user')
         self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         
     
@@ -706,3 +707,12 @@ class ClusterTest(TestCase):
         # delete tr2 to make ticket 'paid' again
         ticket2.delete()
         self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
+
+class UserProfileTests(TestCase):
+    def test_simple_create(self):
+        user = User.objects.create(username='new_user')
+        try:
+            profile = user.get_profile()
+        except (SiteProfileNotAvailable, UserProfile.DoesNotExist):
+            self.assertTrue(False)
+

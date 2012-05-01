@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, TrackerUser, Transaction, Cluster
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster
 
 class CommentPostedCatcher(object):
     """ 
@@ -224,14 +224,14 @@ def user_list(request):
         unassigned = None
     
     return render(request, 'tracker/user_list.html', {
-        'user_list': TrackerUser.objects.all(),
+        'user_list': User.objects.all(),
         'unassigned': unassigned,
         'currency': settings.TRACKER_CURRENCY,
         'totals': totals,
     })
 
 def user_detail(request, username):
-    user = get_object_or_404(TrackerUser, username=username)
+    user = get_object_or_404(User, username=username)
     
     return render(request, 'tracker/user_detail.html', {
         'user_obj': user,

@@ -2,6 +2,7 @@
 import datetime
 
 from django.contrib.comments.signals import comment_was_posted
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db import models
@@ -245,21 +246,31 @@ class Expediture(models.Model):
 
 from django.contrib.auth.models import User
 
-class TrackerUser(User):
-    class Meta:
-        proxy = True
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    bank_account = models.CharField(_('Bank account'), max_length=120, blank=True, help_text=_('Bank account information for money transfers'))
+    other_contact = models.CharField(_('Other contact'), max_length=120, blank=True, help_text=_('Other contact, such as wiki account'))
+    other_identification = models.CharField(_('Other identification'), max_length=120, blank=True, help_text=_('Address, or other identification information, so we know who are we sending money to'))
     
     def get_absolute_url(self):
-        return reverse('user_detail', kwargs={'username':self.username})
+        return reverse('user_detail', kwargs={'username':self.user.username})
     
     def media_count(self):
-        return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+        return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.user.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
     
     def accepted_expeditures(self):
-        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
+        return sum([t.accepted_expeditures() for t in self.user.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
     
     def transactions(self):
-        return Transaction.objects.filter(other=self).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return Transaction.objects.filter(other=self.user).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, **kwargs):
+    if not kwargs.get('created', False):
+        return
+    
+    user = kwargs['instance']
+    profile = UserProfile.objects.create(user=user)
 
 class Transaction(models.Model):
     """ One payment to or from the user. """

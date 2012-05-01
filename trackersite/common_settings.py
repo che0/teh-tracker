@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'customcomments',
 )
 
+AUTH_PROFILE_MODULE = 'tracker.UserProfile'
 COMMENTS_APP = 'customcomments'
 
 ROOT_URLCONF = 'urls'
