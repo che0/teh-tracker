@@ -13,7 +13,7 @@
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{{ticket.topic.grant.get_absolute_url}}">{{ticket.topic.grant.short_name}}</a> &gt; <a href="{% url topic_detail ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <div id="ticket_id">{{ticket.id}}</div>
 <h1>{{ ticket.summary }}</h1>
-{% if user_can_edit_ticket %}<p><a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a></p>{% endif %}
+{% if user_can_edit_ticket or user_can_edit_ticket_in_admin %}<p>{% if user_can_edit_ticket %}<a href="{% url edit_ticket ticket.id %}">{% trans "edit ticket" %}</a>{% endif %}{% if user_can_edit_ticket and user_can_edit_ticket_in_admin %}, {% endif %}{% if user_can_edit_ticket_in_admin %}<a href="{% url admin:tracker_ticket_change ticket.id %}">{% trans "edit in admin" %}</a>{% endif %}</p>{% endif %}
 <p>{% trans "Ticket ID" %}: {{ ticket.id }}<br />
 {% trans "Created" %}: {{ ticket.created }}<br />
 {% trans "Last changed" %}: {{ ticket.updated }}<br />

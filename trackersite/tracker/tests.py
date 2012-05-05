@@ -5,7 +5,8 @@ import datetime
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User, SiteProfileNotAvailable
+from django.contrib.auth.models import User, Permission, SiteProfileNotAvailable
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
 from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, Transaction, UserProfile
@@ -434,6 +435,73 @@ class TicketEditTests(TestCase):
         self.assertEqual(1, len(expeditures))
         self.assertEqual('hundred+1', expeditures[0].description)
         self.assertEqual(101, expeditures[0].amount)
+    
+class TicketEditLinkTests(TestCase):
+    def setUp(self):
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic.save()
+        
+        self.password = 'my_password'
+        self.user = User(username='my_user')
+        self.user.set_password(self.password)
+        self.user.save()
+        
+        self.ticket = Ticket(summary='ticket', topic=self.topic, requested_user=None, requested_text='foo', state='for consideration')
+        self.ticket.save()
+    
+    def get_ticket_response(self):
+        c = Client()
+        c.login(username=self.user.username, password=self.password)
+        response = c.get(reverse('ticket_detail', kwargs={'pk':self.ticket.id}))
+        self.assertEqual(response.status_code, 200)
+        return response
+    
+    def test_clear_ticket(self):
+        response = self.get_ticket_response()
+        self.assertEqual(False, response.context['user_can_edit_ticket'])
+        self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
+        
+    def test_own_ticket(self):
+        self.ticket.requested_user = self.user
+        self.ticket.save()
+        response = self.get_ticket_response()
+        self.assertEqual(True, response.context['user_can_edit_ticket'])
+        self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
+    
+    def test_bare_admin(self):
+        self.user.is_staff = True
+        self.user.save()
+        response = self.get_ticket_response()
+        self.assertEqual(False, response.context['user_can_edit_ticket'])
+        self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
+    
+    def test_tracker_supervisor(self):
+        self.user.is_staff = True
+        topic_content = ContentType.objects.get(app_label='tracker', model='Topic')
+        self.user.user_permissions.add(Permission.objects.get(content_type=topic_content, codename='supervisor'))
+        self.user.save()
+        
+        response = self.get_ticket_response()
+        self.assertEqual(False, response.context['user_can_edit_ticket'])
+        self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
+        
+    def test_total_supervisor(self):
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+        
+        response = self.get_ticket_response()
+        self.assertEqual(False, response.context['user_can_edit_ticket'])
+        self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
+    
+    def test_own_topic(self):
+        self.user.is_staff = True
+        self.user.topic_set.add(self.topic)
+        self.user.save()
+        
+        response = self.get_ticket_response()
+        self.assertEqual(False, response.context['user_can_edit_ticket'])
+        self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
 
 class UserDetailsTest(TestCase):
     def setUp(self):

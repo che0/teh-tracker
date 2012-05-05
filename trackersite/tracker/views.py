@@ -35,8 +35,12 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
     model = Ticket
     
     def get_context_data(self, **kwargs):
+        user = self.request.user
+        ticket = self.object
         context = super(TicketDetailView, self).get_context_data(**kwargs)
-        context['user_can_edit_ticket'] = context['ticket'].can_edit(self.request.user)
+        context['user_can_edit_ticket'] = ticket.can_edit(user)
+        admin_edit = user.is_staff and (user.has_perm('tracker.supervisor') or user.topic_set.filter(id=ticket.topic_id).exists())
+        context['user_can_edit_ticket_in_admin'] = admin_edit
         return context
 ticket_detail = TicketDetailView.as_view()
 
