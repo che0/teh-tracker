@@ -119,7 +119,7 @@ class Ticket(models.Model):
     
     def requested_user_details(self):
         if self.requested_user != None:
-            out = '%s: %s<br />%s: %s' % (
+            out = u'%s: %s<br />%s: %s' % (
                 _('E-mail'), escape(self.requested_user.email),
                 _('Other contact'), escape(self.requested_user.get_profile().other_contact),
             )
