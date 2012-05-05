@@ -3,8 +3,8 @@ import datetime
 
 from django.db import models
 from django.db.models import Q
-from django.forms import ModelForm, ModelChoiceField, ValidationError, Media, TextInput, Textarea
-from django.forms.models import inlineformset_factory, BaseInlineFormSet
+from django import forms
+from django.forms.models import fields_for_model, inlineformset_factory, BaseInlineFormSet
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
@@ -12,13 +12,13 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import DetailView
+from django.views.generic import DetailView, FormView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile
 
 class CommentPostedCatcher(object):
     """ 
@@ -54,7 +54,7 @@ def topics_js(request):
     content = 'topics_table = %s;' % json.dumps(data)
     return HttpResponse(content, content_type='text/javascript')
 
-class TicketForm(ModelForm):
+class TicketForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TicketForm, self).__init__(*args, **kwargs)
         self.fields['topic'].queryset = self.get_topic_queryset()
@@ -63,7 +63,7 @@ class TicketForm(ModelForm):
         return Topic.objects.filter(open_for_tickets=True)
     
     def _media(self):
-        return super(TicketForm, self).media + Media(js=('ticketform.js', reverse('topics_js')))
+        return super(TicketForm, self).media + forms.Media(js=('ticketform.js', reverse('topics_js')))
     media = property(_media)
     
     class Meta:
@@ -72,8 +72,8 @@ class TicketForm(ModelForm):
             'state', 'custom_state', 'rating_percentage', 'amount_paid', 'cluster', 'payment_status')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
-            'summary': TextInput(attrs={'size':'40'}),
-            'description': Textarea(attrs={'rows':'4', 'cols':'60'}),
+            'summary': forms.TextInput(attrs={'size':'40'}),
+            'description': forms.Textarea(attrs={'rows':'4', 'cols':'60'}),
         }
 
 def get_edit_ticket_form_class(ticket):
@@ -83,7 +83,7 @@ def get_edit_ticket_form_class(ticket):
     
     return EditTicketForm
 
-adminCore = Media(js=(
+adminCore = forms.Media(js=(
     settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js",
     settings.STATIC_URL + "jquery.both.js",
     settings.ADMIN_MEDIA_PREFIX + "js/core.js",
@@ -106,9 +106,9 @@ class ExtraItemFormSet(BaseInlineFormSet):
 MEDIAINFO_FIELDS = ('url', 'description', 'count')
 def mediainfo_formfield(f, **kwargs):
     if f.name == 'url':
-        kwargs['widget'] = TextInput(attrs={'size':'60'})
+        kwargs['widget'] = forms.TextInput(attrs={'size':'60'})
     elif f.name == 'count':
-        kwargs['widget'] = TextInput(attrs={'size':'4'})
+        kwargs['widget'] = forms.TextInput(attrs={'size':'4'})
     return f.formfield(**kwargs)
 mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo,
     formset=ExtraItemFormSet, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
@@ -127,7 +127,7 @@ def create_ticket(request):
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture')
-        except ValidationError, e:
+        except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
@@ -175,7 +175,7 @@ def edit_ticket(request, pk):
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
-        except ValidationError, e:
+        except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
@@ -238,6 +238,44 @@ def user_detail(request, username):
         # ^ NOTE 'user' means session user in the template, so we're using user_obj
         'ticket_list': user.ticket_set.all(),
     })
+
+class UserDetailsChange(FormView):
+    template_name = 'tracker/user_details_change.html'
+    user_fields = ('first_name', 'last_name', 'email')
+    profile_fields = [f.name for f in UserProfile._meta.fields if f.name not in ('id', 'user')]
+    
+    def make_user_details_form(self):
+        fields = fields_for_model(User, fields=self.user_fields)
+        fields.update(fields_for_model(UserProfile, exclude=('user', )))
+        return type('UserDetailsForm', (forms.BaseForm,), { 'base_fields': fields })
+    
+    def get_form_class(self):
+        return self.make_user_details_form()
+    
+    def get_initial(self):
+        user = self.request.user
+        out = {}
+        for f in self.user_fields:
+            out[f] = getattr(user, f)
+        for f in self.profile_fields:
+            out[f] = getattr(user.get_profile(), f)
+        return out
+    
+    def form_valid(self, form):
+        user = self.request.user
+        for f in self.user_fields:
+            setattr(user, f, form.cleaned_data[f])
+        user.save()
+        
+        profile = user.get_profile()
+        for f in self.profile_fields:
+            setattr(profile, f, form.cleaned_data[f])
+        profile.save()
+        
+        messages.success(self.request, _('Your details have been saved.'))
+        return HttpResponseRedirect(reverse('index'))
+        
+user_details_change = login_required(UserDetailsChange.as_view())
 
 class ClusterDetailView(DetailView):
     model = Cluster

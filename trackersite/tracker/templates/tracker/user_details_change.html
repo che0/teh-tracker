@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "My details" %}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
+<h1>{% trans "My details" %}</h1>
+
+<form method="post">
+<p>{% trans "Username" %}: {{user.username}}</p>
+{{form.as_p}}
+{% csrf_token %}
+<input type="submit" value="{% trans "Save" %}" />
+</form>
+
+{% endblock content %}
+
