@@ -5,14 +5,14 @@ from django.db import models
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model, inlineformset_factory, BaseInlineFormSet
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import DetailView, FormView
+from django.views.generic import ListView, DetailView, FormView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
@@ -289,3 +289,8 @@ class ClusterDetailView(DetailView):
             context['ticket_summary'] = {'accepted_expeditures': context['cluster'].total_tickets}
             return context
 cluster_detail = ClusterDetailView.as_view()
+
+class AdminUserListView(ListView):
+    model = User
+    template_name = 'tracker/admin_user_list.html'
+admin_user_list = permission_required('tracker.supervisor')(AdminUserListView.as_view())

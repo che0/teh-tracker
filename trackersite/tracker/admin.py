@@ -54,3 +54,6 @@ class TransactionAdmin(admin.ModelAdmin):
     filter_vertical = ('tickets', )
     exclude = ('cluster', )
 admin.site.register(models.Transaction, TransactionAdmin)
+
+# piggypatch admin site to display our own index template with some bonus links
+admin.site.index_template = 'tracker/admin_index_override.html'

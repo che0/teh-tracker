@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block bodyclass %}change-list{% endblock %}
+{% block coltype %}flex{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+      <a href="{% url admin:index %}">
+        {% trans "Home" %}
+      </a>
+      &rsaquo;
+      {% trans "Tracker users" %}
+    </div>
+  {% endblock %}
+
+{% block content %}
+<div id="content-main"><div class="results">
+
+<table cellspacing="0" id="result_list" style="border: 1px solid #ccc">
+<thead><tr>
+<th scope="col">{% trans "Username" %}</th>
+<th scope="col">{% trans "E-mail" %}</th>
+<th scope="col">{% trans "First name" %}</th>
+<th scope="col">{% trans "Last name" %}</th>
+<th scope="col">{% trans "Bank account" %}</th>
+<th scope="col">{% trans "Other contact" %}</th>
+<th scope="col">{% trans "Other identification" %}</th>
+</tr></thead>
+
+<tbody>
+{% for u in user_list %}{% with up=u.get_profile %}<tr class="{% cycle "row1" "row2" %}">
+<th>{{u.username}}</th><td>{{u.email}}</td><td>{{u.first_name}}</td><td>{{u.last_name}}</td><td>{{up.bank_account}}</td><td>{{up.other_contact}}</td><td>{{up.other_identification}}</td>
+</tr>{% endwith %}{% endfor %}
+</tbody></table>
+
+</div></div>
+{% endblock content %}
