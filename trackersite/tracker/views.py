@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model, inlineformset_factory, BaseInlineFormSet
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
@@ -293,4 +293,9 @@ cluster_detail = ClusterDetailView.as_view()
 class AdminUserListView(ListView):
     model = User
     template_name = 'tracker/admin_user_list.html'
-admin_user_list = permission_required('tracker.supervisor')(AdminUserListView.as_view())
+    
+    def get_context_data(self, **kwargs):
+            context = super(AdminUserListView, self).get_context_data(**kwargs)
+            context['is_tracker_supervisor'] = self.request.user.has_perm('tracker.supervisor')
+            return context
+admin_user_list = login_required(AdminUserListView.as_view())

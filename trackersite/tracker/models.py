@@ -117,6 +117,17 @@ class Ticket(models.Model):
         else:
             return escape(self.requested_text)
     
+    def requested_user_details(self):
+        if self.requested_user != None:
+            out = '%s: %s<br />%s: %s' % (
+                _('E-mail'), escape(self.requested_user.email),
+                _('Other contact'), escape(self.requested_user.get_profile().other_contact),
+            )
+            return mark_safe(out)
+        else:
+            return _('no tracker account listed')
+    requested_user_details.short_description = _('Requester details')
+    
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})
     
@@ -249,7 +260,7 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     bank_account = models.CharField(_('Bank account'), max_length=120, blank=True, help_text=_('Bank account information for money transfers'))
-    other_contact = models.CharField(_('Other contact'), max_length=120, blank=True, help_text=_('Other contact, such as wiki account'))
+    other_contact = models.CharField(_('Other contact'), max_length=120, blank=True, help_text=_('Other contact such as wiki account; can be useful in case of topic administrators need to clarify some information'))
     other_identification = models.CharField(_('Other identification'), max_length=120, blank=True, help_text=_('Address, or other identification information, so we know who are we sending money to'))
     
     def get_absolute_url(self):

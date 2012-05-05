@@ -3,6 +3,7 @@
 
 {% block bodyclass %}change-list{% endblock %}
 {% block coltype %}flex{% endblock %}
+{% block title %}{% trans "Users" %}{{block.super}}{% endblock %}
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
@@ -21,16 +22,25 @@
 <thead><tr>
 <th scope="col">{% trans "Username" %}</th>
 <th scope="col">{% trans "E-mail" %}</th>
+{% if is_tracker_supervisor %}
 <th scope="col">{% trans "First name" %}</th>
 <th scope="col">{% trans "Last name" %}</th>
 <th scope="col">{% trans "Bank account" %}</th>
 <th scope="col">{% trans "Other contact" %}</th>
 <th scope="col">{% trans "Other identification" %}</th>
+{% else %}
+<th scope="col">{% trans "Other contact" %}</th>
+{% endif %}
 </tr></thead>
 
 <tbody>
 {% for u in user_list %}{% with up=u.get_profile %}<tr class="{% cycle "row1" "row2" %}">
-<th>{{u.username}}</th><td>{{u.email}}</td><td>{{u.first_name}}</td><td>{{u.last_name}}</td><td>{{up.bank_account}}</td><td>{{up.other_contact}}</td><td>{{up.other_identification}}</td>
+<th>{{u.username}}</th><td>{{u.email}}</td>
+{% if is_tracker_supervisor %}
+<td>{{u.first_name}}</td><td>{{u.last_name}}</td><td>{{up.bank_account}}</td><td>{{up.other_contact}}</td><td>{{up.other_identification}}</td>
+{% else %}
+<td>{{up.other_contact}}</td>
+{% endif %}
 </tr>{% endwith %}{% endfor %}
 </tbody></table>
 
