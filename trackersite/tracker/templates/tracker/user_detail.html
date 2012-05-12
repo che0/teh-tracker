@@ -9,7 +9,7 @@
 <h1>{{ user_obj }}</h1>
 
 {% if ticket_list %}
-{% include "tracker/ticket_table.html" with show_topics="True" show_media="True" show_expenses="True" summary_item=user_obj total_desc=_("Total for this user") total_colspan=5 %}
+{% include "tracker/ticket_table.html" with show_topics="True" show_media="True" show_expenses="True" summary_item=user_obj.get_profile total_desc=_("Total for this user") total_colspan=5 %}
 {% else %}
 <p>{% trans "No tickets available." %}</p>
 {% endif %}
