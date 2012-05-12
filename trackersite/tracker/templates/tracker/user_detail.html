@@ -6,6 +6,7 @@
 
 {% block content %}
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url user_list %}">{% trans "users" %}</a> &gt;</p>
+{% if user == user_obj %}<p class="tools screenonly"><a href="{% url create_ticket %}">{% trans "Create new ticket" %}</a></p>{% endif %}
 <h1>{{ user_obj }}</h1>
 
 {% if ticket_list %}
