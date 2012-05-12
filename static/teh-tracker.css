@@ -44,7 +44,7 @@ td.money { text-align:right; }
 .payment_class_overpaid .payment_status, .payment_cell.overpaid { background-color: #ff7878; }
 
 @media print {
-	#user, .nav { display:none; }
+	#user, .nav, .screenonly { display:none; }
 	#ticket_id { font-size:26pt; font-weight:bold; text-align:right; display:block !important;}
 	#media_list li { list-style-type:none; display:inline; }
 	#media_list li:after { content:";"; }
