@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
 
 class CommentPostedCatcher(object):
     """ 
@@ -200,6 +200,48 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+    })
+
+class TicketDocumentForm(forms.Form):
+    pass
+
+class UploadDocumentForm(forms.Form):
+    file = forms.FileField()
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
+    description = forms.CharField(max_length=255, required=False)
+
+@login_required # TODO we need some tougher limits here
+def edit_ticket_docs(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    return render(request, 'tracker/edit_ticket_docs.html', {
+        'ticket': ticket,
+    })
+
+@login_required # TODO we need some tougher limits here
+def upload_ticket_doc(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    
+    if request.method == 'POST':
+        upload = UploadDocumentForm(request.POST, request.FILES)
+        if upload.is_valid():
+            doc = Document(ticket=ticket)
+            payload = upload.cleaned_data['file']
+            filename = upload.cleaned_data['name']
+            doc.filename = filename
+            doc.size = payload.size
+            doc.content_type = payload.content_type
+            doc.description = upload.cleaned_data['description']
+            doc.payload.save(filename, payload)
+            doc.save()
+            messages.success(request, _('File %(filename)s has been save.') % {'filename':filename})
+            return HttpResponseRedirect(reverse('edit_ticket_docs', kwargs={'pk':ticket.id}))
+    else:
+        upload = UploadDocumentForm()
+    
+    return render(request, 'tracker/upload_ticket_doc.html', {
+        'ticket': ticket,
+        'upload': upload,
+        'form_media': upload.media,
     })
 
 def transaction_list(request):

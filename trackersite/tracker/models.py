@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _, string_concat
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from south.modelsinspector import add_introspection_rules
 
 from tracker.clusters import ClusterUpdate
@@ -254,6 +255,23 @@ class Expediture(models.Model):
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
+
+class TrackerDocumentStorage(FileSystemStorage):
+    def __init__(self):
+        self.location = settings.TRACKER_DOCS_ROOT
+        self.base_url = None
+
+class Document(models.Model):
+    """ Document related to particular ticket, not publicly accessible. """
+    ticket = models.ForeignKey('tracker.Ticket')
+    filename = models.CharField(max_length=120)
+    size = models.PositiveIntegerField()
+    content_type = models.CharField(max_length=64)
+    description = models.CharField(max_length=255, blank=True)
+    payload = models.FileField(upload_to='tickets/%Y/', storage=TrackerDocumentStorage())
+    
+    def __unicode__(self):
+        return self.filename
 
 from django.contrib.auth.models import User
 
