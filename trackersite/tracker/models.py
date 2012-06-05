@@ -263,7 +263,7 @@ class TrackerDocumentStorage(FileSystemStorage):
         self.base_url = None
 
 # introductory chunk for the template
-DOC_INTRO_TEMPLATE = template.Template('<a href="">{{doc.filename}}</a> ({{doc.content_type}}, {{doc.size|filesizeformat}})')
+DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a> ({{doc.content_type}}, {{doc.size|filesizeformat}})')
 
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """
@@ -279,7 +279,7 @@ class Document(models.Model):
     
     def inline_intro(self):
         context = template.Context({'doc':self})
-        return DOC_INTRO_TEMPLATE.render(context)
+        return DOCUMENT_INTRO_TEMPLATE.render(context)
 
 from django.contrib.auth.models import User
 

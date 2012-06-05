@@ -17,6 +17,7 @@ from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
+from sendfile import sendfile
 
 from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
 
@@ -265,6 +266,12 @@ def upload_ticket_doc(request, pk):
         'upload': upload,
         'form_media': upload.media,
     })
+
+@login_required # TODO we need some tougher limits here 
+def download_document(request, ticket_id, filename):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    doc = ticket.document_set.get(filename=filename)
+    return sendfile(request, doc.payload.path, mimetype=doc.content_type)
 
 def transaction_list(request):
     return render(request, 'tracker/transaction_list.html', {
