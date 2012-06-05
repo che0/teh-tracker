@@ -12,6 +12,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django import template
 from south.modelsinspector import add_introspection_rules
 
 from tracker.clusters import ClusterUpdate
@@ -261,17 +262,24 @@ class TrackerDocumentStorage(FileSystemStorage):
         self.location = settings.TRACKER_DOCS_ROOT
         self.base_url = None
 
+# introductory chunk for the template
+DOC_INTRO_TEMPLATE = template.Template('<a href="">{{doc.filename}}</a> ({{doc.content_type}}, {{doc.size|filesizeformat}})')
+
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """
     ticket = models.ForeignKey('tracker.Ticket')
-    filename = models.CharField(max_length=120)
+    filename = models.CharField(max_length=120, help_text='Document filename')
     size = models.PositiveIntegerField()
     content_type = models.CharField(max_length=64)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.CharField(max_length=255, blank=True, help_text='Optional further description of the document')
     payload = models.FileField(upload_to='tickets/%Y/', storage=TrackerDocumentStorage())
     
     def __unicode__(self):
         return self.filename
+    
+    def inline_intro(self):
+        context = template.Context({'doc':self})
+        return DOC_INTRO_TEMPLATE.render(context)
 
 from django.contrib.auth.models import User
 

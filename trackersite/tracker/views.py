@@ -203,18 +203,40 @@ def edit_ticket(request, pk):
     })
 
 class TicketDocumentForm(forms.Form):
-    pass
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
+    description = forms.CharField(max_length=255, required=False)
 
 class UploadDocumentForm(forms.Form):
     file = forms.FileField()
     name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
     description = forms.CharField(max_length=255, required=False)
 
+DOCUMENT_FIELDS = ('filename', 'description')
+documentformset_factory = curry(inlineformset_factory, Ticket, Document,
+    fields=DOCUMENT_FIELDS)
+
 @login_required # TODO we need some tougher limits here
 def edit_ticket_docs(request, pk):
+    DocumentFormSet = documentformset_factory(extra=0, can_delete=True)
+    
     ticket = get_object_or_404(Ticket, id=pk)
+    if request.method == 'POST':
+        try:
+            documents = DocumentFormSet(request.POST, prefix='docs', instance=ticket)
+        except forms.ValidationError, e:
+            return HttpResponseBadRequest(unicode(e))
+        
+        if documents.is_valid():
+            documents.save()
+        
+        messages.success(request, _('Document changes for ticket %s saved.') % ticket)
+        return HttpResponseRedirect(ticket.get_absolute_url())
+    else:
+        documents = DocumentFormSet(prefix='docs', instance=ticket)
+    
     return render(request, 'tracker/edit_ticket_docs.html', {
         'ticket': ticket,
+        'documents': documents,
     })
 
 @login_required # TODO we need some tougher limits here
@@ -233,7 +255,7 @@ def upload_ticket_doc(request, pk):
             doc.description = upload.cleaned_data['description']
             doc.payload.save(filename, payload)
             doc.save()
-            messages.success(request, _('File %(filename)s has been save.') % {'filename':filename})
+            messages.success(request, _('File %(filename)s has been saved.') % {'filename':filename})
             return HttpResponseRedirect(reverse('edit_ticket_docs', kwargs={'pk':ticket.id}))
     else:
         upload = UploadDocumentForm()

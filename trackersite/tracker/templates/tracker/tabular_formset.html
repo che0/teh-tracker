@@ -1,11 +1,12 @@
 {% load i18n adminmedia %}
 <div id="{{ formset.prefix }}-group">
 {{ formset.management_form }}
-<fieldset>
-   <h2>{{ formset_title }}</h2>
+<fieldset{% if not formset_title %} class="noframe"{% endif %}>
+   {% if formset_title %}<h2>{{ formset_title }}</h2>{% endif %}
    {{ formset.non_form_errors }}
    <table>
      <thead><tr>
+         {% if use_inline_intro %}<th></th>{% endif %}
          {% for field in formset.0.visible_fields %}
              {% if field.name == "DELETE" %}
                  <th>{% trans "delete" %}</th>
@@ -14,6 +15,7 @@
              {% endif %}
          {% endfor %}
      </tr><tr>
+         {% if use_inline_intro %}<td></td>{% endif %}
          {% for field in formset.0.visible_fields %}
              {% if field.name == "DELETE" %}
                  <td class="helptext">{% trans "Delete the item" %}</td>
@@ -28,13 +30,14 @@
         {% if inline_admin_form.form.non_field_errors %}
         <tr><td>{{ inline_admin_form.form.non_field_errors }}</td></tr>
         {% endif %}
-        <tr id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}"{% if forloop.last %} class="empty-form"{% endif %}>
+        <tr id="{{ formset.prefix }}-{% if not forloop.last or not inline_admin_form.empty_permitted %}{{ forloop.counter0 }}{% else %}empty{% endif %}"{% if forloop.last and inline_admin_form.empty_permitted  %} class="empty-form"{% endif %}>
             <td class="hidden">
                {% for field in inline_admin_form.hidden_fields %}{{ field }}{% endfor %}
             </td>
+            {% if use_inline_intro %}<td>{{inline_admin_form.instance.inline_intro}}</td>{% endif %}
             {% for field in inline_admin_form.visible_fields %}
               <td class="field_{{ field.name }}{% if field.field.required %} required{% endif %}">             
-                  {% if field.name == "DELETE" %}<span class="delete">{% trans "delete" %}{% else %}{% trans field.name %}</span>{% endif %}
+                  {% if field.name == "DELETE" %}<span class="delete">{% trans "delete" %}</span>{% else %}{% trans field.name %}{% endif %}
                   {{ field.errors.as_ul }}
                   {{ field }}
               </td>

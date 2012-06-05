@@ -7,10 +7,15 @@
 <p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a> &gt; <a href="{% url edit_ticket ticket.id %}">{% trans "edit" %}</a> &gt;</p>
 <h1>{% trans "Edit documents" %}: {{ticket.summary}}</h1>
 
-<ul>
-{% for doc in ticket.document_set.all %}
-<li>{{doc.filename}} ({{doc.content_type}}, {{doc.size|filesizeformat}}){% if doc.description %}<br>{{doc.description}}{% endif %}</li>
-{% endfor %}
-</ul>
+<p><a href="{% url upload_ticket_doc ticket.id %}">{% trans "upload new document" %}</a></p>
+
+{% if documents|length > 0 %}
+<form method="post" action="{{action}}">
+{% include "tracker/tabular_formset.html" with formset=documents formset_item_name=_("document") use_inline_intro="True" %}
+{% csrf_token %}
+<input type="submit" value="{% trans "save" %}" />
+<p>{% blocktrans with mark='<span style="color:red">*</span>' %}Fields marked with {{mark}} are required.{% endblocktrans %}</p>
+</form>
+{% endif %}
 
 {% endblock content %}
