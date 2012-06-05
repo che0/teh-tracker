@@ -280,6 +280,13 @@ class Document(models.Model):
     def inline_intro(self):
         context = template.Context({'doc':self})
         return DOCUMENT_INTRO_TEMPLATE.render(context)
+    
+    class Meta:
+        # by default, everyone can see and edit documents that belong to his tickets
+        permissions = (
+            ("see_all_docs", _("Can see all documents")),
+            ("edit_all_docs", _("Can edit all documents")),
+        )
 
 from django.contrib.auth.models import User
 

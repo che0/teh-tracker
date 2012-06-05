@@ -203,10 +203,6 @@ def edit_ticket(request, pk):
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })
 
-class TicketDocumentForm(forms.Form):
-    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
-    description = forms.CharField(max_length=255, required=False)
-
 class UploadDocumentForm(forms.Form):
     file = forms.FileField()
     name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
@@ -216,7 +212,30 @@ DOCUMENT_FIELDS = ('filename', 'description')
 documentformset_factory = curry(inlineformset_factory, Ticket, Document,
     fields=DOCUMENT_FIELDS)
 
-@login_required # TODO we need some tougher limits here
+def document_view_required(access, ticket_id_field='pk'):
+    """ Wrapper for document-accessing views (access=read|write)"""
+    def actual_decorator(view):
+        def wrapped_view(request, *args, **kwargs):
+            from django.contrib.auth.views import redirect_to_login
+            if not request.user.is_authenticated():
+                return redirect_to_login(request.path)
+            
+            # is there some kind of superuser access?
+            if (access == 'read' and request.user.has_perm('tracker.see_all_docs')) or (access == 'write' and request.user.has_perm('tracker.edit_all_docs')):
+                return view(request, *args, **kwargs)
+            
+            # no -> check for ticket ownership
+            ticket_id = kwargs[ticket_id_field]
+            ticket = get_object_or_404(Ticket, id=ticket_id)
+            if ticket.requested_user == request.user:
+                return view(request, *args, **kwargs)
+            else:
+                return HttpResponseForbidden(_("You cannot see this ticket's documents."))
+        return wrapped_view
+    
+    return actual_decorator
+        
+@document_view_required(access='write')
 def edit_ticket_docs(request, pk):
     DocumentFormSet = documentformset_factory(extra=0, can_delete=True)
     
@@ -240,7 +259,7 @@ def edit_ticket_docs(request, pk):
         'documents': documents,
     })
 
-@login_required # TODO we need some tougher limits here
+@document_view_required(access='write')
 def upload_ticket_doc(request, pk):
     ticket = get_object_or_404(Ticket, id=pk)
     
@@ -267,7 +286,7 @@ def upload_ticket_doc(request, pk):
         'form_media': upload.media,
     })
 
-@login_required # TODO we need some tougher limits here 
+@document_view_required(access='read')
 def download_document(request, ticket_id, filename):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     doc = ticket.document_set.get(filename=filename)
