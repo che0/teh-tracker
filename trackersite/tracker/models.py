@@ -150,6 +150,14 @@ class Ticket(models.Model):
         """ Can given user edit this ticket through a non-admin interface? """
         return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
     
+    def can_see_documents(self, user):
+        """ Can given user see documents belonging to this ticket? """
+        return (user == self.requested_user) or user.has_perm('tracker.see_all_docs')
+    
+    def can_edit_documents(self, user):
+        """ Can given user edit documents belonging to this ticket? """
+        return (user == self.requested_user) or user.has_perm('tracker.edit_all_docs')
+    
     def associated_transactions_total(self):
         return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
     
@@ -263,7 +271,7 @@ class TrackerDocumentStorage(FileSystemStorage):
         self.base_url = None
 
 # introductory chunk for the template
-DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a> ({{doc.content_type}}, {{doc.size|filesizeformat}})')
+DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a> ({{doc.content_type}}; {{doc.size|filesizeformat}})')
 
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """

@@ -42,6 +42,8 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_edit_ticket'] = ticket.can_edit(user)
         admin_edit = user.is_staff and (user.has_perm('tracker.supervisor') or user.topic_set.filter(id=ticket.topic_id).exists())
         context['user_can_edit_ticket_in_admin'] = admin_edit
+        context['user_can_edit_documents'] = ticket.can_edit_documents(user)
+        context['user_can_see_documents'] = ticket.can_see_documents(user)
         return context
 ticket_detail = TicketDetailView.as_view()
 
@@ -201,6 +203,7 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+        'user_can_edit_documents': ticket.can_edit_documents(request.user),
     })
 
 class UploadDocumentForm(forms.Form):
@@ -220,14 +223,8 @@ def document_view_required(access, ticket_id_field='pk'):
             if not request.user.is_authenticated():
                 return redirect_to_login(request.path)
             
-            # is there some kind of superuser access?
-            if (access == 'read' and request.user.has_perm('tracker.see_all_docs')) or (access == 'write' and request.user.has_perm('tracker.edit_all_docs')):
-                return view(request, *args, **kwargs)
-            
-            # no -> check for ticket ownership
-            ticket_id = kwargs[ticket_id_field]
-            ticket = get_object_or_404(Ticket, id=ticket_id)
-            if ticket.requested_user == request.user:
+            ticket = get_object_or_404(Ticket, id=kwargs[ticket_id_field])
+            if (access == 'read' and ticket.can_see_documents(request.user)) or (access == 'write' and ticket.can_edit_documents(request.user)):
                 return view(request, *args, **kwargs)
             else:
                 return HttpResponseForbidden(_("You cannot see this ticket's documents."))
@@ -276,17 +273,22 @@ def upload_ticket_doc(request, pk):
             doc.payload.save(filename, payload)
             doc.save()
             messages.success(request, _('File %(filename)s has been saved.') % {'filename':filename})
-            return HttpResponseRedirect(reverse('edit_ticket_docs', kwargs={'pk':ticket.id}))
+            
+            if 'add-another' in request.POST:
+                next_view = 'upload_ticket_doc'
+            else:
+                next_view = 'ticket_detail'
+            return HttpResponseRedirect(reverse(next_view, kwargs={'pk':ticket.id}))
     else:
         upload = UploadDocumentForm()
     
     return render(request, 'tracker/upload_ticket_doc.html', {
         'ticket': ticket,
         'upload': upload,
-        'form_media': upload.media,
+        'form_media': adminCore + upload.media,
     })
 
-@document_view_required(access='read')
+@document_view_required(access='read', ticket_id_field='ticket_id')
 def download_document(request, ticket_id, filename):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     doc = ticket.document_set.get(filename=filename)
