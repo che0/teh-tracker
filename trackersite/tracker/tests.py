@@ -784,3 +784,9 @@ class UserProfileTests(TestCase):
         except (SiteProfileNotAvailable, UserProfile.DoesNotExist):
             self.assertTrue(False)
 
+class DocumentTests(TestCase):
+    # anonymous/unrelated user cannot see documents (only count information in ticket details)
+    # ticket owner can see and edit documents
+    # user with edit rights can see and edit documents
+    # user with access right can see, but not edit the documents
+    pass
