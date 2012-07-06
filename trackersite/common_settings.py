@@ -55,9 +55,9 @@ AUTH_PROFILE_MODULE = 'tracker.UserProfile'
 COMMENTS_APP = 'customcomments'
 
 ROOT_URLCONF = 'urls'
-LOGIN_URL = '/users/login/'
+LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_URL = '/users/logout/'
+LOGOUT_URL = '/account/logout/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
