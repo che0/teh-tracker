@@ -152,7 +152,7 @@ class Ticket(models.Model):
     
     def can_see_documents(self, user):
         """ Can given user see documents belonging to this ticket? """
-        return (user == self.requested_user) or user.has_perm('tracker.see_all_docs')
+        return (user == self.requested_user) or user.has_perm('tracker.see_all_docs') or user.has_perm('tracker.edit_all_docs')
     
     def can_edit_documents(self, user):
         """ Can given user edit documents belonging to this ticket? """

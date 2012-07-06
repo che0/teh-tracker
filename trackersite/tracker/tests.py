@@ -7,9 +7,10 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Permission, SiteProfileNotAvailable
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.base import ContentFile
 from django.conf import settings
 
-from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, Transaction, UserProfile
+from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, Transaction, UserProfile, Document
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -784,9 +785,67 @@ class UserProfileTests(TestCase):
         except (SiteProfileNotAvailable, UserProfile.DoesNotExist):
             self.assertTrue(False)
 
-class DocumentTests(TestCase):
-    # anonymous/unrelated user cannot see documents (only count information in ticket details)
-    # ticket owner can see and edit documents
-    # user with edit rights can see and edit documents
-    # user with access right can see, but not edit the documents
-    pass
+class DocumentAccessTests(TestCase):
+    def setUp(self):
+        self.owner = {'user': User.objects.create(username='ticket_owner'), 'password':'pw1'}
+        self.other_user = {'user':User.objects.create(username='other_user'), 'password':'pwo'}
+        for u in (self.owner, self.other_user):
+            u['user'].set_password(u['password'])
+            u['user'].save()
+    
+        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.ticket = Ticket.objects.create(summary='ticket', topic=self.topic, requested_user=self.owner['user'])
+        
+        self.doc = {'name':'test.txt', 'content_type':'text/plain', 'payload':'hello, world!'}
+        document = Document(ticket=self.ticket, filename=self.doc['name'], size=len(self.doc['payload']), content_type=self.doc['content_type'])
+        document.payload.save(self.doc['name'], ContentFile(self.doc['payload']))
+    
+    def check_user_access(self, user, can_see, can_edit):
+        c = Client()
+        if user != None:
+            c.login(username=user['user'].username, password=user['password'])
+            deny_code = 403
+        else:
+            deny_code = 302
+        
+        response = c.get(reverse('ticket_detail', kwargs={'pk':self.ticket.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['user_can_see_documents'], can_see)
+        self.assertEqual(response.context['user_can_edit_documents'], can_edit)
+        
+        response = c.get(reverse('edit_ticket_docs', kwargs={'pk':self.ticket.id}))
+        self.assertEqual(response.status_code, {True:200, False:deny_code}[can_edit])
+        
+        response = c.get(reverse('upload_ticket_doc', kwargs={'pk':self.ticket.id}))
+        self.assertEqual(response.status_code, {True:200, False:deny_code}[can_edit])
+        
+        response = c.get(reverse('download_document', kwargs={'ticket_id':self.ticket.id, 'filename':self.doc['name']}))
+        if can_see:
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, self.doc['payload'])
+        else:
+            self.assertEqual(response.status_code, deny_code)
+        
+    
+    def test_anonymous_user_access(self):
+        self.check_user_access(user=None, can_see=False, can_edit=False)
+    
+    def test_unrelated_user_access(self):
+        self.check_user_access(user=self.other_user, can_see=False, can_edit=False)
+    
+    def test_ticket_owner_access(self):
+        self.check_user_access(user=self.owner, can_see=True, can_edit=True)
+    
+    def test_auditor_access(self):
+        topic_content = ContentType.objects.get(app_label='tracker', model='Document')
+        ou = self.other_user['user']
+        ou.user_permissions.add(Permission.objects.get(content_type=topic_content, codename='see_all_docs'))
+        ou.save()
+        self.check_user_access(user=self.other_user, can_see=True, can_edit=False)
+    
+    def test_supervisor_access(self):
+        topic_content = ContentType.objects.get(app_label='tracker', model='Document')
+        ou = self.other_user['user']
+        ou.user_permissions.add(Permission.objects.get(content_type=topic_content, codename='edit_all_docs'))
+        ou.save()
+        self.check_user_access(user=self.other_user, can_see=True, can_edit=True)
