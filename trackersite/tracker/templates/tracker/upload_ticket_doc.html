@@ -30,7 +30,7 @@ $(document).ready(function() {
 
 {% csrf_token %}
 <input type="submit" value="{% trans "upload" %}" /> <input type="submit" name="add-another" value="{% trans "upload and add another" %}" />
-<p>{% blocktrans with mark='<span style="color:red">*</span>' %}Fields marked with {{mark}} are required.{% endblocktrans %}</p>
+<p>{% blocktrans with mark='<span style="color:red">*</span>' %}Fields marked with {{mark}} are required.{% endblocktrans %} {% trans "This document, including its file name and description, will be visible only to the ticket owner and specially privileged users." %}</p>
 </form>
 
 {% endblock content %}

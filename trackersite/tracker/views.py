@@ -207,13 +207,17 @@ def edit_ticket(request, pk):
     })
 
 class UploadDocumentForm(forms.Form):
-    file = forms.FileField()
-    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
-    description = forms.CharField(max_length=255, required=False)
+    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'size':'60'}))
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')}, widget=forms.TextInput(attrs={'size':'30'}))
+    description = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'60'}))
 
 DOCUMENT_FIELDS = ('filename', 'description')
+def document_formfield(f, **kwargs):
+    if f.name == 'description':
+        kwargs['widget'] = forms.TextInput(attrs={'size':'60'})
+    return f.formfield(**kwargs)
 documentformset_factory = curry(inlineformset_factory, Ticket, Document,
-    fields=DOCUMENT_FIELDS)
+    fields=DOCUMENT_FIELDS, formfield_callback=document_formfield)
 
 def document_view_required(access, ticket_id_field='pk'):
     """ Wrapper for document-accessing views (access=read|write)"""

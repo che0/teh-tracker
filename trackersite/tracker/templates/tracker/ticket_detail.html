@@ -74,7 +74,7 @@
 <h2>{% trans "Documents" %}</h2>
 {% if user_can_see_documents %}
 <ul>{% for doc in ticket.document_set.all %}
-	<li>{{doc.inline_intro}}</li>
+	<li>{{doc.html_item}}</li>
 {% endfor %}</ul>
 {% else %}
 <p>{% blocktrans count counter=ticket.document_set.count %}There is 1 document uploaded.{% plural %}There are {{counter}} documents uploaded.{% endblocktrans %}</p>

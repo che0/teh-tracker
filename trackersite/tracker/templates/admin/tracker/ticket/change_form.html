@@ -12,7 +12,7 @@
 		</ul>{% endif %}
 		{% if original.document_set.count > 0 %}
 			<ul>{% for doc in original.document_set.all %}
-				<li>{{doc.inline_intro}}</li>
+				<li>{{doc.html_item}}</li>
 			{% endfor %}</ul>
 		{% else %}
 			<p>{% trans "There are no documents uploaded for this ticket." %}</p>

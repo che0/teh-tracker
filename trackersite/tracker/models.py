@@ -271,7 +271,7 @@ class TrackerDocumentStorage(FileSystemStorage):
         self.base_url = None
 
 # introductory chunk for the template
-DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a> ({{doc.content_type}}; {{doc.size|filesizeformat}})')
+DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a>{% if detail and doc.description %}: {{doc.description}}{% endif %} <small>({{doc.content_type}}; {{doc.size|filesizeformat}})</small>')
 
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """
@@ -287,6 +287,10 @@ class Document(models.Model):
     
     def inline_intro(self):
         context = template.Context({'doc':self})
+        return DOCUMENT_INTRO_TEMPLATE.render(context)
+    
+    def html_item(self):
+        context = template.Context({'doc':self, 'detail':True})
         return DOCUMENT_INTRO_TEMPLATE.render(context)
     
     class Meta:
