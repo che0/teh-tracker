@@ -70,7 +70,7 @@
 </table>
 {% endif %}
 
-{% if ticket.document_set.all.count > 0 %}
+{% if ticket.document_set.count > 0 %}
 <h2>{% trans "Documents" %}</h2>
 {% if user_can_see_documents %}
 <ul>{% for doc in ticket.document_set.all %}
