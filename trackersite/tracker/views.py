@@ -17,8 +17,9 @@ from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
+from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile
+from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
 
 class CommentPostedCatcher(object):
     """ 
@@ -41,6 +42,8 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_edit_ticket'] = ticket.can_edit(user)
         admin_edit = user.is_staff and (user.has_perm('tracker.supervisor') or user.topic_set.filter(id=ticket.topic_id).exists())
         context['user_can_edit_ticket_in_admin'] = admin_edit
+        context['user_can_edit_documents'] = ticket.can_edit_documents(user)
+        context['user_can_see_documents'] = ticket.can_see_documents(user)
         return context
 ticket_detail = TicketDetailView.as_view()
 
@@ -200,7 +203,96 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+        'user_can_edit_documents': ticket.can_edit_documents(request.user),
     })
+
+class UploadDocumentForm(forms.Form):
+    file = forms.FileField()
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')})
+    description = forms.CharField(max_length=255, required=False)
+
+DOCUMENT_FIELDS = ('filename', 'description')
+documentformset_factory = curry(inlineformset_factory, Ticket, Document,
+    fields=DOCUMENT_FIELDS)
+
+def document_view_required(access, ticket_id_field='pk'):
+    """ Wrapper for document-accessing views (access=read|write)"""
+    def actual_decorator(view):
+        def wrapped_view(request, *args, **kwargs):
+            from django.contrib.auth.views import redirect_to_login
+            if not request.user.is_authenticated():
+                return redirect_to_login(request.path)
+            
+            ticket = get_object_or_404(Ticket, id=kwargs[ticket_id_field])
+            if (access == 'read' and ticket.can_see_documents(request.user)) or (access == 'write' and ticket.can_edit_documents(request.user)):
+                return view(request, *args, **kwargs)
+            else:
+                return HttpResponseForbidden(_("You cannot see this ticket's documents."))
+        return wrapped_view
+    
+    return actual_decorator
+        
+@document_view_required(access='write')
+def edit_ticket_docs(request, pk):
+    DocumentFormSet = documentformset_factory(extra=0, can_delete=True)
+    
+    ticket = get_object_or_404(Ticket, id=pk)
+    if request.method == 'POST':
+        try:
+            documents = DocumentFormSet(request.POST, prefix='docs', instance=ticket)
+        except forms.ValidationError, e:
+            return HttpResponseBadRequest(unicode(e))
+        
+        if documents.is_valid():
+            documents.save()
+        
+        messages.success(request, _('Document changes for ticket %s saved.') % ticket)
+        return HttpResponseRedirect(ticket.get_absolute_url())
+    else:
+        documents = DocumentFormSet(prefix='docs', instance=ticket)
+    
+    return render(request, 'tracker/edit_ticket_docs.html', {
+        'ticket': ticket,
+        'documents': documents,
+    })
+
+@document_view_required(access='write')
+def upload_ticket_doc(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    
+    if request.method == 'POST':
+        upload = UploadDocumentForm(request.POST, request.FILES)
+        if upload.is_valid():
+            doc = Document(ticket=ticket)
+            payload = upload.cleaned_data['file']
+            filename = upload.cleaned_data['name']
+            doc.filename = filename
+            doc.size = payload.size
+            doc.content_type = payload.content_type
+            doc.description = upload.cleaned_data['description']
+            doc.payload.save(filename, payload)
+            doc.save()
+            messages.success(request, _('File %(filename)s has been saved.') % {'filename':filename})
+            
+            if 'add-another' in request.POST:
+                next_view = 'upload_ticket_doc'
+            else:
+                next_view = 'ticket_detail'
+            return HttpResponseRedirect(reverse(next_view, kwargs={'pk':ticket.id}))
+    else:
+        upload = UploadDocumentForm()
+    
+    return render(request, 'tracker/upload_ticket_doc.html', {
+        'ticket': ticket,
+        'upload': upload,
+        'form_media': adminCore + upload.media,
+    })
+
+@document_view_required(access='read', ticket_id_field='ticket_id')
+def download_document(request, ticket_id, filename):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    doc = ticket.document_set.get(filename=filename)
+    return sendfile(request, doc.payload.path, mimetype=doc.content_type)
 
 def transaction_list(request):
     return render(request, 'tracker/transaction_list.html', {

@@ -16,6 +16,13 @@ class TicketAdmin(admin.ModelAdmin):
         else:
             return qs.extra(where=['topic_id in (select topic_id from tracker_topic_admin where user_id = %s)'], params=[request.user.id])
     
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context or {}
+        ticket = self.get_object(request, object_id)
+        extra_context['user_can_edit_documents'] = ticket.can_edit_documents(request.user)
+        extra_context['user_can_see_documents'] = ticket.can_see_documents(request.user)
+        return super(TicketAdmin, self).change_view(request, object_id, extra_context=extra_context)
+    
     exclude = ('updated', 'sort_date', 'cluster')
     readonly_fields = ('payment_status', 'requested_user_details')
     list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str', 'payment_status')

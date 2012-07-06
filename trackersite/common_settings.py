@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'tracker',
     'users',
     'customcomments',
+    'sendfile',
 )
 
 AUTH_PROFILE_MODULE = 'tracker.UserProfile'

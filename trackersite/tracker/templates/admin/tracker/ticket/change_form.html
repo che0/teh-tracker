@@ -2,3 +2,23 @@
 {% load i18n %}
 
 {% block form_top %}<div>{% trans "Ticket ID" %}: {{object_id}}</div>{% endblock %}
+
+{% block after_related_objects %}{% if user_can_edit_documents or original.document_set.count > 0 %}
+<fieldset class="module">
+	<h2>{% trans "Ticket documents" %}</h2>
+	{% if user_can_see_documents %}
+		{% if user_can_edit_documents %}<ul class="object-tools" style="margin-top: 0.5em; ">
+			<li><a href="{% url edit_ticket_docs original.id %}">{% trans "edit ticket documents" %}</a></li>
+		</ul>{% endif %}
+		{% if original.document_set.count > 0 %}
+			<ul>{% for doc in original.document_set.all %}
+				<li>{{doc.inline_intro}}</li>
+			{% endfor %}</ul>
+		{% else %}
+			<p>{% trans "There are no documents uploaded for this ticket." %}</p>
+		{% endif %}
+	{% else %}
+		<p>{% blocktrans count counter=original.document_set.count %}There is 1 document uploaded.{% plural %}There are {{counter}} documents uploaded.{% endblocktrans %}</p>
+	{% endif %}
+</fieldset>
+{% endif %}{% endblock %}

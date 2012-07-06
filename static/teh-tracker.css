@@ -51,3 +51,5 @@ td.money { text-align:right; }
 	#media_list li:after { content:";"; }
 	.comments_empty, .comments_add { display:none; }
 }
+
+fieldset.noframe { border: none; padding: 0; }

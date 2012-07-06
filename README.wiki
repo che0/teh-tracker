@@ -6,3 +6,4 @@ Teh tracker is a provisionary app intended to keep track of some [http://www.wik
 
 * django-1.3
 * south
+* django-sendfile
