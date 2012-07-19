@@ -418,6 +418,9 @@ class Cluster(models.Model):
             t.payment_status = status
             t.save(cluster_update_only=True)
         self.save()
+    
+    def __unicode__(self):
+        return unicode(self.id)
 
 @receiver(models.signals.m2m_changed)
 def cluster_note_transaction_link(sender, instance, action, **kwargs):

@@ -298,6 +298,56 @@ def download_document(request, ticket_id, filename):
     doc = ticket.document_set.get(filename=filename)
     return sendfile(request, doc.payload.path, mimetype=doc.content_type)
 
+def topic_finance(request):
+    # first make payment summaries per topic
+    out_topic_list = []
+    for topic in Topic.objects.all():
+        finance = {'fuzzy':False, 'unpaid':0, 'paid':0, 'overpaid':0}
+        # we set fuzzy flag if there is partially paid/overpaid cluster that involves more tickets
+        # and hence our sums may not make much sense
+        
+        for ticket in topic.ticket_set.all():
+            if ticket.payment_status == 'unpaid':
+                finance['unpaid'] += ticket.accepted_expeditures()
+            elif ticket.payment_status == 'partially_paid':
+                if ticket.cluster.more_tickets:
+                    finance['fuzzy'] = True
+                finance['paid'] += ticket.cluster.total_transactions
+                finance['unpaid'] += ticket.cluster.total_tickets - ticket.cluster.total_transactions
+            elif ticket.payment_status == 'paid':
+                finance['paid'] += ticket.accepted_expeditures()
+            elif ticket.payment_status == 'overpaid':
+                if ticket.cluster.more_tickets:
+                    finance['fuzzy'] = True
+                finance['paid'] += ticket.cluster.total_tickets
+                finance['overpaid'] += ticket.cluster.total_transactions - ticket.cluster.total_tickets
+        
+        out_item = {'topic':topic, 'finance': finance}
+        out_topic_list.append(out_item)
+    
+    # now make total summary per clusters
+    cluster_sums = {'unpaid':0, 'paid':0, 'overpaid':0}
+    for cluster in Cluster.objects.all():
+        tickets = cluster.total_tickets or 0
+        transactions = cluster.total_transactions or 0
+        if tickets == transactions:
+            # paid
+            cluster_sums['paid'] += tickets
+        elif tickets > transactions:
+            # unpaid or partially paid
+            cluster_sums['paid'] += transactions
+            cluster_sums['unpaid'] += tickets - transactions
+        else:
+            # overpaid
+            cluster_sums['paid'] += tickets
+            cluster_sums['overpaid'] += transactions - tickets
+    
+    return render(request, 'tracker/topic_finance.html', {
+        'topic_sums': out_topic_list,
+        'cluster_sums': cluster_sums,
+        'have_fuzzy': any([row['finance']['fuzzy'] for row in out_topic_list]),
+    })  
+
 def transaction_list(request):
     return render(request, 'tracker/transaction_list.html', {
         'currency': settings.TRACKER_CURRENCY,
