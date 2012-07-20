@@ -198,6 +198,29 @@ class Topic(models.Model):
             out[s['payment_status']] = s['payment_status__count']
         return out
     
+    def payment_summary(self):
+        finance = {'fuzzy':False, 'unpaid':0, 'paid':0, 'overpaid':0}
+        # we set fuzzy flag if there is partially paid/overpaid cluster that involves more tickets
+        # and hence our sums may not make much sense
+        
+        for ticket in self.ticket_set.all():
+            if ticket.payment_status == 'unpaid':
+                finance['unpaid'] += ticket.accepted_expeditures()
+            elif ticket.payment_status == 'partially_paid':
+                if ticket.cluster.more_tickets:
+                    finance['fuzzy'] = True
+                finance['paid'] += ticket.cluster.total_transactions
+                finance['unpaid'] += ticket.cluster.total_tickets - ticket.cluster.total_transactions
+            elif ticket.payment_status == 'paid':
+                finance['paid'] += ticket.accepted_expeditures()
+            elif ticket.payment_status == 'overpaid':
+                if ticket.cluster.more_tickets:
+                    finance['fuzzy'] = True
+                finance['paid'] += ticket.cluster.total_tickets
+                finance['overpaid'] += ticket.cluster.total_transactions - ticket.cluster.total_tickets
+        
+        return finance
+    
     class Meta:
         verbose_name = _('Topic')
         verbose_name_plural = _('Topics')
@@ -421,6 +444,25 @@ class Cluster(models.Model):
     
     def __unicode__(self):
         return unicode(self.id)
+    
+    @staticmethod
+    def cluster_sums():
+        sums = {'unpaid':0, 'paid':0, 'overpaid':0}
+        for cluster in Cluster.objects.all():
+            tickets = cluster.total_tickets or 0
+            transactions = cluster.total_transactions or 0
+            if tickets == transactions:
+                # paid
+                sums['paid'] += tickets
+            elif tickets > transactions:
+                # unpaid or partially paid
+                sums['paid'] += transactions
+                sums['unpaid'] += tickets - transactions
+            else:
+                # overpaid
+                sums['paid'] += tickets
+                sums['overpaid'] += transactions - tickets
+        return sums
 
 @receiver(models.signals.m2m_changed)
 def cluster_note_transaction_link(sender, instance, action, **kwargs):
@@ -438,3 +480,8 @@ def cluster_member_delete(sender, instance, **kwargs):
         instance.tickets.clear()
     elif sender == Ticket:
         instance.transaction_set.clear()
+        
+        # if previous clear produced a new cluster (which can happen for tickets, delete it)
+        cluster_refreshed = Ticket.objects.get(id=instance.id).cluster
+        if cluster_refreshed != None:
+            cluster_refreshed.delete()
