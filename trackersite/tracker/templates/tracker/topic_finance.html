@@ -25,11 +25,11 @@
 <td{% if item.finance.unpaid %} class="payment_cell unpaid"{% endif %}>{{item.finance.unpaid}}</td>
 <td{% if item.finance.paid %} class="payment_cell paid"{% endif %}>{{item.finance.paid}}</td>
 <td{% if item.finance.overpaid %} class="payment_cell overpaid"{% endif %}>{{item.finance.overpaid}}</td>
-{% if have_fuzzy %}<td>{% if item.finance.fuzzy %}*{% endif %}</td>{% endif %}
+{% if have_fuzzy %}<td>{% if item.finance.fuzzy %}✱{% endif %}</td>{% endif %}
 </tr>
 {% endfor %}
-<tr>
-	<th colspan="2">{% trans "Total" %}</th>
+<tr class="total first_total">
+	<td colspan="2">{% trans "Total" %}</td>
 	<td></td>
 	<td{% if cluster_sums.unpaid %} class="payment_cell unpaid"{% endif %}>{{cluster_sums.unpaid}}</td>
 	<td{% if cluster_sums.paid %} class="payment_cell paid"{% endif %}>{{cluster_sums.paid}}</td>
@@ -37,5 +37,9 @@
 	{% if have_fuzzy %}<td></td>{% endif %}
 </tr>
 </table>
+
+{% if have_fuzzy %}<p>
+✱ {% blocktrans %}Payment sums for marked topics may not be accurate, as they involve partial payments assigned to more than one ticket. Such payments may be counted multiple times in per-topic row. Total sums are not affected.{% endblocktrans %}
+</p>{% endif %}
 
 {% endblock content %}
