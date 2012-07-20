@@ -22,24 +22,24 @@
 <td><a href="{% url topic_detail item.topic.id %}">{{item.topic.name}}</a></td>
 <td><a href="{{item.topic.grant.get_absolute_url}}" title="{{topic.grant.full_name}}">{{item.topic.grant.short_name}}</a></td>
 <td>{{item.topic.ticket_set.count}}</td>
-<td{% if item.finance.unpaid %} class="payment_cell unpaid"{% endif %}>{{item.finance.unpaid}}</td>
-<td{% if item.finance.paid %} class="payment_cell paid"{% endif %}>{{item.finance.paid}}</td>
-<td{% if item.finance.overpaid %} class="payment_cell overpaid"{% endif %}>{{item.finance.overpaid}}</td>
+<td class="money payment_cell {% if item.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{item.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
+<td class="money payment_cell{% if item.finance.paid %} paid{% endif %}">{{item.finance.paid}}&nbsp;{{CURRENCY}}</td>
+<td class="money payment_cell {% if item.finance.overpaid %}overpaid{% else %}n_a{% endif %}">{{item.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
 {% if have_fuzzy %}<td>{% if item.finance.fuzzy %}✱{% endif %}</td>{% endif %}
 </tr>
 {% endfor %}
 <tr class="total first_total">
 	<td colspan="2">{% trans "Total" %}</td>
 	<td></td>
-	<td{% if cluster_sums.unpaid %} class="payment_cell unpaid"{% endif %}>{{cluster_sums.unpaid}}</td>
-	<td{% if cluster_sums.paid %} class="payment_cell paid"{% endif %}>{{cluster_sums.paid}}</td>
-	<td{% if cluster_sums.overpaid %} class="payment_cell overpaid"{% endif %}>{{cluster_sums.overpaid}}</td>
+	<td class="money payment_cell{% if cluster_sums.unpaid %} unpaid{% endif %}">{{cluster_sums.unpaid}}&nbsp;{{CURRENCY}}</td>
+	<td class="money payment_cell{% if cluster_sums.paid %} paid{% endif %}">{{cluster_sums.paid}}&nbsp;{{CURRENCY}}</td>
+	<td class="money payment_cell{% if cluster_sums.overpaid %} overpaid{% endif %}">{{cluster_sums.overpaid}}&nbsp;{{CURRENCY}}</td>
 	{% if have_fuzzy %}<td></td>{% endif %}
 </tr>
 </table>
 
 {% if have_fuzzy %}<p>
-✱ {% blocktrans %}Payment sums for marked topics may not be accurate, as they involve partial payments assigned to more than one ticket. Such payments may be counted multiple times in per-topic row. Total sums are not affected.{% endblocktrans %}
+✱ {% blocktrans %}Payment sums for marked topics may not be accurate, as they involve partial payments assigned to more than one ticket. Such payments may be counted multiple times in per-topic rows. Total sums are not affected.{% endblocktrans %}
 </p>{% endif %}
 
 {% endblock content %}

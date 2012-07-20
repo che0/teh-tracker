@@ -10,4 +10,6 @@
 {% include "tracker/topic_table.html" with show_grants="True" %}
 {% block below_list %}{% endblock %}
 
+<p><a href="{% url topic_finance %}">{% trans "topic finance" %}</a></p>
+
 {% endblock content %}
