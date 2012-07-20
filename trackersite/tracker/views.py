@@ -311,7 +311,6 @@ def topic_finance(request):
 
 def transaction_list(request):
     return render(request, 'tracker/transaction_list.html', {
-        'currency': settings.TRACKER_CURRENCY,
         'transaction_list': Transaction.objects.all(),
         'total': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     })
@@ -337,7 +336,6 @@ def user_list(request):
     return render(request, 'tracker/user_list.html', {
         'user_list': User.objects.all(),
         'unassigned': unassigned,
-        'currency': settings.TRACKER_CURRENCY,
         'totals': totals,
     })
 

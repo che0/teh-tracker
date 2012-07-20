@@ -18,13 +18,13 @@
 <h2>{% trans "Transactions" %}</h2>
 <table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for t in cluster.transaction_set.all %}
-<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td>{{t.amount}} {{t.currency}}</td><td>{{t.description}}</td>
+<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td class="money">{{t.amount}}&nbsp;{{CURRENCY}}</td><td>{{t.description}}</td>
 <td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 <td>{{t.accounting_info}}</td></tr>
 {% endfor %}
 <tr class="total first_total">
 <td colspan="2">{% trans "Total transactions" %}</td>
-<td class="money">{{cluster.total_transactions}}&nbsp;{{cluster.ticket_set.all.0.currency}}</td>
+<td class="money">{{cluster.total_transactions}}&nbsp;{{CURRENCY}}</td>
 <td colspan="3"></td>
 </tr>
 </table>

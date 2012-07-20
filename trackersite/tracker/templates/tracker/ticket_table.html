@@ -37,12 +37,12 @@
 {# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-{# expeditures #}<td class="money">{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{ticket.currency}}{% endif %}</td>
+{# expeditures #}<td class="money">{% if ticket.expeditures.count > 0 %}{{ticket.expeditures.amount}}&nbsp;{{CURRENCY}}{% endif %}</td>
 {% endif %}
 
 <td>{{ticket.state_str}}</td>
 {% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
-<td class="money">{% if accepted > 0 %}{{accepted}}&nbsp;{{ticket.currency}}{% endif %}</td>
+<td class="money">{% if accepted > 0 %}{{accepted}}&nbsp;{{CURRENCY}}{% endif %}</td>
 <td class="payment_status">{{ticket.get_payment_status_display}}</td>
 {% endwith %}{% endif %}
 
@@ -57,9 +57,9 @@
 	{% if summary_item.media_count.objects > 0 %}<td>{{summary_item.media_count.objects}}</td><td>{{summary_item.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-	<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.expeditures.amount}}&nbsp;{{ticket_list.0.currency}}{% endif %}</td>
+	<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.expeditures.amount}}&nbsp;{{CURRENCY}}{% endif %}</td>
 	<td></td>
-	<td class="money">{{summary_item.accepted_expeditures}}&nbsp;{{ticket_list.0.currency}}</td>
+	<td class="money">{{summary_item.accepted_expeditures}}&nbsp;{{CURRENCY}}</td>
 	<td colspan="2"></td>
 {% else %}
 	<td colspan="3"></td>
