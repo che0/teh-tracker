@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-07-21 21:35+0200\n"
-"PO-Revision-Date: 2012-07-21 21:35+0200\n"
+"PO-Revision-Date: 2012-07-21 21:38+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -888,7 +888,7 @@ msgstr "Celkem výdaje"
 #: tracker/templates/tracker/ticket_table.html:22
 #: tracker/templates/tracker/user_list.html:11
 msgid "Accepted expeditures"
-msgstr "Přijaté výdaje"
+msgstr "Schválené výdaje"
 
 #: tracker/templates/tracker/ticket_detail.html:60
 #, python-format
@@ -1106,7 +1106,7 @@ msgstr "Nejsou k dispozici žádné tikety."
 
 #: tracker/templates/tracker/user_detail.html:26
 msgid "Accepted expeditures total"
-msgstr "Přijaté výdaje celkem"
+msgstr "Schválené výdaje celkem"
 
 #: tracker/templates/tracker/user_details_change.html:4
 #: tracker/templates/tracker/user_details_change.html:8
@@ -1367,7 +1367,7 @@ msgstr "Tým aplikace %(site_name)s"
 #~ msgstr "Zůstatek"
 
 #~ msgid "Accepted"
-#~ msgstr "Přijaté"
+#~ msgstr "Schválené"
 
 #~ msgid "open for new tickets"
 #~ msgstr "otevřeno pro nové tikety"
