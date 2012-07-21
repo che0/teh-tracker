@@ -204,7 +204,8 @@ class Topic(models.Model):
         # and hence our sums may not make much sense
         
         def cluster_topic_count(cluster):
-            return len({t.topic_id for t in cluster.ticket_set.only('topic').select_related('topic')})
+            topic_set = set([t.topic_id for t in cluster.ticket_set.only('topic').select_related('topic')])
+            return len(topic_set)
         
         seen_cluster_ids = set()
         for ticket in self.ticket_set.all():
