@@ -203,21 +203,27 @@ class Topic(models.Model):
         # we set fuzzy flag if there is partially paid/overpaid cluster that involves more tickets
         # and hence our sums may not make much sense
         
+        def cluster_topic_count(cluster):
+            return len({t.topic_id for t in cluster.ticket_set.only('topic').select_related('topic')})
+        
+        seen_cluster_ids = set()
         for ticket in self.ticket_set.all():
             if ticket.payment_status == 'unpaid':
                 finance['unpaid'] += ticket.accepted_expeditures()
-            elif ticket.payment_status == 'partially_paid':
-                if ticket.cluster.more_tickets:
-                    finance['fuzzy'] = True
-                finance['paid'] += ticket.cluster.total_transactions
-                finance['unpaid'] += ticket.cluster.total_tickets - ticket.cluster.total_transactions
             elif ticket.payment_status == 'paid':
                 finance['paid'] += ticket.accepted_expeditures()
-            elif ticket.payment_status == 'overpaid':
-                if ticket.cluster.more_tickets:
+            elif ticket.payment_status in ('partially_paid', 'overpaid'):
+                cluster_topics = cluster_topic_count(ticket.cluster)
+                if cluster_topics > 1:
                     finance['fuzzy'] = True
-                finance['paid'] += ticket.cluster.total_tickets
-                finance['overpaid'] += ticket.cluster.total_transactions - ticket.cluster.total_tickets
+                if ticket.cluster.id not in seen_cluster_ids:
+                    seen_cluster_ids.add(ticket.cluster.id)
+                    if ticket.payment_status == 'partially_paid':
+                        finance['paid'] += ticket.cluster.total_transactions / cluster_topics
+                        finance['unpaid'] += (ticket.cluster.total_tickets - ticket.cluster.total_transactions) / cluster_topics
+                    else: # overpaid
+                        finance['paid'] += ticket.cluster.total_tickets / cluster_topics
+                        finance['overpaid'] += (ticket.cluster.total_transactions - ticket.cluster.total_tickets) / cluster_topics
         
         return finance
     
