@@ -166,6 +166,67 @@ class Ticket(models.Model):
         verbose_name_plural = _('Tickets')
         ordering = ['-sort_date']
 
+class FinanceStatus(object):
+    """ This is not a model, but rather a representation of topic finance status. """
+    
+    def __init__(self, fuzzy=False, unpaid=0, paid=0, overpaid=0):
+        self.fuzzy = fuzzy
+        # we set fuzzy flag if there is partially paid/overpaid cluster that involves more tickets
+        # and hence our sums may not make much sense
+        
+        self.unpaid = unpaid
+        self.paid = paid
+        self.overpaid = overpaid
+        
+        self.seen_cluster_ids = set()
+    
+    def __repr__(self):
+        return 'FinanceStatus(fuzzy=%s, unpaid=%s, paid=%s, overpaid=%s)' % (self.fuzzy, self.unpaid, self.paid, self.overpaid)
+    
+    def _equals(self, other):
+        return self.fuzzy == other.fuzzy and self.unpaid == other.unpaid and self.paid == other.paid and self.overpaid == other.overpaid
+    
+    def __eq__(self, other):
+        try:
+            return self._equals(other)
+        except AttributeError:
+            return NotImplemented
+    
+    def __ne__(self, other):
+        try:
+            return not self._equals(other)
+        except AttributeError:
+            return NotImplemented
+    
+    def add_ticket(self, ticket):
+        if ticket.payment_status == 'unpaid':
+            self.unpaid += ticket.accepted_expeditures()
+        elif ticket.payment_status == 'paid':
+            self.paid += ticket.accepted_expeditures()
+        elif ticket.payment_status in ('partially_paid', 'overpaid'):
+            cluster_topics = ticket.cluster.get_topic_count()
+            if cluster_topics > 1:
+                self.fuzzy = True
+            if ticket.cluster.id not in self.seen_cluster_ids:
+                self.seen_cluster_ids.add(ticket.cluster.id)
+                if ticket.payment_status == 'partially_paid':
+                    self.paid += ticket.cluster.total_transactions / cluster_topics
+                    self.unpaid += (ticket.cluster.total_tickets - ticket.cluster.total_transactions) / cluster_topics
+                else: # overpaid
+                    self.paid += ticket.cluster.total_tickets / cluster_topics
+                    self.overpaid += (ticket.cluster.total_transactions - ticket.cluster.total_tickets) / cluster_topics
+    
+    def add_finance(self, other):
+        self.fuzzy = self.fuzzy or other.fuzzy
+        self.unpaid += other.unpaid
+        self.paid += other.paid
+        self.overpaid += other.overpaid
+        self.seen_cluster_ids = self.seen_cluster_ids.union(other.seen_cluster_ids)
+    
+    def as_dict(self):
+        return {'fuzzy':self.fuzzy, 'unpaid':self.unpaid, 'paid':self.paid, 'overpaid':self.overpaid}
+
+
 class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
@@ -199,32 +260,9 @@ class Topic(models.Model):
         return out
     
     def payment_summary(self):
-        finance = {'fuzzy':False, 'unpaid':0, 'paid':0, 'overpaid':0}
-        # we set fuzzy flag if there is partially paid/overpaid cluster that involves more tickets
-        # and hence our sums may not make much sense
-        
-        def cluster_topic_count(cluster):
-            topic_set = set([t.topic_id for t in cluster.ticket_set.only('topic').select_related('topic')])
-            return len(topic_set)
-        
-        seen_cluster_ids = set()
+        finance = FinanceStatus()
         for ticket in self.ticket_set.all():
-            if ticket.payment_status == 'unpaid':
-                finance['unpaid'] += ticket.accepted_expeditures()
-            elif ticket.payment_status == 'paid':
-                finance['paid'] += ticket.accepted_expeditures()
-            elif ticket.payment_status in ('partially_paid', 'overpaid'):
-                cluster_topics = cluster_topic_count(ticket.cluster)
-                if cluster_topics > 1:
-                    finance['fuzzy'] = True
-                if ticket.cluster.id not in seen_cluster_ids:
-                    seen_cluster_ids.add(ticket.cluster.id)
-                    if ticket.payment_status == 'partially_paid':
-                        finance['paid'] += ticket.cluster.total_transactions / cluster_topics
-                        finance['unpaid'] += (ticket.cluster.total_tickets - ticket.cluster.total_transactions) / cluster_topics
-                    else: # overpaid
-                        finance['paid'] += ticket.cluster.total_tickets / cluster_topics
-                        finance['overpaid'] += (ticket.cluster.total_transactions - ticket.cluster.total_tickets) / cluster_topics
+            finance.add_ticket(ticket)
         
         return finance
     
@@ -438,6 +476,11 @@ class Cluster(models.Model):
                 return 'paid'
         else: # paid > tickets
             return 'overpaid'
+    
+    def get_topic_count(self):
+        """ Retuns number of topic this cluster spans """
+        topic_set = set([t.topic_id for t in self.ticket_set.only('topic').select_related('topic')])
+        return len(topic_set)
     
     def update_status(self):
         """ Recounts all the summaries and updates payment status in tickets. """

@@ -19,7 +19,7 @@ from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
 
 class CommentPostedCatcher(object):
     """ 
@@ -299,14 +299,22 @@ def download_document(request, ticket_id, filename):
     return sendfile(request, doc.payload.path, mimetype=doc.content_type)
 
 def topic_finance(request):
-    out_topic_list = []
-    for topic in Topic.objects.all():
-        out_topic_list.append({'topic':topic, 'finance': topic.payment_summary()})
+    grants_out = []
+    for grant in Grant.objects.all():
+        topics = []
+        grant_finance = FinanceStatus()
+        for topic in grant.topic_set.all():
+            topic_finance = topic.payment_summary()
+            grant_finance.add_finance(topic_finance)
+            topics.append({'topic':topic, 'finance':topic_finance})
+        grants_out.append({'grant':grant, 'topics':topics, 'finance':grant_finance, 'rows':len(topics)+1})
     
+    csums = Cluster.cluster_sums()
     return render(request, 'tracker/topic_finance.html', {
-        'topic_sums': out_topic_list,
-        'cluster_sums': Cluster.cluster_sums(),
-        'have_fuzzy': any([row['finance']['fuzzy'] for row in out_topic_list]),
+        'grants': grants_out,
+        'cluster_sums': csums,
+        'total_transactions': csums['paid'] + csums['overpaid'], 
+        'have_fuzzy': any([row['finance'].fuzzy for row in grants_out]),
     })  
 
 def transaction_list(request):

@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
 
-from tracker.models import Ticket, Topic, Grant, MediaInfo, Expediture, Transaction, UserProfile, Document, Cluster
+from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, Transaction, UserProfile, Document, Cluster
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -645,30 +645,30 @@ class ClusterTest(TestCase):
         ticket.state = 'expenses filed'
         ticket.save()
         self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':0, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':0, 'overpaid':0}, Cluster.cluster_sums())
         
         Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
         self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':100, 'paid':0, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(unpaid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':100, 'paid':0, 'overpaid':0}, Cluster.cluster_sums())
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=50, other=self.user, description='part one')
         tr.tickets.add(ticket)
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':50, 'paid':50, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(unpaid=50, paid=50), self.topic.payment_summary())
         self.assertEqual({'unpaid':50, 'paid':50, 'overpaid':0}, Cluster.cluster_sums())
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=50, other=self.user, description='part one')
         tr.tickets.add(ticket)
         self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=50, other=self.user, description='overkill')
         tr.tickets.add(ticket)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':50}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100, overpaid=50), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':50}, Cluster.cluster_sums())
         
         c = Ticket.objects.get(id=tid).cluster
@@ -702,7 +702,7 @@ class ClusterTest(TestCase):
         # check status
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':200, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(unpaid=200, paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':200, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         # complete payment
@@ -722,7 +722,7 @@ class ClusterTest(TestCase):
         # check status
         self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
         self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':300, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=300), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':0}, Cluster.cluster_sums())
         
         # overpay ticket1
@@ -732,7 +732,7 @@ class ClusterTest(TestCase):
         self.assertEqual(cid, Transaction.objects.get(id=tr1p.id).cluster.id)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':300, 'overpaid':5}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
         
         # separate clusters
@@ -750,13 +750,13 @@ class ClusterTest(TestCase):
         self.assertEqual(False, Ticket.objects.get(id=tid2).cluster.more_tickets)
         self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
         
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':300, 'overpaid':5}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
         
         # reconnect make ticket2 overpaid again
         tr1.tickets.add(ticket2)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':300, 'overpaid':5}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
 
     def test_cluster_transaction_delete(self):
@@ -767,19 +767,19 @@ class ClusterTest(TestCase):
         tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
         tr1.tickets.add(ticket)
         self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=5, other=self.user, description='pay1plus')
         tr2.tickets.add(ticket)
         self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':5}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100, overpaid=5), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':5}, Cluster.cluster_sums())
         
         # delete tr2 to make ticket 'paid' again
         tr2.delete()
         self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
     
     def test_cluster_ticket_delete(self):
@@ -791,7 +791,7 @@ class ClusterTest(TestCase):
         tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=100, other=self.user, description='pay1')
         tr1.tickets.add(ticket1)
         self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         # add another ticket to the transaction cluster
@@ -800,13 +800,13 @@ class ClusterTest(TestCase):
         tr1.tickets.add(ticket2)
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':50, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(unpaid=50, paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':50, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         # delete tr2 to make ticket 'paid' again
         ticket2.delete()
         self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual({'fuzzy':False, 'unpaid':0, 'paid':100, 'overpaid':0}, self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
     
     def test_fuzzy_cluster(self):
@@ -826,8 +826,8 @@ class ClusterTest(TestCase):
         self.assertEqual('partially_paid', Ticket.objects.get(id=ticket1.id).payment_status)
         self.assertEqual('partially_paid', Ticket.objects.get(id=ticket2.id).payment_status)
         self.assertEqual('partially_paid', Ticket.objects.get(id=ticket3.id).payment_status)
-        self.assertEqual({'fuzzy':True, 'unpaid':60, 'paid':50, 'overpaid':0}, self.topic.payment_summary())
-        self.assertEqual({'fuzzy':True, 'unpaid':60, 'paid':50, 'overpaid':0}, another_topic.payment_summary())
+        self.assertEqual(FinanceStatus(fuzzy=True, unpaid=60, paid=50), self.topic.payment_summary())
+        self.assertEqual(FinanceStatus(fuzzy=True, unpaid=60, paid=50), another_topic.payment_summary())
         self.assertEqual({'unpaid':120, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
 
 class UserProfileTests(TestCase):

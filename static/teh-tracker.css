@@ -5,8 +5,11 @@ table td { border-bottom: 1px solid black; }
 table tr:hover td { background-color: #ddd; }
 #user { text-align: right; }
 abbr[title] { border-bottom: dotted 1px black; }
+tr.highlight td { background-color: #eee; }
 tr.total td { font-weight: bold; }
+tr.mid_total td { border-top: 1px solid #666; }
 tr.first_total td { border-top: 2px solid black; }
+tr.grand_total td { border-bottom: double 3px black; }
 .ticket_list tr.total td { border-top: 2px solid black; }
 .hide-switch > .unhide { display: none; }
 .hidden { display: none; }
