@@ -35,7 +35,7 @@
 		<td class="money payment_cell">{{gitem.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell">{{gitem.finance.paid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell">{{gitem.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
-		{% if have_fuzzy %}<td>{% if gitem.finance.fuzzy %}✱{% endif %}</td>{% endif %}
+		{% if have_fuzzy %}<td></td>{% endif %}
 	</tr>
 {% endfor %}{# /grant #}
 
