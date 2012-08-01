@@ -27,7 +27,7 @@
 		<td class="money payment_cell {% if titem.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{titem.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell{% if titem.finance.paid %} paid{% endif %}">{{titem.finance.paid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell {% if titem.finance.overpaid %}overpaid{% else %}n_a{% endif %}">{{titem.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
-		{% if have_fuzzy %}<td>{% if finance.fuzzy %}✱{% endif %}</td>{% endif %}
+		{% if have_fuzzy %}<td>{% if titem.finance.fuzzy %}✱{% endif %}</td>{% endif %}
 	</tr>
 	{% endfor %}{# /topics #}
 	<tr class="total highlight mid_total">
@@ -35,7 +35,7 @@
 		<td class="money payment_cell">{{gitem.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell">{{gitem.finance.paid}}&nbsp;{{CURRENCY}}</td>
 		<td class="money payment_cell">{{gitem.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
-		{% if have_fuzzy %}<td>{% if finance.fuzzy %}✱{% endif %}</td>{% endif %}
+		{% if have_fuzzy %}<td>{% if gitem.finance.fuzzy %}✱{% endif %}</td>{% endif %}
 	</tr>
 {% endfor %}{# /grant #}
 

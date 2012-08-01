@@ -1023,7 +1023,7 @@ msgstr "Celkem"
 
 #: tracker/templates/tracker/topic_finance.html:50
 msgid "Paid out in total"
-msgstr ""
+msgstr "Vyplaceno celkem"
 
 #: tracker/templates/tracker/topic_finance.html:57
 msgid ""
