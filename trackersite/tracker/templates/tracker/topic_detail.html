@@ -24,7 +24,7 @@
 
 {% if topic.ticket_set.all|length > 0 %}
 <h2>{% trans "Tickets" %}</h2>
-{% include "tracker/ticket_table.html" with ticket_list=topic.ticket_set.all show_media=topic.ticket_media show_expenses=topic.ticket_expenses summary_item=topic show_requester="True" total_desc=_("Total for this topic") total_colspan=5 %}
+{% include "tracker/ticket_table.html" with ticket_list=topic.ticket_set.all show_media=topic.ticket_media show_expenses=topic.ticket_expenses summary_item=topic show_requester="True" total_desc=_("Total for this topic") total_colspan=4 %}
 {% endif %}
 
 {% get_comment_count for topic as comment_count %}
