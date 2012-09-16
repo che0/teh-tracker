@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.functional import curry, lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.generic import ListView, DetailView, FormView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
@@ -208,7 +208,7 @@ def edit_ticket(request, pk):
 
 class UploadDocumentForm(forms.Form):
     file = forms.FileField(widget=forms.ClearableFileInput(attrs={'size':'60'}))
-    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':_('We need a sane file name, such as my-invoice123.jpg')}, widget=forms.TextInput(attrs={'size':'30'}))
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':ugettext_lazy('We need a sane file name, such as my-invoice123.jpg')}, widget=forms.TextInput(attrs={'size':'30'}))
     description = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'60'}))
 
 DOCUMENT_FIELDS = ('filename', 'description')
