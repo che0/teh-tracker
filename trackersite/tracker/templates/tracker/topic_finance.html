@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n trackertags %}
 
 {% block title %}{% trans "Topic finance" %}{% endblock %}
 
@@ -24,31 +24,31 @@
 		{% if not forloop.first %}<tr>{% endif %}
 		<td><a href="{% url topic_detail titem.topic.id %}">{{titem.topic.name}}</a></td>
 		<td>{{titem.topic.ticket_set.count}}</td>
-		<td class="money payment_cell {% if titem.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{titem.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
-		<td class="money payment_cell{% if titem.finance.paid %} paid{% endif %}">{{titem.finance.paid}}&nbsp;{{CURRENCY}}</td>
-		<td class="money payment_cell {% if titem.finance.overpaid %}overpaid{% else %}n_a{% endif %}">{{titem.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
+		<td class="money payment_cell {% if titem.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{titem.finance.unpaid|money}}</td>
+		<td class="money payment_cell{% if titem.finance.paid %} paid{% endif %}">{{titem.finance.paid|money}}</td>
+		<td class="money payment_cell {% if titem.finance.overpaid %}overpaid{% else %}n_a{% endif %}">{{titem.finance.overpaid|money}}</td>
 		{% if have_fuzzy %}<td>{% if titem.finance.fuzzy %}✱{% endif %}</td>{% endif %}
 	</tr>
 	{% endfor %}{# /topics #}
 	<tr class="total highlight mid_total">
 		<td colspan="2">{% blocktrans with gname=gitem.grant.short_name%}Total {{gname}}{% endblocktrans %}</td>
-		<td class="money payment_cell">{{gitem.finance.unpaid}}&nbsp;{{CURRENCY}}</td>
-		<td class="money payment_cell">{{gitem.finance.paid}}&nbsp;{{CURRENCY}}</td>
-		<td class="money payment_cell">{{gitem.finance.overpaid}}&nbsp;{{CURRENCY}}</td>
+		<td class="money payment_cell">{{gitem.finance.unpaid|money}}</td>
+		<td class="money payment_cell">{{gitem.finance.paid|money}}</td>
+		<td class="money payment_cell">{{gitem.finance.overpaid|money}}</td>
 		{% if have_fuzzy %}<td></td>{% endif %}
 	</tr>
 {% endfor %}{# /grant #}
 
 <tr class="total first_total grand_total highlight">
 	<td colspan="3">{% trans "Total" %}</td>
-	<td class="money payment_cell">{{cluster_sums.unpaid}}&nbsp;{{CURRENCY}}</td>
-	<td class="money payment_cell">{{cluster_sums.paid}}&nbsp;{{CURRENCY}}</td>
-	<td class="money payment_cell">{{cluster_sums.overpaid}}&nbsp;{{CURRENCY}}</td>
+	<td class="money payment_cell">{{cluster_sums.unpaid|money}}</td>
+	<td class="money payment_cell">{{cluster_sums.paid|money}}</td>
+	<td class="money payment_cell">{{cluster_sums.overpaid|money}}</td>
 	{% if have_fuzzy %}<td></td>{% endif %}
 </tr>
 <tr class="total">
 	<td colspan="4">{% trans "Paid out in total" %}</td>
-	<td colspan="2" style="text-align: center;">{{total_transactions}}&nbsp;{{CURRENCY}}</td>
+	<td colspan="2" style="text-align: center;">{{total_transactions|money}}</td>
 	{% if have_fuzzy %}<td></td>{% endif %}
 </tr>
 </table>

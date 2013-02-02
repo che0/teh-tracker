@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n trackertags %}
 
 {% block title %}{{ user_obj }}{% endblock %}
 {# note: "user" is used to identify user session, so "user_obj" is the user we're looking at #}
@@ -19,11 +19,11 @@
 <h2>{% trans "Transactions" %}</h2>
 <table><tr><th>{% trans "Date" %}</th><th>{% trans "Description" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for item in user_obj.transaction_set.all %}
-<tr><td>{{item.date}}</td><td>{{item.description}}</td><td class="money">{{item.amount}}&nbsp;{{CURRENCY}}</td>
+<tr><td>{{item.date}}</td><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td>
 <td>{% for ticket in item.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 <td>{{item.accounting_info}}</td></tr>{% endfor %}
-<tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td class="money">{{user_obj.get_profile.transactions.amount}}&nbsp;{{CURRENCY}}</td><td></td><td></td></tr>
-<tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td class="money">{{user_obj.get_profile.accepted_expeditures}}&nbsp;{{CURRENCY}}</td><td></td><td></td></tr>
+<tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td class="money">{{user_obj.get_profile.transactions.amount|money}}</td><td></td><td></td></tr>
+<tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td class="money">{{user_obj.get_profile.accepted_expeditures|money}}</td><td></td><td></td></tr>
 </table>
 {% endif %}
 
