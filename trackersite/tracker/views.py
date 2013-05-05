@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.generic import ListView, DetailView, FormView
@@ -394,14 +394,24 @@ class UserDetailsChange(FormView):
         
 user_details_change = login_required(UserDetailsChange.as_view())
 
-class ClusterDetailView(DetailView):
-    model = Cluster
-        
-    def get_context_data(self, **kwargs):
-            context = super(ClusterDetailView, self).get_context_data(**kwargs)
-            context['ticket_summary'] = {'accepted_expeditures': context['cluster'].total_tickets}
-            return context
-cluster_detail = ClusterDetailView.as_view()
+def cluster_detail(request, pk):
+    id = int(pk)
+    try:
+        cluster = Cluster.objects.get(id=id)
+    except Cluster.DoesNotExist:
+        try:
+            ticket = Ticket.objects.get(id=id)
+            if ticket.cluster is None:
+                raise Http404
+            return HttpResponseRedirect(reverse('cluster_detail', kwargs={'pk':ticket.cluster.id}))
+        except Ticket.DoesNotExist:
+            raise Http404
+    
+    return render(request, 'tracker/cluster_detail.html', {
+        'cluster': cluster,
+        'ticket_summary': {'accepted_expeditures': cluster.total_tickets},
+    })
+    
 
 class AdminUserListView(ListView):
     model = User
