@@ -8,7 +8,10 @@ $(document).ready(function() {
 		var name = $('#id_name');
 		if ((name.val() == '') || (name.attr('data-prefilled') == 'true'))
 		{
-			name.val($('#id_file').val());
+			var filename = $('#id_file').val();
+			filename = filename.replace('C:\\fakepath\\', '');
+			filename = filename.replace(new RegExp('[^-_\\.A-Za-z0-9]', 'g'), '-');
+			name.val(filename);
 			name.attr('data-prefilled', 'true');
 		}
 	});
