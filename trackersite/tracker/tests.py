@@ -609,10 +609,10 @@ class TransactionTest(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('text/csv', response['Content-Type'])
         self.assertEqual(
-            "DATE,OTHER PARTY,AMOUNT CZK,DESCRIPTION,TICKETS,GRANTS,ACCOUNTING INFO\r\n"
-            + "2011-12-26,user2,300.00,user2,,,\r\n"
-            + "2011-12-25,user,-200.00,other,,,\r\n"
-            + "2011-12-24,user,500.00,some desc,,,\r\n", response.content)
+            "DATE;OTHER PARTY;AMOUNT CZK;DESCRIPTION;TICKETS;GRANTS;ACCOUNTING INFO\r\n"
+            + "2011-12-26;user2;300.00;user2;;;\r\n"
+            + "2011-12-25;user;-200.00;other;;;\r\n"
+            + "2011-12-24;user;500.00;some desc;;;\r\n", response.content)
     
     def test_user_list(self):
         topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
