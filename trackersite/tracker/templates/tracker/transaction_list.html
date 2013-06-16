@@ -23,4 +23,5 @@
 {% else %}
 <p>{% trans "No transactions available." %}</p>
 {% endif %}
+<p><a href="{% url transactions_csv %}">{% trans "download as csv" %}</a></p>
 {% endblock content %}

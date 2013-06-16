@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+import datetime, csv
 
 from django.db import models
 from django.db.models import Q
@@ -322,6 +322,22 @@ def transaction_list(request):
         'transaction_list': Transaction.objects.all(),
         'total': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     })
+
+def transactions_csv(request):
+    response = HttpResponse(mimetype='text/csv')
+    writer = csv.writer(response)
+    writer.writerow(['DATE', 'OTHER PARTY', 'AMOUNT ' + unicode(settings.TRACKER_CURRENCY), 'DESCRIPTION', 'TICKETS', 'GRANTS', 'ACCOUNTING INFO'])
+    writer.writerows([
+            tx.date.strftime('%Y-%m-%d'),
+            tx.other_party(),
+            tx.amount,
+            tx.description,
+            ' '.join([unicode(t.id) for t in tx.tickets.all()]),
+            ' '.join([g.short_name for g in tx.grant_set()]),
+            tx.accounting_info,
+        ] for tx in Transaction.objects.all()
+    )
+    return response
 
 def user_list(request):
     totals = {
