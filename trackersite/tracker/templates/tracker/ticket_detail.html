@@ -24,7 +24,11 @@
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
 {% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
-{% trans "State" %}: {{ ticket.state_str }}<br />
+{% trans "State" %}: {{ ticket.state_str }}
+{% if user_can_edit_ticket %}TODO edit {% endif %}
+{% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
+	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by_html}}{% endif %}, {{ack.added}}</li>
+{% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
 {% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}

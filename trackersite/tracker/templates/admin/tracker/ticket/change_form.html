@@ -1,7 +1,20 @@
 {% extends "admin/change_form.html" %}
 {% load i18n %}
 
-{% block form_top %}<div>{% trans "Ticket ID" %}: {{object_id}}</div>{% endblock %}
+{% block form_top %}<div>{% trans "Ticket ID" %}: {{object_id}}</div>
+<div style="float:right">
+<h2>{% trans "Approvals" %}</h2>
+<ul>{% for ack in original.ticketack_set.all %}
+	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by_html}}{% else %}; {% endif %}{{ack.added}} <a href="#">REMOVE TODO</a></li>
+{% endfor %}</ul>
+
+<ul>
+{{add_ack_form.as_ul}}
+</ul>
+
+</div>
+
+{% endblock %}
 
 {% block after_related_objects %}{% if user_can_edit_documents or original.document_set.count > 0 %}
 <fieldset class="module">

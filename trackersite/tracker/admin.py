@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
+from django.conf.urls.defaults import patterns
 from django.contrib import admin
+from django import forms
 from tracker import models
+from django.utils.translation import ugettext_lazy as _
 
 class MediaInfoAdmin(admin.TabularInline):
     model = models.MediaInfo
 
 class ExpeditureAdmin(admin.TabularInline):
     model = models.Expediture
+
+class AddAckForm(forms.Form):
+    ack_type = forms.ChoiceField(choices=models.ACK_TYPES, label=_('Type'))
+    comment = forms.CharField(required=False, max_length=255)
 
 class TicketAdmin(admin.ModelAdmin):
     def queryset(self, request):
@@ -21,6 +28,7 @@ class TicketAdmin(admin.ModelAdmin):
         ticket = self.get_object(request, object_id)
         extra_context['user_can_edit_documents'] = ticket.can_edit_documents(request.user)
         extra_context['user_can_see_documents'] = ticket.can_see_documents(request.user)
+        extra_context['add_ack_form'] = AddAckForm()
         return super(TicketAdmin, self).change_view(request, object_id, extra_context=extra_context)
     
     exclude = ('updated', 'sort_date', 'cluster')
@@ -31,6 +39,14 @@ class TicketAdmin(admin.ModelAdmin):
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
     inlines = [MediaInfoAdmin, ExpeditureAdmin]
+    
+    def alter_acks(self, request, ticket_id):
+        raise NotImplementedError('TODO')
+    
+    def get_urls(self):
+        return patterns('',
+            (r'^(?P<ticket_id>\d+)/alter_acks/$', self.alter_acks),
+        ) + super(TicketAdmin, self).get_urls()
 admin.site.register(models.Ticket, TicketAdmin)
 
 class TopicAdmin(admin.ModelAdmin):

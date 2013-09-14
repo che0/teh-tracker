@@ -575,3 +575,13 @@ class TicketAck(models.Model):
     
     def __unicode__(self):
         return u'%d %s by %s on %s' % (self.ticket_id, self.get_ack_type_display(), self.added_by, self.added)
+    
+    def added_by_html(self):
+        if self.added_by != None:
+            out = '<a href="%s">%s</a>' % (self.added_by.get_absolute_url(), escape(unicode(self.added_by)))
+            return mark_safe(out)
+        else:
+            return ''
+    
+    class Meta:
+        ordering = ['added']
