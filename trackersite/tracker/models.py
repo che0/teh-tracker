@@ -17,21 +17,21 @@ from south.modelsinspector import add_introspection_rules
 
 from tracker.clusters import ClusterUpdate
 
-STATE_CHOICES = (
-    ('draft', _('draft')),
-    ('for consideration', _('for consideration')),
-    ('accepted', _('accepted')),
-    ('expenses filed', _('expenses filed')),
-    ('closed', _('closed')),
-    ('custom', _('custom')),
-)
-
 PAYMENT_STATUS_CHOICES = (
     ('n_a', _('n/a')),
     ('unpaid', _('unpaid')),
     ('partially_paid', _('partially paid')),
     ('paid', _('paid')),
     ('overpaid', _('overpaid')),
+)
+
+ACK_TYPES = (
+    ('user_content', _('submitted')),
+    ('content', _('accepted')),
+    ('user_docs', _('expense documents submitted')),
+    ('docs', _('expense documents filed')),
+    ('archive', _('archived')),
+    ('close', _('closed')),
 )
 
 class PercentageField(models.SmallIntegerField):
@@ -53,7 +53,6 @@ class Ticket(models.Model):
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    state = models.CharField(_('state'), max_length=20, choices=STATE_CHOICES, help_text=_('Ticket state'))
     custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=_('Custom state description'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
@@ -86,19 +85,29 @@ class Ticket(models.Model):
         self.save()
     
     def state_str(self):
-        basic = _('unknown')
-        if (self.state == 'custom') and self.custom_state:
-            basic = self.custom_state
-        else:
-            for choice in STATE_CHOICES:
-                if choice[0] == self.state:
-                    basic = choice[1]
-                    break
+        if self.custom_state:
+            return self.custom_state
         
-        if self.rating_percentage:
-            return '%s [%s %%]' % (unicode(basic), self.rating_percentage)
+        acks = self.ack_set()
+        if 'closed' in acks:
+            return _('closed')
+        elif 'archive' in acks:
+            return _('archived')
+        elif 'content' in acks:
+            if not self.rating_percentage:
+                return _('waiting for content rating')
+            
+            if 'docs' in acks:
+                return _('complete')
+            elif 'user_docs' in acks:
+                return _('waiting for filing of documents')
+            else:
+                return _('waiting for document submission')
         else:
-            return basic
+            if 'user_content' in acks:
+                return _('waiting for approval')
+            else:
+                return _('draft')
     state_str.admin_order_field = 'state'
     state_str.short_description = _('state')
             
@@ -140,7 +149,7 @@ class Ticket(models.Model):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     def accepted_expeditures(self):
-        if (self.state != 'expenses filed') or (self.rating_percentage == None):
+        if not self.has_all_acks('content', 'docs', 'archive') or (self.rating_percentage == None):
             return 0
         else:
             total = sum([x.amount for x in self.expediture_set.all()])
@@ -148,7 +157,8 @@ class Ticket(models.Model):
     
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
-        return (self.state != 'expenses filed') and (self.state != 'closed') and (user == self.requested_user)
+        acks = self.ack_set()
+        return ('archive' not in acks) and ('close' not in acks) and (user == self.requested_user)
     
     def can_see_documents(self, user):
         """ Can given user see documents belonging to this ticket? """
@@ -160,6 +170,24 @@ class Ticket(models.Model):
     
     def associated_transactions_total(self):
         return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
+    
+    def ack_set(self):
+        return set([x.ack_type for x in self.ticketack_set.only('ack_type')])
+    
+    def has_ack(self, ack_type):
+        return self.ticketack_set.filter(ack_type=ack_type).exists()
+    
+    def has_all_acks(self, *wanted_acks):
+        acks = self.ack_set()
+        for wanted in wanted_acks:
+            if wanted not in acks:
+                return False
+        return True
+    
+    def add_acks(self, *acks):
+        """ Adds acks, mostly for testing. """
+        for ack in acks:
+            self.ticketack_set.create(ack_type=ack, comment='system operation')
     
     class Meta:
         verbose_name = _('Ticket')
@@ -251,7 +279,7 @@ class Topic(models.Model):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     def accepted_expeditures(self):
-        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
+        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(rating_percentage__gt=0)])
     
     def tickets_per_payment_status(self):
         out = {}
@@ -383,7 +411,7 @@ class UserProfile(models.Model):
         return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id = %s)'], params=[self.user.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
     
     def accepted_expeditures(self):
-        return sum([t.accepted_expeditures() for t in self.user.ticket_set.filter(state='expenses filed', rating_percentage__gt=0)])
+        return sum([t.accepted_expeditures() for t in self.user.ticket_set.filter(rating_percentage__gt=0)])
     
     def transactions(self):
         return Transaction.objects.filter(other=self.user).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
@@ -535,3 +563,15 @@ def cluster_member_delete(sender, instance, **kwargs):
         cluster_refreshed = Ticket.objects.get(id=instance.id).cluster
         if cluster_refreshed != None:
             cluster_refreshed.delete()
+
+
+class TicketAck(models.Model):
+    """ Ack flag for given ticket. """
+    ticket = models.ForeignKey('Ticket')
+    ack_type = models.CharField(max_length=20, choices=ACK_TYPES)
+    added = models.DateTimeField(_('created'), auto_now_add=True)
+    added_by = models.ForeignKey('auth.User', blank=True, null=True)
+    comment = models.CharField(blank=True, max_length=255)
+    
+    def __unicode__(self):
+        return u'%d %s by %s on %s' % (self.ticket_id, self.get_ack_type_display(), self.added_by, self.added)

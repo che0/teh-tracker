@@ -17,10 +17,10 @@ class SimpleTicketTest(TestCase):
         self.topic = Topic(name='topic1', grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
-        self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, description='foo foo')
         self.ticket1.save()
         
-        self.ticket2 = Ticket(summary='bar', requested_text='req2', topic=self.topic, state='for consideration', description='bar bar')
+        self.ticket2 = Ticket(summary='bar', requested_text='req2', topic=self.topic, description='bar bar')
         self.ticket2.save()
     
     def test_ticket_sort_date(self):
@@ -86,7 +86,7 @@ class OldRedirectTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
-        self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, description='foo foo')
         self.ticket.save()
     
     def assert301(self, *args, **kwargs):
@@ -119,7 +119,7 @@ class TicketSumTests(TestCase):
         self.topic.save()
         
     def test_empty_ticket(self):
-        empty_ticket = Ticket(topic=self.topic, requested_text='someone', summary='empty ticket', state='for consideration')
+        empty_ticket = Ticket(topic=self.topic, requested_text='someone', summary='empty ticket')
         empty_ticket.save()
         
         self.assertEqual(0, empty_ticket.media_count()['objects'])
@@ -128,7 +128,7 @@ class TicketSumTests(TestCase):
         self.assertEqual(0, self.topic.expeditures()['count'])
     
     def test_full_ticket(self):
-        full_ticket = Ticket(topic=self.topic, requested_text='someone', summary='full ticket', state='for consideration')
+        full_ticket = Ticket(topic=self.topic, requested_text='someone', summary='full ticket')
         full_ticket.save()
         full_ticket.mediainfo_set.create(description='Vague pictures')
         full_ticket.mediainfo_set.create(description='Counted pictures', count=15)
@@ -191,7 +191,7 @@ class TicketTests(TestCase):
         ticket = Ticket.objects.order_by('-created')[0]
         self.assertEqual(self.user, ticket.requested_user)
         self.assertEqual(self.user.username, ticket.requested_by())
-        self.assertEqual('for consideration', ticket.state)
+        self.assertEqual('draft', ticket.state_str())
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
     
     def test_ticket_creation_with_media(self):
@@ -285,8 +285,9 @@ class TicketEditTests(TestCase):
         user.set_password(password)
         user.save()
         
-        ticket = Ticket(summary='ticket', topic=topic, requested_user=None, requested_text='foo', state='closed')
+        ticket = Ticket(summary='ticket', topic=topic, requested_user=None, requested_text='foo')
         ticket.save()
+        ticket.add_acks('close')
         
         c = Client()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
@@ -302,8 +303,7 @@ class TicketEditTests(TestCase):
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # still deny edit, ticket locked
         
-        ticket.state = 'for consideration'
-        ticket.save()
+        ticket.ticketack_set.filter(ack_type='close').delete()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(200, response.status_code) # now it should pass
         
@@ -447,7 +447,7 @@ class TicketEditLinkTests(TestCase):
         self.user.set_password(self.password)
         self.user.save()
         
-        self.ticket = Ticket(summary='ticket', topic=self.topic, requested_user=None, requested_text='foo', state='for consideration')
+        self.ticket = Ticket(summary='ticket', topic=self.topic, requested_user=None, requested_text='foo')
         self.ticket.save()
     
     def get_ticket_response(self):
@@ -512,7 +512,7 @@ class UserDetailsTest(TestCase):
         self.user = User(username='user')
         self.user.save()
         
-        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='for consideration', description='foo foo')
+        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, description='foo foo')
         self.ticket.save()
     
     def test_user_details(self):
@@ -529,14 +529,16 @@ class SummaryTest(TestCase):
         self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
         self.topic.save()
         
-        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='expenses filed', rating_percentage=50)
+        self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, rating_percentage=50)
         self.ticket.save()
+        self.ticket.add_acks('content', 'docs', 'archive')
         self.ticket.expediture_set.create(description='foo', amount=200)
         self.ticket.expediture_set.create(description='foo', amount=100)
         self.ticket.mediainfo_set.create(description='foo', count=5)
         
-        self.ticket2 = Ticket(summary='foo', requested_user=self.user, topic=self.topic, state='expenses filed', rating_percentage=100)
+        self.ticket2 = Ticket(summary='foo', requested_user=self.user, topic=self.topic, rating_percentage=100)
         self.ticket2.save()
+        self.ticket2.add_acks('content', 'docs', 'archive')
         self.ticket2.expediture_set.create(description='foo', amount=600)
         self.ticket2.expediture_set.create(description='foo', amount=10)
         self.ticket2.mediainfo_set.create(description='foo', count=5)
@@ -549,7 +551,7 @@ class SummaryTest(TestCase):
         self.assertEqual({'unpaid':1, 'paid':1}, self.topic.tickets_per_payment_status())
 
     def test_ticket_summary(self):
-        self.ticket.state = 'for consideration'
+        self.ticket.ticketack_set.filter(ack_type='archive').delete()
         self.ticket.rating_percentage = None
         self.ticket.save()
         
@@ -561,8 +563,7 @@ class SummaryTest(TestCase):
         self.ticket.save()
         self.assertEqual(0, self.ticket.accepted_expeditures())
         
-        self.ticket.state = 'expenses filed'
-        self.ticket.save()
+        self.ticket.add_acks('archive')
         self.assertEqual(150, self.ticket.accepted_expeditures())
 
     def test_topic_summary(self):
@@ -616,11 +617,12 @@ class TransactionTest(TestCase):
     
     def test_user_list(self):
         topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
-        ticket = Ticket.objects.create(summary='foo', requested_user=self.user2, topic=topic, state='expenses filed', rating_percentage=100)
+        ticket = Ticket.objects.create(summary='foo', requested_user=self.user2, topic=topic, rating_percentage=100)
+        ticket.add_acks('content', 'docs', 'archive')
         ticket.expediture_set.create(description='exp', amount=300)
         ticket.mediainfo_set.create(description='media', count=5)
         
-        unt = Ticket.objects.create(summary='anon', topic=topic, state='custom')
+        unt = Ticket.objects.create(summary='anon', topic=topic)
         unt.mediainfo_set.create(description='media', count=3)
         
         c = Client()
@@ -649,12 +651,12 @@ class ClusterTest(TestCase):
         
     
     def test_simple_ticket(self):
-        ticket = Ticket.objects.create(summary='foo', topic=self.topic, state='accepted', rating_percentage=100)
+        ticket = Ticket.objects.create(summary='foo', topic=self.topic, rating_percentage=100)
+        ticket.add_acks('content')
         tid = ticket.id
         self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
         
-        ticket.state = 'expenses filed'
-        ticket.save()
+        ticket.add_acks('docs', 'archive')
         self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
         self.assertEqual(FinanceStatus(), self.topic.payment_summary())
         self.assertEqual({'unpaid':0, 'paid':0, 'overpaid':0}, Cluster.cluster_sums())
@@ -689,11 +691,13 @@ class ClusterTest(TestCase):
         self.assertEqual(150, c.total_transactions)
     
     def test_real_cluster(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
+        ticket1.add_acks('content', 'docs', 'archive')
         tid1 = ticket1.id
         Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
         
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
+        ticket2.add_acks('content', 'docs', 'archive')
         tid2 = ticket2.id
         Expediture.objects.create(ticket_id=tid2, description='exp', amount=200)
         
@@ -771,7 +775,8 @@ class ClusterTest(TestCase):
         self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
 
     def test_cluster_transaction_delete(self):
-        ticket = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
+        ticket.add_acks('content', 'docs', 'archive')
         tid = ticket.id
         Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
         
@@ -794,7 +799,8 @@ class ClusterTest(TestCase):
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
     
     def test_cluster_ticket_delete(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
+        ticket1.add_acks('content', 'docs', 'archive')
         tid1 = ticket1.id
         Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
         
@@ -806,7 +812,8 @@ class ClusterTest(TestCase):
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
         
         # add another ticket to the transaction cluster
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
+        ticket2.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket2.id, description='exp', amount=50)
         tr1.tickets.add(ticket2)
         self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
@@ -821,14 +828,17 @@ class ClusterTest(TestCase):
         self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
     
     def test_fuzzy_cluster(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
+        ticket1.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket1.id, description='exp', amount=100)
         
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, state='expenses filed', rating_percentage=100)
+        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
+        ticket2.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket2.id, description='exp', amount=70)
         
         another_topic = Topic.objects.create(name='another_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
-        ticket3 = Ticket.objects.create(summary='three', topic=another_topic, state='expenses filed', rating_percentage=100)
+        ticket3 = Ticket.objects.create(summary='three', topic=another_topic, rating_percentage=100)
+        ticket3.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket3.id, description='exp', amount=50)
         
         trans = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')

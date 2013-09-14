@@ -76,7 +76,7 @@ class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'sort_date', 'requested_user', 'requested_text',
-            'state', 'custom_state', 'rating_percentage', 'supervisor_notes', 'cluster', 'payment_status')
+            'custom_state', 'rating_percentage', 'supervisor_notes', 'cluster', 'payment_status')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
             'summary': forms.TextInput(attrs={'size':'40'}),
@@ -140,7 +140,6 @@ def create_ticket(request):
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
             ticket = ticketform.save(commit=False)
             ticket.requested_user = request.user
-            ticket.state = 'for consideration'
             ticket.save()
             ticketform.save_m2m()
             if ticket.topic.ticket_media:
@@ -347,7 +346,7 @@ def user_list(request):
     totals = {
         'ticket_count': Ticket.objects.count(),
         'media': MediaInfo.objects.aggregate(objects=models.Count('id'), media=models.Sum('count')),
-        'accepted_expeditures': sum([t.accepted_expeditures() for t in Ticket.objects.filter(state='expenses filed', rating_percentage__gt=0)]),
+        'accepted_expeditures': sum([t.accepted_expeditures() for t in Ticket.objects.filter(rating_percentage__gt=0)]),
         'transactions': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     }
     
@@ -356,7 +355,7 @@ def user_list(request):
         unassigned = {
             'ticket_count': userless.count(),
             'media': MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where requested_user_id is null)']).aggregate(objects=models.Count('id'), media=models.Sum('count')),
-            'accepted_expeditures': sum([t.accepted_expeditures() for i in Ticket.objects.filter(state='expenses filed', requested_user=None)]),
+            'accepted_expeditures': sum([t.accepted_expeditures() for t in userless]),
         }
     else:
         unassigned = None
