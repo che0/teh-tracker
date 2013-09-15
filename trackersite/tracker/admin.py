@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django import forms
 from tracker import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils import simplejson
+from django.http import HttpResponse
+from django.template import RequestContext
+from django.template.loader import get_template
 
 class MediaInfoAdmin(admin.TabularInline):
     model = models.MediaInfo
@@ -13,7 +17,7 @@ class ExpeditureAdmin(admin.TabularInline):
 
 class AddAckForm(forms.Form):
     ack_type = forms.ChoiceField(choices=models.ACK_TYPES, label=_('Type'))
-    comment = forms.CharField(required=False, max_length=255)
+    comment = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size':'40'}))
 
 class TicketAdmin(admin.ModelAdmin):
     def queryset(self, request):
@@ -40,12 +44,29 @@ class TicketAdmin(admin.ModelAdmin):
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
     inlines = [MediaInfoAdmin, ExpeditureAdmin]
     
-    def alter_acks(self, request, ticket_id):
-        raise NotImplementedError('TODO')
+    @staticmethod
+    def _render(request, template_name, context_data):
+        c = RequestContext(request, context_data)
+        return get_template(template_name).render(c)
+    
+    def alter_acks(self, request, object_id):
+        ticket = models.Ticket.objects.get(id=object_id)
+        if (request.method == 'POST'):
+            form = AddAckForm(request.POST)
+            if form.is_valid():
+                ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
+                return HttpResponse(simplejson.dumps({
+                    'form':self._render(request, 'admin/tracker/ticket/add_ack_success.html', {'ack':ack}),
+                    'success':True,
+                }))
+        else:
+            form = AddAckForm()
+        form_html = self._render(request, 'admin/tracker/ticket/add_ack.html', {'form':form})
+        return HttpResponse(simplejson.dumps({'form':form_html}))
     
     def get_urls(self):
         return patterns('',
-            (r'^(?P<ticket_id>\d+)/alter_acks/$', self.alter_acks),
+            url(r'^(?P<object_id>\d+)/alter_acks/$', self.alter_acks),
         ) + super(TicketAdmin, self).get_urls()
 admin.site.register(models.Ticket, TicketAdmin)
 

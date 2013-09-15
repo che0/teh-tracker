@@ -1,0 +1,2 @@
+{% load i18n %}
+{% trans "Added" %}: {{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %} --{{ack.added_by}}, {{ack.added}}
