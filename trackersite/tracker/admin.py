@@ -5,7 +5,7 @@ from django import forms
 from tracker import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils import simplejson
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseNotAllowed
 from django.template import RequestContext
 from django.template.loader import get_template
 
@@ -49,14 +49,15 @@ class TicketAdmin(admin.ModelAdmin):
         c = RequestContext(request, context_data)
         return get_template(template_name).render(c)
     
-    def alter_acks(self, request, object_id):
+    def add_ack(self, request, object_id):
         ticket = models.Ticket.objects.get(id=object_id)
         if (request.method == 'POST'):
             form = AddAckForm(request.POST)
             if form.is_valid():
                 ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
                 return HttpResponse(simplejson.dumps({
-                    'form':self._render(request, 'admin/tracker/ticket/add_ack_success.html', {'ack':ack}),
+                    'form':self._render(request, 'admin/tracker/ticket/ack_line.html', {'ack':ack}),
+                    'id':ack.id,
                     'success':True,
                 }))
         else:
@@ -64,9 +65,23 @@ class TicketAdmin(admin.ModelAdmin):
         form_html = self._render(request, 'admin/tracker/ticket/add_ack.html', {'form':form})
         return HttpResponse(simplejson.dumps({'form':form_html}))
     
+    def remove_ack(self, request, object_id):
+        ticket = models.Ticket.objects.get(id=object_id)
+        if (request.method != 'POST'):
+            return HttpResponseNotAllowed(['POST'])
+        try:
+            ack = ticket.ticketack_set.get(id=request.POST.get('id', None))
+        except models.TicketAck.DoesNotExist:
+            raise Http404
+        ack.delete()
+        return HttpResponse(simplejson.dumps({
+            'success':True,
+        }))
+    
     def get_urls(self):
         return patterns('',
-            url(r'^(?P<object_id>\d+)/alter_acks/$', self.alter_acks),
+            url(r'^(?P<object_id>\d+)/acks/add/$', self.add_ack),
+            url(r'^(?P<object_id>\d+)/acks/remove/$', self.remove_ack),
         ) + super(TicketAdmin, self).get_urls()
 admin.site.register(models.Ticket, TicketAdmin)
 

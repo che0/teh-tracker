@@ -1,0 +1,20 @@
+@keyframes incoming {
+	from { background: #49ff01; }
+	to { background: transparent; }
+}
+@-webkit-keyframes incoming {
+	from { background: #49ff01; }
+	to { background: transparent; }
+}
+.newly-added {
+	animation: incoming 3s;
+	-webkit-animation: incoming 3s;
+}
+
+.remove-block .really { display:none; }
+.remove-block.really .initial { display:none; }
+.remove-block.really .really { display:inline; padding:0 0 0 0.4em; border:1px solid red; }
+.remove-block.really .really a { padding:0 0.4em; color:white; background-color:red; font-weight:bold; }
+
+.removing { background-color:red; }
+.removing.failed { background-color:gray; }

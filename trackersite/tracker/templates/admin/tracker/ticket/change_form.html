@@ -3,15 +3,16 @@
 
 {% block extrahead %}{{block.super}}
 <script type="text/javascript" src="{{STATIC_URL}}ticketack.js"></script>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}ticketack.css" />
 {% endblock extrahead %}
 
 {% block form_top %}<div>{% trans "Ticket ID" %}: {{object_id}}</div>
 <div style="float:right">
 <h2>{% trans "Approvals" %}</h2>
-<ul class="ack-set" data-handler="alter_acks/">{% for ack in original.ticketack_set.all %}
-	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by}},{% else %};{% endif %} {{ack.added}} <a href="#">REMOVE TODO</a></li>
+<ul class="ack-set" data-add-handler="acks/add/" data-remove-handler="acks/remove/" data-token="{{csrf_token}}">{% for ack in original.ticketack_set.all %}
+	<li data-id="{{ack.id}}">{% include "admin/tracker/ticket/ack_line.html" %}</li>
 {% endfor %}
-	<li class="add-ack">ADD ACK</li>
+	<li class="add-block"><a href="#" class="add-ack">ADD ACK</a></li>
 </ul>
 </div>
 
