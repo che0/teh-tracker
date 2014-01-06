@@ -25,10 +25,13 @@
 {% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
 {% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
 {% trans "State" %}: {{ ticket.state_str }}
-{% if user_can_edit_ticket %}TODO edit {% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
-	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by_html}}{% endif %}, {{ack.added}}</li>
+	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by_html}}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %}TODO REMOVE ACK{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
+{% if user_can_edit_ticket %}{% with acks_to_add=ticket.possible_user_acks %}{% if acks_to_add %}
+{% trans "Confirm" %}:<ul>{% for possible_ack in acks_to_add %}
+	<li>{{possible_ack.display}} TODO ADD ACK</li>
+{% endfor %}</ul>{% endif %}{% endwith %}{% endif %}
 {% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}

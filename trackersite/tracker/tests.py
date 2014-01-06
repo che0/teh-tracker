@@ -437,6 +437,30 @@ class TicketEditTests(TestCase):
         self.assertEqual('hundred+1', expeditures[0].description)
         self.assertEqual(101, expeditures[0].amount)
     
+    def test_ack_user_edit(self):
+        # make a ticket
+        grant = Grant.objects.create(full_name='g', short_name='g')
+        topic = Topic.objects.create(name='t', grant=grant)
+        ticket = Ticket.objects.create(summary='ticket', topic=topic, requested_text='u')
+        
+        # two user acks are possible
+        self.assertEqual(
+            set(['user_content', 'user_docs']),
+            set([a.ack_type for a in ticket.possible_user_acks()])
+        )
+        
+        # add some acks, now only user_content is possible to add
+        ticket.add_acks('user_docs', 'content')
+        self.assertEqual(['user_content'], [a.ack_type for a in ticket.possible_user_acks()])
+        
+        # user_docs can be removed
+        ud = ticket.ticketack_set.get(ack_type='user_docs')
+        self.assertTrue(ud.user_removable)
+        
+        # content can't be removed
+        cont = ticket.ticketack_set.get(ack_type='content')
+        self.assertFalse(cont.user_removable)
+    
 class TicketEditLinkTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))

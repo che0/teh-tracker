@@ -34,6 +34,8 @@ ACK_TYPES = (
     ('close', _('closed')),
 )
 
+USER_EDITABLE_ACK_TYPES = ('user_content', 'user_docs')
+
 class PercentageField(models.SmallIntegerField):
     """ Field that holds a percentage. """
     def formfield(self, **kwargs):
@@ -188,6 +190,14 @@ class Ticket(models.Model):
         """ Adds acks, mostly for testing. """
         for ack in acks:
             self.ticketack_set.create(ack_type=ack, comment='system operation')
+    
+    def possible_user_acks(self):
+        """ List of PossibleAck objects, that could be added by ticket requester now. """
+        out = []
+        for ack_type in USER_EDITABLE_ACK_TYPES:
+            if not self.has_ack(ack_type):
+                out.append(PossibleAck(ack_type))
+        return out
     
     class Meta:
         verbose_name = _('Ticket')
@@ -583,5 +593,29 @@ class TicketAck(models.Model):
         else:
             return ''
     
+    @property
+    def user_removable(self):
+        """ If this ack can be removed by user (provided the ticket is not locked, user has rights, etc) """
+        return self.ack_type in USER_EDITABLE_ACK_TYPES
+    
     class Meta:
         ordering = ['added']
+
+class PossibleAck(object):
+    """ Python representation of possible ack that can be added by user to a ticket. """
+    _display_names = dict(ACK_TYPES)
+    
+    def __init__(self, ack_type):
+        if ack_type not in self._display_names:
+            raise ValueError(ack_type)
+        self.ack_type = ack_type
+    
+    def __eq__(self, other):
+        return self.ack_type == other.ack_type
+    
+    def __unicode__(self):
+        return self.display
+    
+    @property
+    def display(self):
+        return self._display_names[self.ack_type]
