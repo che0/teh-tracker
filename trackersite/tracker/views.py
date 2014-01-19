@@ -12,14 +12,14 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _, ugettext_lazy
-from django.views.generic import ListView, DetailView, FormView
+from django.views.generic import ListView, DetailView, FormView, DeleteView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document, TicketAck
 
 class CommentPostedCatcher(object):
     """ 
@@ -46,6 +46,28 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_see_documents'] = ticket.can_see_documents(user)
         return context
 ticket_detail = TicketDetailView.as_view()
+
+class TicketAckDeleteView(DeleteView):
+    model = TicketAck
+    
+    def get_object(self):
+        try:
+            self.ticket = Ticket.objects.get(id=self.kwargs['pk'])
+            ack = self.ticket.ticketack_set.get(id=self.kwargs['ack_id'])
+        except (Ticket.DoesNotExist, TicketAck.DoesNotExist):
+            raise Http404
+        return ack
+    
+    def delete(self, request, *args, **kwargs):
+        ack = self.get_object()
+        if not (self.ticket.can_edit(request.user) and ack.user_removable):
+            return HttpResponseForbidden(_('You cannot edit this'))
+        
+        ack_display = ack.get_ack_type_display()
+        ack.delete()
+        messages.success(request, _('Ticket %s confirmation "%s" has been deleted.') % (self.ticket.id, ack_display))
+        return HttpResponseRedirect(self.ticket.get_absolute_url())
+ticket_ack_delete = TicketAckDeleteView.as_view()
 
 class TopicDetailView(CommentPostedCatcher, DetailView):
     model = Topic
