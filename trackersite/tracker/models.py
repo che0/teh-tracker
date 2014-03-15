@@ -36,6 +36,13 @@ ACK_TYPES = (
 
 USER_EDITABLE_ACK_TYPES = ('user_content', 'user_docs')
 
+def uber_ack(ack_type):
+    """ Return 'super-ack' for given user-editable ack. """
+    return {
+        'user_content':'content',
+        'user_docs':'docs',
+    }[ack_type]
+
 class PercentageField(models.SmallIntegerField):
     """ Field that holds a percentage. """
     def formfield(self, **kwargs):
@@ -195,7 +202,7 @@ class Ticket(models.Model):
         """ List of PossibleAck objects, that could be added by ticket requester now. """
         out = []
         for ack_type in USER_EDITABLE_ACK_TYPES:
-            if not self.has_ack(ack_type):
+            if not self.has_ack(ack_type) and not self.has_ack(uber_ack(ack_type)):
                 out.append(PossibleAck(ack_type))
         return out
     

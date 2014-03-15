@@ -455,7 +455,7 @@ class TicketAckTests(TestCase):
         )
         
         # add some acks, now only user_content is possible to add
-        self.ticket.add_acks('user_docs', 'content')
+        self.ticket.add_acks('user_docs')
         self.assertEqual(['user_content'], [a.ack_type for a in self.ticket.possible_user_acks()])
         
         # user_docs can be removed
@@ -463,6 +463,7 @@ class TicketAckTests(TestCase):
         self.assertTrue(ud.user_removable)
         
         # content can't be removed
+        self.ticket.add_acks('content')
         cont = self.ticket.ticketack_set.get(ack_type='content')
         self.assertFalse(cont.user_removable)
     
