@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Confirm" %}: {{ticket.summary}}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a> &gt; {% trans "confirmations" %} &gt;</p>
+<h1>{% trans "Confirm" %}: {{ticketack.display}}</h1>
+
+<form method="POST" action="">
+{{form.as_p}}
+<input type="submit" value="{% trans "Add confirmation" %}">
+<a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
+{% csrf_token %}</form></p>
+{% endblock %}

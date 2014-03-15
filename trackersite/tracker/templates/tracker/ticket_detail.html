@@ -30,7 +30,7 @@
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
 {% if user_can_edit_ticket %}{% with acks_to_add=ticket.possible_user_acks %}{% if acks_to_add %}
 <div class="screenonly">{% trans "Confirm" %}:<ul>{% for possible_ack in acks_to_add %}
-	<li>{{possible_ack.display}} TODO ADD ACK</li>
+	<li><a href="{% url ticket_ack_add ticket.id,possible_ack.ack_type %}">{{possible_ack.display}}</a></li>
 {% endfor %}</ul></div>{% endif %}{% endwith %}{% endif %}
 {% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 

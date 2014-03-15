@@ -198,13 +198,17 @@ class Ticket(models.Model):
         for ack in acks:
             self.ticketack_set.create(ack_type=ack, comment='system operation')
     
-    def possible_user_acks(self):
-        """ List of PossibleAck objects, that could be added by ticket requester now. """
+    def possible_user_ack_types(self):
+        """ List of possible ack types, that can be added by ticket requester. """
         out = []
         for ack_type in USER_EDITABLE_ACK_TYPES:
             if not self.has_ack(ack_type) and not self.has_ack(uber_ack(ack_type)):
-                out.append(PossibleAck(ack_type))
+                out.append(ack_type)
         return out
+    
+    def possible_user_acks(self):
+        """ List of PossibleAck objects, that can be added by ticket requester. """
+        return [PossibleAck(ack_type) for ack_type in self.possible_user_ack_types()]
     
     class Meta:
         verbose_name = _('Ticket')

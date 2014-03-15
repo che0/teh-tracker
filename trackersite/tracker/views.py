@@ -19,7 +19,7 @@ from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document, TicketAck
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document, TicketAck, PossibleAck
 
 class CommentPostedCatcher(object):
     """ 
@@ -46,6 +46,39 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_see_documents'] = ticket.can_see_documents(user)
         return context
 ticket_detail = TicketDetailView.as_view()
+
+class TicketAckAddForm(forms.Form):
+    comment = forms.CharField(required=False, max_length=255)
+
+class TicketAckAddView(FormView):
+    template_name = 'tracker/ticketack_add.html'
+    form_class = TicketAckAddForm
+    
+    def get_form(self, form_class):
+        ticket = get_object_or_404(Ticket, id=self.kwargs['pk'])
+        if not (ticket.can_edit(self.request.user) and self.kwargs['ack_type'] in ticket.possible_user_ack_types()):
+            raise Http404
+        return form_class(**self.get_form_kwargs())
+    
+    def form_valid(self, form):
+        ticket = get_object_or_404(Ticket, id=self.kwargs['pk'])
+        ack = TicketAck.objects.create(
+            ticket=ticket,
+            ack_type=self.kwargs['ack_type'], 
+            added_by=self.request.user,
+            comment=form.cleaned_data['comment'],
+        )
+        ack_display = ack.get_ack_type_display()
+        messages.success(self.request, _('Ticket %s confirmation "%s" has been added.') % (ticket.id, ack_display))
+        return HttpResponseRedirect(ticket.get_absolute_url())
+    
+    def get_context_data(self, **kwargs):
+        kwargs.update({
+            'ticket': get_object_or_404(Ticket, id=self.kwargs['pk']),
+            'ticketack': PossibleAck(self.kwargs['ack_type']),
+        })
+        return kwargs
+ticket_ack_add = TicketAckAddView.as_view()
 
 class TicketAckDeleteView(DeleteView):
     model = TicketAck
