@@ -68,8 +68,10 @@ class TicketAckAddView(FormView):
             added_by=self.request.user,
             comment=form.cleaned_data['comment'],
         )
-        ack_display = ack.get_ack_type_display()
-        messages.success(self.request, _('Ticket %s confirmation "%s" has been added.') % (ticket.id, ack_display))
+        msg = _('Ticket %(ticket_id)s confirmation "%(confirmation)s" has been added.') % {
+            'ticket_id':ticket.id, 'confirmation':ack.get_ack_type_display(),
+        }
+        messages.success(self.request, msg)
         return HttpResponseRedirect(ticket.get_absolute_url())
     
     def get_context_data(self, **kwargs):
@@ -98,7 +100,11 @@ class TicketAckDeleteView(DeleteView):
         
         ack_display = ack.get_ack_type_display()
         ack.delete()
-        messages.success(request, _('Ticket %s confirmation "%s" has been deleted.') % (self.ticket.id, ack_display))
+        
+        msg = _('Ticket %(ticket_id)s confirmation "%(confirmation)s" has been deleted.') % {
+            'ticket_id':self.ticket.id, 'confirmation':ack_display,
+        }
+        messages.success(request, msg)
         return HttpResponseRedirect(self.ticket.get_absolute_url())
 ticket_ack_delete = TicketAckDeleteView.as_view()
 
