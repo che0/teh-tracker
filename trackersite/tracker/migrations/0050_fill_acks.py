@@ -11,7 +11,7 @@ class Migration(DataMigration):
             acks = {
                 'draft': (),
                 'for consideration': ('user_content',),
-                'accepted': ('content'),
+                'accepted': ('content',),
                 'expenses filed': ('content', 'docs', 'archive'),
                 'closed': ('close', ),
                 'custom': (),
