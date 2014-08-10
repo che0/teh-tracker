@@ -4,12 +4,12 @@
 {% block title %}{% trans "Topic list" %}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt;</p>
 <h1>{% trans "Topic list" %}</h1>
 {% block above_list %}{% endblock %}
 {% include "tracker/topic_table.html" with show_grants="True" %}
 {% block below_list %}{% endblock %}
 
-<p><a href="{% url topic_finance %}">{% trans "topic finance" %}</a></p>
+<p><a href="{% url "topic_finance" %}">{% trans "topic finance" %}</a></p>
 
 {% endblock content %}

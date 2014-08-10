@@ -4,7 +4,7 @@
 {% block title %}{% trans "Edit confirmation" %}: {{ticketack.ticket.summary}}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticketack.ticket.id %}">{{ticketack.ticket.summary}}</a> &gt; {% trans "confirmations" %} &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticketack.ticket.id %}">{{ticketack.ticket.summary}}</a> &gt; {% trans "confirmations" %} &gt;</p>
 <h1>{% trans "Remove confirmation" %}: {{ticketack.get_ack_type_display}}</h1>
 
 <p>{% trans "Type" %}: {{ticketack.get_ack_type_display}}

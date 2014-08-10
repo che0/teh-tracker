@@ -1,10 +1,10 @@
 {% extends "primitive_base.html" %}
-{% load i18n adminmedia %}
+{% load i18n %}
 
 {% block head %}{{ block.super }}
 <link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
-<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
+<script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
 {{form_media}}{% endblock %}
 
 {% block language_code %}{{LANGUAGE_CODE}}{% endblock %}
@@ -12,8 +12,8 @@
 {% block fulltitle %}{% block title %}{% endblock %}{% endblock %}
 
 {% block body %}
-<div id="user">{% if user.is_authenticated %}{% trans "user" %}: <a href="{{user.get_absolute_url}}">{{user.username}}</a> (<a href="{% url password_change %}">{% trans "change password" %}</a>; <a href="{% url user_details_change %}">{% trans "change my details" %}</a>); {% if user.is_staff %}<a href="{% url admin:index %}">{% trans "admin" %}</a>; {% endif%}<a href="{% url choose_language %}">change language</a>; <a href="{% url logout %}">{% trans "logout" %}</a>
-{% else %}<a href="{% url login %}">{% trans "login" %}</a>; <a href="{% url register %}">{% trans "register" %}</a>; <a href="{% url choose_language %}">change language</a>
+<div id="user">{% if user.is_authenticated %}{% trans "user" %}: <a href="{{user.get_absolute_url}}">{{user.username}}</a> (<a href="{% url "password_change" %}">{% trans "change password" %}</a>; <a href="{% url "user_details_change" %}">{% trans "change my details" %}</a>); {% if user.is_staff %}<a href="{% url "admin:index" %}">{% trans "admin" %}</a>; {% endif%}<a href="{% url "choose_language" %}">change language</a>; <a href="{% url "logout" %}">{% trans "logout" %}</a>
+{% else %}<a href="{% url "login" %}">{% trans "login" %}</a>; <a href="{% url "register" %}">{% trans "register" %}</a>; <a href="{% url "choose_language" %}">change language</a>
 {% endif %}</div>
 
 {% if messages %}

@@ -280,9 +280,9 @@ class Topic(models.Model):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
     grant = models.ForeignKey('tracker.Grant', verbose_name=_('grant'), help_text=_('Grant project where this topic belongs'))
-    open_for_tickets = models.BooleanField(_('open for tickets'), help_text=_('Is this topic open for ticket submissions from users?'))
-    ticket_media = models.BooleanField(_('ticket media'), help_text=_('Does this topic track ticket media items?'))
-    ticket_expenses = models.BooleanField(_('ticket expenses'), help_text=_('Does this topic track ticket expenses?'))
+    open_for_tickets = models.BooleanField(_('open for tickets'), default=True, help_text=_('Is this topic open for ticket submissions from users?'))
+    ticket_media = models.BooleanField(_('ticket media'), default=True, help_text=_('Does this topic track ticket media items?'))
+    ticket_expenses = models.BooleanField(_('ticket expenses'), default=True, help_text=_('Does this topic track ticket expenses?'))
     description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     form_description = models.TextField(_('form description'), blank=True, help_text=_('Description shown to users who enter tickets for this topic'))
     admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), blank=True, help_text=_('Selected users will have administration access to this topic.'))
@@ -352,7 +352,7 @@ class MediaInfo(models.Model):
     """ Media related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this media info belongs to'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Item description to show'))
-    url = models.URLField(_('URL'), blank=True, verify_exists=False, help_text=_('Link to media files'))
+    url = models.URLField(_('URL'), blank=True, help_text=_('Link to media files'))
     count = models.PositiveIntegerField(_('count'), blank=True, null=True, help_text=_('Number of files'))
     
     def __unicode__(self):
@@ -388,7 +388,7 @@ class TrackerDocumentStorage(FileSystemStorage):
         self.base_url = None
 
 # introductory chunk for the template
-DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url download_document doc.ticket.id doc.filename %}">{{doc.filename}}</a>{% if detail and doc.description %}: {{doc.description}}{% endif %} <small>({{doc.content_type}}; {{doc.size|filesizeformat}})</small>')
+DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url "download_document" doc.ticket.id doc.filename %}">{{doc.filename}}</a>{% if detail and doc.description %}: {{doc.description}}{% endif %} <small>({{doc.content_type}}; {{doc.size|filesizeformat}})</small>')
 
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """

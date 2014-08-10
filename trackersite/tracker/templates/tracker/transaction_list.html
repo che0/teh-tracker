@@ -4,11 +4,11 @@
 {% block title %}{% trans "Transaction list" %}{% endblock %}
 
 {% block head %}{{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest transactions' %}" href="{% url transactions_feed %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest transactions' %}" href="{% url "transactions_feed" %}" />
 {% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt;</p>
 <h1>{% trans "Transaction list" %}</h1>
 
 {% if transaction_list %}
@@ -23,5 +23,5 @@
 {% else %}
 <p>{% trans "No transactions available." %}</p>
 {% endif %}
-<p><a href="{% url transactions_csv %}">{% trans "download as csv" %}</a></p>
+<p><a href="{% url "transactions_csv" %}">{% trans "download as csv" %}</a></p>
 {% endblock content %}

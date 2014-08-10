@@ -4,13 +4,13 @@
 {% block title %}{% trans "Edit" %}: {{ticket.summary}}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a> &gt;</p>
 <h1>{% trans "Edit" %}: {{ticket.summary}}</h1>
 
-{% if user_can_edit_documents %}<p><a href="{% url edit_ticket_docs ticket.id %}">{% trans "edit ticket documents" %}</a></p>{% endif %}
+{% if user_can_edit_documents %}<p><a href="{% url "edit_ticket_docs" ticket.id %}">{% trans "edit ticket documents" %}</a></p>{% endif %}
 
 {% block above_form %}{% endblock %}
-{% url edit_ticket ticket.id as action %}
+{% url "edit_ticket" ticket.id as action %}
 {% include "tracker/ticket_form.html" with submit=_("save") %}
 {% block below_form %}{% endblock %}
 {% endblock content %}

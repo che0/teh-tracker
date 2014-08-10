@@ -15,7 +15,7 @@
 </tr>
 {% for topic in topic_list %}{% with tpps=topic.tickets_per_payment_status %}
 <tr>
-<td><a href="{% url topic_detail topic.id %}">{{topic.name}}</a></td>
+<td><a href="{% url "topic_detail" topic.id %}">{{topic.name}}</a></td>
 {% if show_grants %}<td><a href="{{topic.grant.get_absolute_url}}" title="{{topic.grant.full_name}}">{{topic.grant.short_name}}</a></td>{% endif %}
 <td>{{topic.ticket_set.count}}</td>
 <td{% if tpps.n_a %} class="payment_cell n_a" {% endif %}>{{tpps.n_a}}</td>

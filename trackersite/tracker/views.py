@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 
 from django.db import models
 from django.db.models import Q
@@ -15,7 +16,6 @@ from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.generic import ListView, DetailView, FormView, DeleteView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
-from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 

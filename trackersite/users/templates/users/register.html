@@ -4,7 +4,7 @@
 {% block title %}{% trans "Register" %}{% endblock %}
 
 {% block content %}
-<form method="post" action="{% url register %}">
+<form method="post" action="{% url "register" %}">
 {{ form.as_p }}
 {% csrf_token %}
 <input type="submit" value="{% trans "register" %}" />

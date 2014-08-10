@@ -1,0 +1,7 @@
+# just our usual stuff
+Django>=1.6,<1.7
+South
+django-sendfile
+
+# we'll presume MySQL as the database
+mysql-python

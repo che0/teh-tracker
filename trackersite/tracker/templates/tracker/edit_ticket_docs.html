@@ -4,10 +4,10 @@
 {% block title %}{% trans "Edit documents" %}: {{ticket.summary}}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url ticket_detail ticket.id %}">{{ticket.summary}}</a> &gt; <a href="{% url edit_ticket ticket.id %}">{% trans "edit" %}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a> &gt; <a href="{% url "edit_ticket" ticket.id %}">{% trans "edit" %}</a> &gt;</p>
 <h1>{% trans "Edit documents" %}: {{ticket.summary}}</h1>
 
-<p><a href="{% url upload_ticket_doc ticket.id %}">{% trans "upload new document" %}</a></p>
+<p><a href="{% url "upload_ticket_doc" ticket.id %}">{% trans "upload new document" %}</a></p>
 
 {% if documents|length > 0 %}
 <form method="post" action="{{action}}">

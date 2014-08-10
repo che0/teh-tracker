@@ -28,7 +28,7 @@ class Migration(SchemaMigration):
                     ticket.save()
         
         # Changing field 'Ticket.topic'
-        db.alter_column('tracker_ticket', 'topic_id', self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['tracker.Topic']))
+        db.alter_column('tracker_ticket', 'topic_id', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['tracker.Topic']))
 
 
     def backwards(self, orm):

@@ -14,7 +14,7 @@ from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Exped
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic1', grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='topic1', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         
         self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, description='foo foo')
@@ -84,7 +84,7 @@ class SimpleTicketTest(TestCase):
 
 class OldRedirectTests(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, description='foo foo')
         self.ticket.save()
@@ -115,7 +115,7 @@ class OldRedirectTests(TestCase):
 
 class TicketSumTests(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         
     def test_empty_ticket(self):
@@ -143,7 +143,7 @@ class TicketSumTests(TestCase):
 
 class TicketTests(TestCase):
     def setUp(self):
-        self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.open_topic.save()
         
         self.password = 'password'
@@ -242,7 +242,7 @@ class TicketTests(TestCase):
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
     
     def test_closed_topic(self):
-        closed_topic = Topic(name='closed topic', open_for_tickets=False, grant=Grant.objects.create(full_name='g', short_name='g'))
+        closed_topic = Topic(name='closed topic', open_for_tickets=False, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         closed_topic.save()
         
         c = self.get_client()
@@ -260,7 +260,7 @@ class TicketTests(TestCase):
 
 class TicketEditTests(TestCase):
     def test_correct_choices(self):
-        grant = Grant.objects.create(full_name='g', short_name='g')
+        grant = Grant.objects.create(full_name='g', short_name='g', slug='g')
         t_closed = Topic(name='t1', open_for_tickets=False, grant=grant)
         t_closed.save()
         t_open = Topic(name='t2', open_for_tickets=True, grant=grant)
@@ -277,7 +277,7 @@ class TicketEditTests(TestCase):
         self.assertEqual(wanted_choices, choices)
     
     def test_ticket_edit(self):
-        topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
+        topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         topic.save()
         
         password = 'my_password'
@@ -439,7 +439,7 @@ class TicketEditTests(TestCase):
     
 class TicketAckTests(TestCase):
     def setUp(self):
-        self.grant = Grant.objects.create(full_name='g', short_name='g')
+        self.grant = Grant.objects.create(full_name='g', short_name='g', slug='g')
         self.topic = Topic.objects.create(name='t', grant=self.grant)
         self.password = 'my_password'
         self.user = User(username='my_user')
@@ -500,7 +500,7 @@ class TicketAckTests(TestCase):
     
 class TicketEditLinkTests(TestCase):
     def setUp(self):
-        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         
         self.password = 'my_password'
@@ -567,7 +567,7 @@ class TicketEditLinkTests(TestCase):
 
 class UserDetailsTest(TestCase):
     def setUp(self):
-        self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         
         self.user = User(username='user')
@@ -897,7 +897,7 @@ class ClusterTest(TestCase):
         ticket2.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket2.id, description='exp', amount=70)
         
-        another_topic = Topic.objects.create(name='another_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        another_topic = Topic.objects.create(name='another_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         ticket3 = Ticket.objects.create(summary='three', topic=another_topic, rating_percentage=100)
         ticket3.add_acks('content', 'docs', 'archive')
         Expediture.objects.create(ticket_id=ticket3.id, description='exp', amount=50)
@@ -928,7 +928,7 @@ class DocumentAccessTests(TestCase):
             u['user'].set_password(u['password'])
             u['user'].save()
     
-        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.ticket = Ticket.objects.create(summary='ticket', topic=self.topic, requested_user=self.owner['user'])
         
         self.doc = {'name':'test.txt', 'content_type':'text/plain', 'payload':'hello, world!'}

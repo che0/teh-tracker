@@ -1,21 +1,21 @@
 {% extends "base.html" %}
-{% load i18n adminmedia comments %}
+{% load i18n comments %}
 
 {% block head %}{{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url topic_ticket_feed topic.id %}" />
-<script src="{% admin_media_prefix %}js/jquery.min.js" type="text/javascript"></script>
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url "topic_ticket_feed" topic.id %}" />
+<script src="{{STATIC_URL}}admin/js/jquery.min.js" type="text/javascript"></script>
 <script src="{{STATIC_URL}}hiding.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block title %}{{ topic.name }}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt; <a href="{{topic.grant.get_absolute_url}}">{{topic.grant.short_name}}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt; <a href="{{topic.grant.get_absolute_url}}">{{topic.grant.short_name}}</a> &gt;</p>
 <h1>{{ topic.name }}</h1>
 
 {% if topic.description %}<div>{{ topic.description|safe|linebreaks }}</div>{% endif %}
 
-{% if topic.open_for_tickets %}<p>{% trans "Topic is open for new tickets" %}{% if user.is_authenticated %}: <a href="{% url create_ticket %}?topic={{topic.id}}">{% trans "add ticket" %}</a>{% else %}.{% endif %}</p>{% endif %}
+{% if topic.open_for_tickets %}<p>{% trans "Topic is open for new tickets" %}{% if user.is_authenticated %}: <a href="{% url "create_ticket" %}?topic={{topic.id}}">{% trans "add ticket" %}</a>{% else %}.{% endif %}</p>{% endif %}
 
 {% with admins=topic.admin.all %}{% if admins %}
 <p>{% if admins.count > 1 %}{% trans "Topic administrators" %}{% else %}{% trans "Topic administrator" %}{% endif %}: {% for admin in admins %}{{ admin.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
@@ -38,7 +38,7 @@
 <div class="hide-switch"><a href="#" class="unhide">{% trans "Add comment" %}</a>
 <div class="hidden">
 <h3>{% trans "Add comment" %}</h3>
-{% url topic_detail pk=topic.id as next %}{% render_comment_form for topic %}
+{% url "topic_detail" pk=topic.id as next %}{% render_comment_form for topic %}
 </div></div>
 
 {% endblock content %}

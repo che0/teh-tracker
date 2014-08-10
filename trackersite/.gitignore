@@ -1,4 +1,3 @@
 *.py[co]
 *.mo
-/manage.py
 /settings.py

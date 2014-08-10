@@ -4,7 +4,7 @@
 {% block title %}{% blocktrans with cid=cluster.id %}Cluster {{cid}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url transaction_list %}">{% trans "transactions" %}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "transaction_list" %}">{% trans "transactions" %}</a> &gt;</p>
 <h1>{% blocktrans with cid=cluster.id %}Cluster {{cid}}{% endblocktrans %}</h1>
 
 <p>{% trans "Payment status" %}: {% trans cluster.ticket_set.all.0.get_payment_status_display %}</p>

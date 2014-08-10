@@ -4,7 +4,7 @@
 {% block title %}{% trans "Topic finance" %}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url ticket_list %}">{% trans "index" %}</a> &gt; <a href="{% url topic_list %}">{% trans "topics" %}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt;</p>
 <h1>{% trans "Topic finance" %}</h1>
 <table class="highlight_totals"><tr>
 <th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>
@@ -22,7 +22,7 @@
 	<tr><td rowspan="{{gitem.rows}}"><a href="{{gitem.grant.get_absolute_url}}" title="{{gitem.grant.full_name}}">{{gitem.grant.short_name}}</a></td>
 	{% for titem in gitem.topics %}
 		{% if not forloop.first %}<tr>{% endif %}
-		<td><a href="{% url topic_detail titem.topic.id %}">{{titem.topic.name}}</a></td>
+		<td><a href="{% url "topic_detail" titem.topic.id %}">{{titem.topic.name}}</a></td>
 		<td>{{titem.topic.ticket_set.count}}</td>
 		<td class="money payment_cell {% if titem.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{titem.finance.unpaid|money}}</td>
 		<td class="money payment_cell{% if titem.finance.paid %} paid{% endif %}">{{titem.finance.paid|money}}</td>
