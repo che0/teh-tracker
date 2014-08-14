@@ -11,7 +11,7 @@
 <tr><th rowspan="2">{% trans "User" %}</th><th rowspan="2">{% trans "Tickets" %}<th colspan="2">{% trans "Media" %}</th><th rowspan="2">{% trans "Accepted expeditures" %}</th><th rowspan="2">{% trans "Transactions total" %}</th></tr>
 <tr><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th><th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 
-{% for u in user_list %}{% with tu=u.get_profile %}
+{% for u in user_list %}{% with tu=u.trackerprofile %}
 <tr><td><a href="{{tu.get_absolute_url}}">{{u}}</a></td><td>{{u.ticket_set.count|default:""}}</td><td>{{tu.media_count.objects|default:""}}</td><td>{{tu.media_count.media|default:""}}</td><td class="money">{% if tu.accepted_expeditures %}{{tu.accepted_expeditures|money}}{% endif %}</td><td class="money">{% if tu.transactions.amount %}{{tu.transactions.amount|money}}{% endif %}</td></tr>
 {% endwith %}{% endfor %}
 

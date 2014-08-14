@@ -141,7 +141,7 @@ class Ticket(models.Model):
         if self.requested_user != None:
             out = u'%s: %s<br />%s: %s' % (
                 _('E-mail'), escape(self.requested_user.email),
-                _('Other contact'), escape(self.requested_user.get_profile().other_contact),
+                _('Other contact'), escape(self.requested_user.trackerprofile.other_contact),
             )
             return mark_safe(out)
         else:
@@ -419,7 +419,7 @@ class Document(models.Model):
 
 from django.contrib.auth.models import User
 
-class UserProfile(models.Model):
+class TrackerProfile(models.Model):
     user = models.OneToOneField(User)
     bank_account = models.CharField(_('Bank account'), max_length=120, blank=True, help_text=_('Bank account information for money transfers'))
     other_contact = models.CharField(_('Other contact'), max_length=120, blank=True, help_text=_('Other contact such as wiki account; can be useful in case of topic administrators need to clarify some information'))
@@ -443,7 +443,7 @@ def create_user_profile(sender, **kwargs):
         return
     
     user = kwargs['instance']
-    profile = UserProfile.objects.create(user=user)
+    profile = TrackerProfile.objects.create(user=user)
 
 class Transaction(models.Model):
     """ One payment to or from the user. """

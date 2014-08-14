@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
 
-from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, Transaction, UserProfile, Document, Cluster
+from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, Transaction, TrackerProfile, Document, Cluster
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
@@ -633,7 +633,7 @@ class SummaryTest(TestCase):
         self.assertEqual(150 + 610, self.topic.accepted_expeditures())
     
     def test_user_summary(self):
-        profile = self.user.get_profile()
+        profile = self.user.trackerprofile
         self.assertEqual({'objects':3, 'media':13}, profile.media_count())
         self.assertEqual(150 + 610, profile.accepted_expeditures())
         self.assertEqual({'count':0, 'amount':None}, profile.transactions())
@@ -643,7 +643,7 @@ class SummaryTest(TestCase):
             self.user.transaction_set.create(date=datetime.date.today(), amount=amount, description='foo')
         
         add_trans(500)
-        self.assertEqual({'count':1, 'amount':500}, self.user.get_profile().transactions())
+        self.assertEqual({'count':1, 'amount':500}, self.user.trackerprofile.transactions())
 
 class TransactionTest(TestCase):
     
@@ -916,8 +916,8 @@ class UserProfileTests(TestCase):
     def test_simple_create(self):
         user = User.objects.create(username='new_user')
         try:
-            profile = user.get_profile()
-        except (SiteProfileNotAvailable, UserProfile.DoesNotExist):
+            profile = user.trackerprofile
+        except (SiteProfileNotAvailable, TrackerProfile.DoesNotExist):
             self.assertTrue(False)
 
 class DocumentAccessTests(TestCase):

@@ -19,7 +19,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, UserProfile, Document, TicketAck, PossibleAck
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
 
 class CommentPostedCatcher(object):
     """ 
@@ -441,11 +441,11 @@ def user_detail(request, username):
 class UserDetailsChange(FormView):
     template_name = 'tracker/user_details_change.html'
     user_fields = ('first_name', 'last_name', 'email')
-    profile_fields = [f.name for f in UserProfile._meta.fields if f.name not in ('id', 'user')]
+    profile_fields = [f.name for f in TrackerProfile._meta.fields if f.name not in ('id', 'user')]
     
     def make_user_details_form(self):
         fields = fields_for_model(User, fields=self.user_fields)
-        fields.update(fields_for_model(UserProfile, exclude=('user', )))
+        fields.update(fields_for_model(TrackerProfile, exclude=('user', )))
         return type('UserDetailsForm', (forms.BaseForm,), { 'base_fields': fields })
     
     def get_form_class(self):
@@ -457,7 +457,7 @@ class UserDetailsChange(FormView):
         for f in self.user_fields:
             out[f] = getattr(user, f)
         for f in self.profile_fields:
-            out[f] = getattr(user.get_profile(), f)
+            out[f] = getattr(user.trackerprofile, f)
         return out
     
     def form_valid(self, form):
@@ -466,7 +466,7 @@ class UserDetailsChange(FormView):
             setattr(user, f, form.cleaned_data[f])
         user.save()
         
-        profile = user.get_profile()
+        profile = user.trackerprofile
         for f in self.profile_fields:
             setattr(profile, f, form.cleaned_data[f])
         profile.save()

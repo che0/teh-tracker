@@ -52,7 +52,6 @@ INSTALLED_APPS = (
     'sendfile',
 )
 
-AUTH_PROFILE_MODULE = 'tracker.UserProfile'
 COMMENTS_APP = 'customcomments'
 
 ROOT_URLCONF = 'urls'
