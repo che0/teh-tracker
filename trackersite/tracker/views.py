@@ -386,7 +386,7 @@ def transaction_list(request):
     })
 
 def transactions_csv(request):
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     def writerow(row):
         response.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
         response.write(u'\r\n')
