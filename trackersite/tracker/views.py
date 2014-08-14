@@ -195,6 +195,8 @@ def create_ticket(request):
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture')
+            mediainfo.media   # trigger ValidationError when management form field are missing
+            expeditures.media # this seems to be a regression between Django 1.3 and 1.6
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
