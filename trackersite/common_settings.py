@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, abspath, join
 from django.utils.translation import ugettext_lazy as _
+
 SITE_DIR = abspath(dirname(__file__))
 PROJECT_DIR = abspath(join(dirname(__file__), '..'))
+_IGNORE = ('_IGNORE', '__builtins__', '__doc__', '__file__', '__name__', '__package__', 'os')
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
