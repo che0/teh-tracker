@@ -56,7 +56,7 @@ class TicketAdmin(admin.ModelAdmin):
             form = AddAckForm(request.POST)
             if form.is_valid():
                 ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
-                return HttpResponse(simplejson.dumps({
+                return HttpResponse(json.dumps({
                     'form':self._render(request, 'admin/tracker/ticket/ack_line.html', {'ack':ack}),
                     'id':ack.id,
                     'success':True,
@@ -64,7 +64,7 @@ class TicketAdmin(admin.ModelAdmin):
         else:
             form = AddAckForm()
         form_html = self._render(request, 'admin/tracker/ticket/add_ack.html', {'form':form})
-        return HttpResponse(simplejson.dumps({'form':form_html}))
+        return HttpResponse(json.dumps({'form':form_html}))
     
     def remove_ack(self, request, object_id):
         ticket = models.Ticket.objects.get(id=object_id)
@@ -75,7 +75,7 @@ class TicketAdmin(admin.ModelAdmin):
         except models.TicketAck.DoesNotExist:
             raise Http404
         ack.delete()
-        return HttpResponse(simplejson.dumps({
+        return HttpResponse(json.dumps({
             'success':True,
         }))
     
