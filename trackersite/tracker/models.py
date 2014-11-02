@@ -12,6 +12,8 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.core.validators import RegexValidator
+from django.core.urlresolvers import NoReverseMatch
 from django import template
 from south.modelsinspector import add_introspection_rules
 
@@ -393,7 +395,9 @@ DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url "download_document"
 class Document(models.Model):
     """ Document related to particular ticket, not publicly accessible. """
     ticket = models.ForeignKey('tracker.Ticket')
-    filename = models.CharField(max_length=120, help_text='Document filename')
+    filename = models.CharField(max_length=120, help_text='Document filename', validators=[
+        RegexValidator(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', message=_(u'We need a sane file name, such as my-invoice123.jpg')),
+    ])
     size = models.PositiveIntegerField()
     content_type = models.CharField(max_length=64)
     description = models.CharField(max_length=255, blank=True, help_text='Optional further description of the document')
@@ -403,8 +407,11 @@ class Document(models.Model):
         return self.filename
     
     def inline_intro(self):
-        context = template.Context({'doc':self})
-        return DOCUMENT_INTRO_TEMPLATE.render(context)
+        try:
+            context = template.Context({'doc':self})
+            return DOCUMENT_INTRO_TEMPLATE.render(context)
+        except NoReverseMatch:
+            return self.filename
     
     def html_item(self):
         context = template.Context({'doc':self, 'detail':True})

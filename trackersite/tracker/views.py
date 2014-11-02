@@ -311,9 +311,8 @@ def edit_ticket_docs(request, pk):
         
         if documents.is_valid():
             documents.save()
-        
-        messages.success(request, _('Document changes for ticket %s saved.') % ticket)
-        return HttpResponseRedirect(ticket.get_absolute_url())
+            messages.success(request, _('Document changes for ticket %s saved.') % ticket)
+            return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         documents = DocumentFormSet(prefix='docs', instance=ticket)
     
