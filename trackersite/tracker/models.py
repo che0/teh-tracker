@@ -2,7 +2,7 @@
 import datetime
 
 from django.contrib.comments.signals import comment_was_posted
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db import models
@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.validators import RegexValidator
 from django.core.urlresolvers import NoReverseMatch
+from django.core.cache import cache
 from django import template
 from south.modelsinspector import add_introspection_rules
 
@@ -53,8 +54,42 @@ class PercentageField(models.SmallIntegerField):
         return super(PercentageField, self).formfield(**defaults)
 add_introspection_rules([], ["^tracker\.models\.PercentageField"])
 
+class CachedModel(models.Model):
+    """ Model which has some values cached """
+    
+    def _get_item_key(self, name):
+        return u'm:%s:%s:%s' % (self.__class__.__name__, self.id, name)
+    
+    def _get_version_key(self):
+        return u'm:%s:%s:_version' % (self.__class__.__name__, self.id)
+    
+    def _cache_version(self):
+        return cache.get(self._get_version_key()) or 1
+    
+    def flush_cache(self):
+        cache.set(self._get_version_key(), self._cache_version() + 1)
+    flush_cache.alters_data = True
+    
+    @staticmethod
+    def cached_getter(raw_method):
+        def wrapped(self):
+            key = self._get_item_key(raw_method.__name__)
+            version = self._cache_version()
+            cached = cache.get(key, version=version)
+            if cached is not None:
+                return cached
+            else:
+                value = raw_method(self)
+                cache.set(key, value, version=version)
+                return value
+        
+        return wrapped 
+    
+    class Meta:
+        abstract = True
+cached_getter = CachedModel.cached_getter
 
-class Ticket(models.Model):
+class Ticket(CachedModel):
     """ One unit of tracked / paid stuff. """
     created = models.DateTimeField(_('created'), auto_now_add=True)
     updated = models.DateTimeField(_('updated'))
@@ -91,6 +126,8 @@ class Ticket(models.Model):
         
         if not cluster_update_only:
             ClusterUpdate.perform(ticket_ids=set([self.id]))
+        
+        self.flush_cache()
     
     def _note_comment(self, **kwargs):
         self.save()
@@ -125,6 +162,7 @@ class Ticket(models.Model):
     def __unicode__(self):
         return '%s: %s' % (self.id , self.summary)
     
+    @cached_getter
     def requested_by(self):
         if self.requested_user != None:
             return self.requested_user.username
@@ -139,6 +177,7 @@ class Ticket(models.Model):
         else:
             return escape(self.requested_text)
     
+    @cached_getter
     def requested_user_details(self):
         if self.requested_user != None:
             out = u'%s: %s<br />%s: %s' % (
@@ -153,12 +192,15 @@ class Ticket(models.Model):
     def get_absolute_url(self):
         return reverse('ticket_detail', kwargs={'pk':self.id})
     
+    @cached_getter
     def media_count(self):
         return self.mediainfo_set.aggregate(objects=models.Count('id'), media=models.Sum('count'))
     
+    @cached_getter
     def expeditures(self):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
+    @cached_getter
     def accepted_expeditures(self):
         if not self.has_all_acks('content', 'docs', 'archive') or (self.rating_percentage == None):
             return 0
@@ -179,14 +221,16 @@ class Ticket(models.Model):
         """ Can given user edit documents belonging to this ticket? """
         return (user == self.requested_user) or user.has_perm('tracker.edit_all_docs')
     
+    @cached_getter
     def associated_transactions_total(self):
         return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
     
+    @cached_getter
     def ack_set(self):
         return set([x.ack_type for x in self.ticketack_set.only('ack_type')])
     
     def has_ack(self, ack_type):
-        return self.ticketack_set.filter(ack_type=ack_type).exists()
+        return ack_type in self.ack_set()
     
     def has_all_acks(self, *wanted_acks):
         acks = self.ack_set()
@@ -199,7 +243,9 @@ class Ticket(models.Model):
         """ Adds acks, mostly for testing. """
         for ack in acks:
             self.ticketack_set.create(ack_type=ack, comment='system operation')
+        self.flush_cache()
     
+    @cached_getter
     def possible_user_ack_types(self):
         """ List of possible ack types, that can be added by ticket requester. """
         out = []
@@ -208,9 +254,14 @@ class Ticket(models.Model):
                 out.append(ack_type)
         return out
     
+    @cached_getter
     def possible_user_acks(self):
         """ List of PossibleAck objects, that can be added by ticket requester. """
         return [PossibleAck(ack_type) for ack_type in self.possible_user_ack_types()]
+    
+    def flush_cache(self):
+        super(Ticket, self).flush_cache()
+        self.topic.flush_cache()
     
     class Meta:
         verbose_name = _('Ticket')
@@ -278,7 +329,7 @@ class FinanceStatus(object):
         return {'fuzzy':self.fuzzy, 'unpaid':self.unpaid, 'paid':self.paid, 'overpaid':self.overpaid}
 
 
-class Topic(models.Model):
+class Topic(CachedModel):
     """ Topics according to which the tickets are grouped. """
     name = models.CharField(_('name'), max_length=80)
     grant = models.ForeignKey('tracker.Grant', verbose_name=_('grant'), help_text=_('Grant project where this topic belongs'))
@@ -295,21 +346,26 @@ class Topic(models.Model):
     def get_absolute_url(self):
         return reverse('topic_detail', kwargs={'pk':self.id})
     
+    @cached_getter
     def media_count(self):
         return MediaInfo.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
     
+    @cached_getter
     def expeditures(self):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
+    @cached_getter
     def accepted_expeditures(self):
         return sum([t.accepted_expeditures() for t in self.ticket_set.filter(rating_percentage__gt=0)])
     
+    @cached_getter
     def tickets_per_payment_status(self):
         out = {}
         for s in self.ticket_set.values('payment_status').annotate(models.Count('payment_status')):
             out[s['payment_status']] = s['payment_status__count']
         return out
     
+    @cached_getter
     def payment_summary(self):
         finance = FinanceStatus()
         for ticket in self.ticket_set.all():
@@ -618,6 +674,15 @@ class TicketAck(models.Model):
     
     class Meta:
         ordering = ['added']
+
+@receiver(post_save, sender=TicketAck)
+def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
+    if not raw:
+        instance.ticket.flush_cache()
+        
+@receiver(post_delete, sender=TicketAck)
+def flush_ticket_after_ack_delete(sender, instance, **kwargs):
+    instance.ticket.flush_cache()
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """

@@ -6,7 +6,7 @@ from tracker.models import Ticket, Topic, Grant
 from tracker.feeds import LatestTicketsFeed, TopicTicketsFeed, TransactionsFeed
 
 urlpatterns = patterns('',
-    url(r'^tickets/$', ListView.as_view(model=Ticket), name='ticket_list'),
+    url(r'^tickets/$', 'tracker.views.ticket_list', name='ticket_list'),
     url(r'^tickets/feed/$', LatestTicketsFeed(), name='ticket_list_feed'),
     url(r'^ticket/(?P<pk>\d+)/$', 'tracker.views.ticket_detail', name='ticket_detail'),
     url(r'^ticket/(?P<pk>\d+)/edit/$', 'tracker.views.edit_ticket', name='edit_ticket'),

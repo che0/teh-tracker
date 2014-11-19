@@ -21,6 +21,13 @@ from sendfile import sendfile
 
 from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
 
+class TicketListView(ListView):
+    model = Ticket
+    
+    def get_queryset(self):
+        return super(TicketListView, self).get_queryset().select_related()
+ticket_list = TicketListView.as_view()
+
 class CommentPostedCatcher(object):
     """ 
     View mixin that catches 'c' GET argument from comment framework
