@@ -23,6 +23,13 @@ from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Exped
 
 class TicketListView(ListView):
     model = Ticket
+    paginate_by = 50
+    
+    def get(self, request, *args, **kwargs):
+        if kwargs.get('page', None) == '1':
+            return HttpResponseRedirect(reverse('ticket_list'))
+        else:
+            return super(TicketListView, self).get(request, *args, **kwargs)
     
     def get_queryset(self):
         return super(TicketListView, self).get_queryset().select_related()

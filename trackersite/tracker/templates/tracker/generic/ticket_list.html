@@ -10,7 +10,9 @@
 {% block content %}
 <p class="nav">{% trans "index" %} | <a href="{% url "topic_list" %}">{% trans "topics" %}</a> | <a href="{% url "transaction_list" %}">{% trans "transactions" %}</a> | <a href="{% url "user_list" %}">{% trans "users" %}</a></p>
 {% if user.is_authenticated %}<p class="tools screenonly"><a href="{% url "create_ticket" %}">{% trans "Create new ticket" %}</a></p>{% endif %}
+{% include "tracker/paginator.html" with url_name="ticket_list" extra_class="top" %}
 <h1>{% trans "Ticket list" %}</h1>
+
 {% block above_list %}{% endblock %}
 
 {% if ticket_list %}
@@ -19,6 +21,8 @@
 <p>{% trans "No tickets available." %}</p>
 {% endif %}
 {% block below_list %}{% endblock %}
+
+{% include "tracker/paginator.html" with url_name="ticket_list" extra_class="bottom" %}
 
 {% if user.is_authenticated %}<p><a href="{% url "create_ticket" %}">{% trans "Create new ticket" %}</a></p>{% endif %}
 {% endblock content %}
