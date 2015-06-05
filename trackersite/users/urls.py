@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^password/reset/sent/$', auth.password_reset_done, name='password_reset_done', kwargs={
             'template_name':'users/password_reset_done.html',
         }),
-    url(r'^password/reset/(?P<uidb36>[^/]+)/(?P<token>[^/]+)/$', auth.password_reset_confirm, name='password_reset_confirm', kwargs={
+    url(r'^password/reset/(?P<uidb64>[^/]+)/(?P<token>[^/]+)/$', auth.password_reset_confirm, name='password_reset_confirm', kwargs={
             'template_name':'users/password_reset_confirm.html',
         }),
     url(r'^password/reset/done/$', auth.password_reset_complete, name='password_reset_complete', kwargs={
