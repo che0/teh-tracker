@@ -1,0 +1,41 @@
+{% load trackertags %}<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Overview of {{grant.full_name}}</title>
+<link href="styles.css" rel="stylesheet" type="text/css">
+</head><body>
+<h1>Overview of {{grant.full_name}}</h1>
+<p>Generated on {{date|date:'r'}}</p>
+
+<table>
+<tr><th>Topic</th><th>Unpaid</th><th>Paid</th><th>Overpaid</th></tr>
+{% for t in finance.topics %}<tr><td><a href="#topic-{{t.topic.id}}">{{t.topic.name}}</a></td>
+<td class="money payment_cell {% if t.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{t.finance.unpaid|money}}</td>
+<td class="money payment_cell{% if t.finance.paid %} paid{% endif %}">{{t.finance.paid|money}}</td>
+<td class="money payment_cell {% if t.finance.overpaid %}overpaid{% else %}n_a{% endif %}">{{t.finance.overpaid|money}}</td></tr>
+{% endfor %}
+<tr class="total first_total"><td>Total {{grant.full_name}}</td>
+<td class="money payment_cell">{{finance.finance.unpaid|money}}</td>
+<td class="money payment_cell">{{finance.finance.paid|money}}</td>
+<td class="money payment_cell">{{finance.finance.overpaid|money}}</td>
+</tr></table>
+
+{% for topic in grant.topic_set.all %}
+<h2 id="topic-{{topic.id}}">{{topic.name}}</h2>
+
+{% if topic.ticket_set.all %}
+<table>
+<tr><th>ID</th><th>Ticket</th><th>Status</th><th>Accepted</th><th>Payment</th></tr>
+{% for ticket in topic.ticket_set.all %}<tr class="payment_class_{{ticket.payment_status}}">
+<td><a href="{{ticket.id}}/index.html">{{ticket.id}}</a></td><td><a href="{{ticket.id}}/index.html">{{ticket.summary}}</a></td>
+<td>{{ticket.state_str}}</td>{% with accepted=ticket.accepted_expeditures %}<td class="money">{% if accepted > 0 %}{{accepted|money}}{% endif %}</td><td class="payment_status">{{ticket.get_payment_status_display}}</td></tr>
+{% endwith %}
+</tr>
+{% endfor %}{# /ticket #}
+</table>
+{% else %}<p>There are no tickets in this topic.</p>{% endif %}
+
+{% endfor %}{# /topic #}
+
+<p>∎</p>
+</body></html>

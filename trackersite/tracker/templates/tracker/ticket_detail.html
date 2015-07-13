@@ -18,48 +18,7 @@
 	{% if user_can_edit_documents %}<a href="{% url "edit_ticket_docs" ticket.id %}">{% trans "edit ticket documents" %}</a>{% endif %}
 </p>{% endif %}
 
-<p>{% trans "Ticket ID" %}: {{ ticket.id }}<br />
-{% trans "Created" %}: {{ ticket.created }}<br />
-{% trans "Last changed" %}: {{ ticket.updated }}<br />
-{% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
-{% trans "Requested by" %}: {{ ticket.requested_by_html }}<br />
-{% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
-{% trans "State" %}: {{ ticket.state_str }}
-{% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
-	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{{ack.added_by_html}}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
-{% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
-{% if user_can_edit_ticket %}{% with acks_to_add=ticket.possible_user_acks %}{% if acks_to_add %}
-<div class="screenonly">{% trans "Confirm" %}:<ul>{% for possible_ack in acks_to_add %}
-	<li><a href="{% url "ticket_ack_add" ticket.id possible_ack.ack_type %}">{{possible_ack.display}}</a></li>
-{% endfor %}</ul></div>{% endif %}{% endwith %}{% endif %}
-{% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
-
-{% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
-
-{% if ticket.supervisor_notes %}<h2>{% trans "Supervisor notes" %}</h2><div>{{ ticket.supervisor_notes|safe|linebreaks }}</div>{% endif %}
-
-{% if ticket.media_count.objects > 0 %}
-<h2>{% trans "Media" %}</h2>
-<p>{% trans "Number of objects" %}: {{ ticket.media_count.objects }}
-{% if ticket.media_count.media %}<br />{% trans "Number of media files" %}: {{ ticket.media_count.media }}</p>{% endif %}
-<ul id="media_list">
-{% for item in ticket.mediainfo_set.all %}
-<li>{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}</li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if ticket.expeditures.count > 0 %}
-<h2>{% trans "Expeditures" %}</h2>
-<table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</tr>
-{% for item in ticket.expediture_set.all %}
-<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td></tr>
-{% endfor %}
-<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td></tr>
-<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td></tr>
-</table>
-{% endif %}
+{% include "tracker/ticket_common_detail.html" with active_links=True %}
 
 {% if ticket.transaction_set.all.count > 0 %}
 <h2>{% trans "Transactions" %}</h2>
