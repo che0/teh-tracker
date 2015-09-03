@@ -7,8 +7,12 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
 class UserWithEmailForm(auth.forms.UserCreationForm):
     email = forms.EmailField(required=False, help_text=_("Will be used for password recovery and notifications, if you enable them."))
+    captcha = ReCaptchaField(widget=ReCaptchaWidget())
     
     class Meta:
         model = auth.models.User

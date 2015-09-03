@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n recaptcha2 %}
+
+{% block head %}{{block.super}}{% recaptcha_init %}{% endblock %}
 
 {% block title %}{% trans "Register" %}{% endblock %}
 

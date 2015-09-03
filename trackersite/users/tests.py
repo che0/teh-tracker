@@ -13,15 +13,10 @@ class CreateUserTest(TestCase):
         response = Client().post(reverse('register'), {
             'username':USERNAME, 'password1':PW, 'password2':PW, 'email':EMAIL,
         })
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
         
-        # user exists and has the e-mail
-        user = User.objects.get(username=USERNAME)
-        self.assertTrue(user.check_password(PW))
-        self.assertEqual(EMAIL, user.email)
-        
-        # login works
-        self.assertTrue(Client().login(username=USERNAME, password=PW))
+        # user does not exist -> we've been killed by captcha
+        self.assertEqual(0, len(User.objects.filter(username=USERNAME)))
 
 class PasswordResetTests(TestCase):
     def test_password_reset(self):

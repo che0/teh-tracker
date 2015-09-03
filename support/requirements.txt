@@ -2,6 +2,7 @@
 Django>=1.6,<1.7
 South
 django-sendfile
+django-recaptcha2
 
 # we'll presume MySQL as the database
 mysql-python

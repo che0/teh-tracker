@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'users',
     'customcomments',
     'sendfile',
+    'snowpenguin.django.recaptcha2',
 )
 
 COMMENTS_APP = 'customcomments'
