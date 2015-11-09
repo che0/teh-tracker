@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% load i18n comments %}
+{% load i18n comments recaptcha2 %}
 
 {% block head %}{{ block.super }}
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url "topic_ticket_feed" topic.id %}" />
 <script src="{{STATIC_URL}}admin/js/jquery.min.js" type="text/javascript"></script>
 <script src="{{STATIC_URL}}hiding.js" type="text/javascript"></script>
+{% recaptcha_init %}
 {% endblock %}
 
 {% block title %}{{ topic.name }}{% endblock %}

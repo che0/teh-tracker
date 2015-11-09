@@ -9,17 +9,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.comments.models import Comment
 from django.contrib.comments.forms import CommentSecurityForm, COMMENT_MAX_LENGTH
 
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
 class CustomCommentForm(CommentSecurityForm):
     """
     Handles i bit less details of the comment than the usual form
     """
-    name          = forms.CharField(label=_("Name"), max_length=50)
-    comment       = forms.CharField(label=_('Comment'), widget=forms.Textarea,
-                                    max_length=COMMENT_MAX_LENGTH)
-    honeypot      = forms.CharField(required=False,
-                                    label=_('If you enter anything in this field '\
-                                            'your comment will be treated as spam'))
-
+    name = forms.CharField(label=_("Name"), max_length=50)
+    comment = forms.CharField(label=_('Comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH)
+    captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
     def get_comment_object(self):
         """
@@ -81,10 +80,3 @@ class CustomCommentForm(CommentSecurityForm):
                 return old
 
         return new
-    
-    def clean_honeypot(self):
-        """Check that nothing's been entered into the honeypot."""
-        value = self.cleaned_data["honeypot"]
-        if value:
-            raise forms.ValidationError(self.fields["honeypot"].label)
-        return value

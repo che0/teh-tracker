@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% load recaptcha2 %}
+
+{% block head %}{{block.super}}{% recaptcha_init %}{% endblock %}
+
+{% block fulltitle %}{% block title %}{% endblock %}{% endblock fulltitle %}
