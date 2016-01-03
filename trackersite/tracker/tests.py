@@ -751,6 +751,19 @@ class ClusterTest(TestCase):
         self.assertEqual(100, c.total_tickets)
         self.assertEqual(150, c.total_transactions)
     
+    def test_rounding(self):
+        ticket = Ticket.objects.create(summary='foo', topic=self.topic, rating_percentage=37)
+        tid = ticket.id
+        Expediture.objects.create(ticket_id=tid, description='exp', amount=1075.50)
+        ticket.add_acks('content', 'docs', 'archive')
+        
+        self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
+        
+        tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=397.94, other=self.user, description='payment')
+        tr.tickets.add(ticket)
+        self.assertEqual(397.94, ticket.accepted_expeditures())
+        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
+    
     def test_real_cluster(self):
         ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
         ticket1.add_acks('content', 'docs', 'archive')

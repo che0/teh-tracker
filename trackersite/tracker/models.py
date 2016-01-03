@@ -17,6 +17,7 @@ from django.core.urlresolvers import NoReverseMatch
 from django.core.cache import cache
 from django import template
 from south.modelsinspector import add_introspection_rules
+from decimal import Decimal
 
 from tracker.clusters import ClusterUpdate
 
@@ -206,7 +207,8 @@ class Ticket(CachedModel):
             return 0
         else:
             total = sum([x.amount for x in self.expediture_set.all()])
-            return total * self.rating_percentage / 100
+            reduced = total * self.rating_percentage / 100
+            return Decimal(round(reduced, 2))
     
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
@@ -576,16 +578,17 @@ class Cluster(models.Model):
     def get_status(self):
         paid = self.total_transactions or 0
         tickets = self.total_tickets or 0
-        if paid < tickets:
-            if paid == 0:
-                return 'unpaid'
-            else:
-                return 'partially_paid'
-        elif paid == tickets:
+
+        if abs(paid - tickets) < 0.01: # float-friendly equality
             if tickets == 0:
                 return 'n_a'
             else:
                 return 'paid'
+        elif paid < tickets:
+            if paid == 0:
+                return 'unpaid'
+            else:
+                return 'partially_paid'
         else: # paid > tickets
             return 'overpaid'
     
@@ -679,10 +682,12 @@ class TicketAck(models.Model):
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
     if not raw:
         instance.ticket.flush_cache()
+        ClusterUpdate.perform(ticket_ids=set([instance.ticket.id]))
         
 @receiver(post_delete, sender=TicketAck)
 def flush_ticket_after_ack_delete(sender, instance, **kwargs):
     instance.ticket.flush_cache()
+    ClusterUpdate.perform(ticket_ids=set([instance.ticket.id]))
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
