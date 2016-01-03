@@ -7,6 +7,7 @@
 {% trans "Requested by" %}: {% if active_links %}{{ticket.requested_by_html}}{% else %}{{ticket.requested_by}}{% endif %}<br />
 {% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
 {% trans "State" %}: {{ ticket.state_str }}
+{% if "content" in ticket.ack_set %}<br />{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;%{% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
