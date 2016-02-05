@@ -39,6 +39,10 @@ class TopicTicketsFeed(Feed):
     def item_pubdate(self, item):
         return item.updated
 
+class TopicSubmittedTicketsFeed(TopicTicketsFeed):
+    def items(self, topic):
+        return [t for t in topic.ticket_set.order_by('-updated')[:40] if t.has_ack('user_content')]
+
 class TransactionsFeed(Feed):
     description_template = 'feeds/transaction_description.html'
     

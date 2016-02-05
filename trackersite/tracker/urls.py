@@ -3,11 +3,11 @@ from django.conf.urls import patterns, include, url
 from django.views.generic import DetailView, ListView, RedirectView
 
 from tracker.models import Ticket, Topic, Grant
-from tracker.feeds import LatestTicketsFeed, TopicTicketsFeed, TransactionsFeed
+from tracker import feeds
 
 urlpatterns = patterns('',
     url(r'^tickets/(?:page/(?P<page>\d+)/)?$', 'tracker.views.ticket_list', name='ticket_list'),
-    url(r'^tickets/feed/$', LatestTicketsFeed(), name='ticket_list_feed'),
+    url(r'^tickets/feed/$', feeds.LatestTicketsFeed(), name='ticket_list_feed'),
     url(r'^ticket/(?P<pk>\d+)/$', 'tracker.views.ticket_detail', name='ticket_detail'),
     url(r'^ticket/(?P<pk>\d+)/edit/$', 'tracker.views.edit_ticket', name='edit_ticket'),
     url(r'^ticket/(?P<pk>\d+)/edit/docs/$', 'tracker.views.edit_ticket_docs', name='edit_ticket_docs'),
@@ -19,13 +19,14 @@ urlpatterns = patterns('',
     url(r'^topics/$', ListView.as_view(model=Topic), name='topic_list'),
     url(r'^topics/finance/$', 'tracker.views.topic_finance', name='topic_finance'),
     url(r'^topic/(?P<pk>\d+)/$', 'tracker.views.topic_detail', name='topic_detail'),
-    url(r'^topic/(?P<pk>\d+)/feed/$', TopicTicketsFeed(), name='topic_ticket_feed'),
+    url(r'^topic/(?P<pk>\d+)/feed/$', feeds.TopicTicketsFeed(), name='topic_ticket_feed'),
+    url(r'^topic/(?P<pk>\d+)/feed/submitted/$', feeds.TopicSubmittedTicketsFeed(), name='topic_submitted_ticket_feed'),
     url(r'^grant/(?P<slug>[-\w]+)/$', DetailView.as_view(model=Grant), name='grant_detail'),
     url(r'^users/$', 'tracker.views.user_list', name='user_list'),
     url(r'^users/(?P<username>[^/]+)/$', 'tracker.views.user_detail', name='user_detail'),
     url(r'^my/details/$', 'tracker.views.user_details_change', name='user_details_change'),
     url(r'^transactions/$', 'tracker.views.transaction_list', name='transaction_list'),
-    url(r'^transactions/feed/$', TransactionsFeed(), name='transactions_feed'),
+    url(r'^transactions/feed/$', feeds.TransactionsFeed(), name='transactions_feed'),
     url(r'^transactions/transactions\.csv$', 'tracker.views.transactions_csv', name='transactions_csv'),
     url(r'^cluster/(?P<pk>\d+)/$', 'tracker.views.cluster_detail', name='cluster_detail'),
     url(r'^comments/', include('django.contrib.comments.urls')),
