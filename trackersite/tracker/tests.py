@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import re
 
 from django.test import TestCase
 from django.test.client import Client
@@ -81,6 +82,20 @@ class SimpleTicketTest(TestCase):
     def test_topic_absolute_url(self):
         t = self.topic
         self.assertEqual(reverse('topic_detail', kwargs={'pk':t.id}), t.get_absolute_url())
+    
+    def _test_one_feed(self, url_name, topic_id, expected_ticket_count):
+        url_kwargs = {'pk':topic_id} if topic_id is not None else {}
+        response = Client().get(reverse(url_name, kwargs=url_kwargs))
+        self.assertEqual(response.status_code, 200)
+        items_in_response = re.findall(r'<item>', response.content) # ugly, mostly works
+        self.assertEqual(expected_ticket_count, len(items_in_response))
+    
+    def test_feeds(self):
+        self.ticket1.add_acks('user_content')
+        self._test_one_feed('ticket_list_feed', None, 2)
+        self._test_one_feed('ticket_submitted_feed', None, 1)
+        self._test_one_feed('topic_ticket_feed', self.topic.id, 2)
+        self._test_one_feed('topic_submitted_ticket_feed', self.topic.id, 1)
 
 class OldRedirectTests(TestCase):
     def setUp(self):

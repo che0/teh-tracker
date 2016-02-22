@@ -20,6 +20,12 @@ class LatestTicketsFeed(Feed):
     def item_pubdate(self, item):
         return item.updated
 
+class SubmittedTicketsFeed(LatestTicketsFeed):
+    title = _('Latest submitted tickets')
+    description = _('Recently changed submitted tickets')
+    
+    def items(self):
+        return [t for t in Ticket.objects.order_by('-updated')[:40] if t.has_ack('user_content')]
 
 class TopicTicketsFeed(Feed):
     description_template = 'feeds/ticket_description.html'
