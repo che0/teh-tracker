@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
-from django.views.generic import DetailView, ListView, RedirectView
+from django.views.generic import DetailView, RedirectView
 
-from tracker.models import Ticket, Topic, Grant
+from tracker.models import Grant
 from tracker import feeds
 
 urlpatterns = patterns('',
@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     url(r'^ticket/(?P<pk>\d+)/edit/acks/(?P<ack_id>\d+)/delete/$', 'tracker.views.ticket_ack_delete', name='ticket_ack_delete'),
     url(r'^ticket/(?P<ticket_id>\d+)/docs/(?P<filename>[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+)$', 'tracker.views.download_document', name='download_document'),
     url(r'^ticket/new/$', 'tracker.views.create_ticket', name='create_ticket'),
-    url(r'^topics/$', ListView.as_view(model=Topic), name='topic_list'),
+    url(r'^topics/$', 'tracker.views.topic_list', name='topic_list'),
     url(r'^topics/finance/$', 'tracker.views.topic_finance', name='topic_finance'),
     url(r'^topic/(?P<pk>\d+)/$', 'tracker.views.topic_detail', name='topic_detail'),
     url(r'^topic/(?P<pk>\d+)/feed/$', feeds.TopicTicketsFeed(), name='topic_ticket_feed'),

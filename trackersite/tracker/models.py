@@ -378,7 +378,7 @@ class Topic(CachedModel):
     class Meta:
         verbose_name = _('Topic')
         verbose_name_plural = _('Topics')
-        ordering = ['name']
+        ordering = ['-open_for_tickets', 'name']
         permissions = (
             ("supervisor", "Can edit all topics and tickets"),
         )

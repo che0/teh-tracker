@@ -122,6 +122,12 @@ class TicketAckDeleteView(DeleteView):
         return HttpResponseRedirect(self.ticket.get_absolute_url())
 ticket_ack_delete = TicketAckDeleteView.as_view()
 
+def topic_list(request):
+    return render(request, 'tracker/topic_list.html', {
+        'open_topics': Topic.objects.filter(open_for_tickets=True),
+        'closed_topics': Topic.objects.filter(open_for_tickets=False),
+    })
+
 class TopicDetailView(CommentPostedCatcher, DetailView):
     model = Topic
 topic_detail = TopicDetailView.as_view()

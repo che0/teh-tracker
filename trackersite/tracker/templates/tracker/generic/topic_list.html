@@ -7,7 +7,10 @@
 <p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt;</p>
 <h1>{% trans "Topic list" %}</h1>
 {% block above_list %}{% endblock %}
-{% include "tracker/topic_table.html" with show_grants="True" %}
+{% include "tracker/topic_table.html" with show_grants="True" topic_list=open_topics %}
+
+<h3>{% trans "Topics closed for new tickets" %}</h3>
+{% include "tracker/topic_table.html" with show_grants="True" topic_list=closed_topics %}
 {% block below_list %}{% endblock %}
 
 <p><a href="{% url "topic_finance" %}">{% trans "topic finance" %}</a></p>
