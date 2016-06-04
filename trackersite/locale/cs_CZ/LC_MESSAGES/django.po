@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-06-05 00:38+0200\n"
-"PO-Revision-Date: 2016-06-05 00:41+0200\n"
+"PO-Revision-Date: 2016-06-05 00:43+0200\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
 "Language: cs\n"
@@ -221,7 +221,7 @@ msgstr "ohodnocení"
 
 #: tracker/models.py:104
 msgid "Rating percentage set by topic administrator"
-msgstr "Procentuální ohodnocení stanovené garantem tématu"
+msgstr "Procentuální ohodnocení stanovené schvalovatelem"
 
 #: tracker/models.py:105 tracker/models.py:341 tracker/models.py:391
 #: tracker/models.py:414 tracker/models.py:428 tracker/models.py:519
@@ -238,11 +238,11 @@ msgstr ""
 
 #: tracker/models.py:106
 msgid "supervisor notes"
-msgstr "poznámky garanta"
+msgstr "poznámky schvalovate"
 
 #: tracker/models.py:106
 msgid "This space is for notes of project supervisors and accounting staff."
-msgstr "Místo pro poznámky projektových garantů nebo účetních."
+msgstr "Místo pro poznámky schvalovatelů nebo účetních."
 
 #: tracker/models.py:108
 msgid "payment status"
@@ -502,8 +502,8 @@ msgid ""
 "Other contact such as wiki account; can be useful in case of topic "
 "administrators need to clarify some information"
 msgstr ""
-"Další kontakt (např. účet na wiki); může se hodit třeba pokud budou garanti "
-"témat potřebovat nějaká upřesnění"
+"Další kontakt (např. účet na wiki); může se hodit třeba pokud budou "
+"schvalovatelé potřebovat nějaká upřesnění"
 
 #: tracker/models.py:491 tracker/templates/tracker/admin_user_list.html:30
 msgid "Other identification"
@@ -913,7 +913,7 @@ msgstr "Schválit"
 
 #: tracker/templates/tracker/ticket_common_detail.html:22
 msgid "Supervisor notes"
-msgstr "Poznámky garanta"
+msgstr "Poznámky schvalovatele"
 
 #: tracker/templates/tracker/ticket_common_detail.html:25
 #: tracker/templates/tracker/ticket_table.html:8
@@ -1093,11 +1093,11 @@ msgstr "přidat tiket"
 
 #: tracker/templates/tracker/topic_detail.html:23
 msgid "Topic administrators"
-msgstr "Garanti tématu"
+msgstr "Schvalovatelé tématu"
 
 #: tracker/templates/tracker/topic_detail.html:23
 msgid "Topic administrator"
-msgstr "Garant tématu"
+msgstr "Schvalovatel tématu"
 
 #: tracker/templates/tracker/topic_detail.html:28
 msgid "Total for this topic"
@@ -1141,7 +1141,7 @@ msgstr "Tikety podle plateb"
 
 #: tracker/templates/tracker/topic_table.html:8
 msgid "Administrators"
-msgstr "Garanti"
+msgstr "Schvalovatelé"
 
 #: tracker/templates/tracker/topic_table.html:10
 msgid "no payment required"
