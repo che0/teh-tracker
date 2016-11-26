@@ -6,11 +6,12 @@ import re
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User, Permission, SiteProfileNotAvailable
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
 
+from users.models import UserWrapper
 from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, Transaction, TrackerProfile, Document, Cluster
 
 class SimpleTicketTest(TestCase):
@@ -593,7 +594,7 @@ class UserDetailsTest(TestCase):
     
     def test_user_details(self):
         c = Client()
-        response = c.get(self.user.get_absolute_url())
+        response = c.get(UserWrapper(self.user).get_absolute_url())
         self.assertEqual(200, response.status_code)
         self.assertEqual(self.ticket, response.context['ticket_list'][0])
 
@@ -945,7 +946,7 @@ class UserProfileTests(TestCase):
         user = User.objects.create(username='new_user')
         try:
             profile = user.trackerprofile
-        except (SiteProfileNotAvailable, TrackerProfile.DoesNotExist):
+        except TrackerProfile.DoesNotExist:
             self.assertTrue(False)
 
 class DocumentAccessTests(TestCase):

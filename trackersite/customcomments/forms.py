@@ -6,8 +6,8 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.comments.models import Comment
-from django.contrib.comments.forms import CommentSecurityForm, COMMENT_MAX_LENGTH
+from django_comments.models import Comment
+from django_comments.forms import CommentSecurityForm, COMMENT_MAX_LENGTH
 
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget

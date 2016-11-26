@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from django.contrib.comments.signals import comment_was_posted
+from django_comments.signals import comment_was_posted
 from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
@@ -16,9 +16,9 @@ from django.core.validators import RegexValidator
 from django.core.urlresolvers import NoReverseMatch
 from django.core.cache import cache
 from django import template
-from south.modelsinspector import add_introspection_rules
 from decimal import Decimal
 
+from users.models import UserWrapper
 from tracker.clusters import ClusterUpdate
 
 PAYMENT_STATUS_CHOICES = (
@@ -53,7 +53,6 @@ class PercentageField(models.SmallIntegerField):
         defaults = {'min_value': 0, 'max_value':100}
         defaults.update(kwargs)
         return super(PercentageField, self).formfield(**defaults)
-add_introspection_rules([], ["^tracker\.models\.PercentageField"])
 
 class CachedModel(models.Model):
     """ Model which has some values cached """
@@ -173,8 +172,7 @@ class Ticket(CachedModel):
     
     def requested_by_html(self):
         if self.requested_user != None:
-            out = '<a href="%s">%s</a>' % (self.requested_user.get_absolute_url(), escape(unicode(self.requested_user)))
-            return mark_safe(out)
+            return UserWrapper(self.requested_user).get_html_link()
         else:
             return escape(self.requested_text)
     
@@ -459,7 +457,7 @@ class Document(models.Model):
     size = models.PositiveIntegerField()
     content_type = models.CharField(max_length=64)
     description = models.CharField(max_length=255, blank=True, help_text='Optional further description of the document')
-    payload = models.FileField(upload_to='tickets/%Y/', storage=TrackerDocumentStorage())
+    payload = models.FileField(upload_to='tickets/%Y/', storage=FileSystemStorage(location=settings.TRACKER_DOCS_ROOT))
     
     def __unicode__(self):
         return self.filename
@@ -536,8 +534,7 @@ class Transaction(models.Model):
     
     def other_party_html(self):
         if self.other != None:
-            out = '<a href="%s">%s</a>' % (self.other.get_absolute_url(), escape(unicode(self.other)))
-            return mark_safe(out)
+            return UserWrapper(self.other).get_html_link()
         else:
             return escape(self.other_text)
     
@@ -665,8 +662,7 @@ class TicketAck(models.Model):
     
     def added_by_html(self):
         if self.added_by != None:
-            out = '<a href="%s">%s</a>' % (self.added_by.get_absolute_url(), escape(unicode(self.added_by)))
-            return mark_safe(out)
+            return UserWrapper(self.added_by).get_html_link()
         else:
             return ''
     

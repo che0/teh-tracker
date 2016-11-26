@@ -1,8 +1,8 @@
 # just our usual stuff
-Django>=1.6,<1.7
-South
+Django>=1.8,<1.9
 django-sendfile
 django-recaptcha2
+django-contrib-comments
 
 # we'll presume MySQL as the database
 mysql-python
