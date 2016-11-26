@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('size', models.PositiveIntegerField()),
                 ('content_type', models.CharField(max_length=64)),
                 ('description', models.CharField(help_text=b'Optional further description of the document', max_length=255, blank=True)),
-                ('payload', models.FileField(storage=django.core.files.storage.FileSystemStorage(location=b'/home/che/projects/teh-tracker/deploy/private'), upload_to=b'tickets/%Y/')),
+                ('payload', models.FileField(storage=django.core.files.storage.FileSystemStorage(location=settings.TRACKER_DOCS_ROOT), upload_to=b'tickets/%Y/')),
             ],
             options={
                 'permissions': (('see_all_docs', 'Can see all documents'), ('edit_all_docs', 'Can edit all documents')),

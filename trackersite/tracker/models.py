@@ -440,11 +440,6 @@ class Expediture(models.Model):
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
 
-class TrackerDocumentStorage(FileSystemStorage):
-    def __init__(self):
-        self.location = settings.TRACKER_DOCS_ROOT
-        self.base_url = None
-
 # introductory chunk for the template
 DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url "download_document" doc.ticket.id doc.filename %}">{{doc.filename}}</a>{% if detail and doc.description %}: {{doc.description}}{% endif %} <small>({{doc.content_type}}; {{doc.size|filesizeformat}})</small>')
 
