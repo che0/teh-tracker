@@ -513,6 +513,16 @@ class TicketAckTests(TestCase):
         c.login(username=self.user.username, password=self.password)
         response = c.post(reverse('ticket_ack_delete', kwargs={'pk':self.ticket.id, 'ack_id':cont.id}))
         self.assertEqual(response.status_code, 403)
+
+    def test_topic_content_acks_per_user(self):
+        c = Client()
+        response = c.get(reverse('topic_content_acks_per_user'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_topic_content_acks_per_user_csv(self):
+        c = Client()
+        response = c.get(reverse('topic_content_acks_per_user_csv'))
+        self.assertEqual(response.status_code, 200)
     
 class TicketEditLinkTests(TestCase):
     def setUp(self):

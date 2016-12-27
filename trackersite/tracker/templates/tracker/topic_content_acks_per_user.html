@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n trackertags %}
+
+{% block title %}{% trans "Topic ack overview" %}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt;</p>
+<h1>{% trans "Topic ack overview" %}</h1>
+
+<table>
+<tr>
+    <th>{% trans "Supervisor" %}</th>
+    <th>{% trans "Grant" %}</th>
+    <th>{% trans "Topic" %}</th>
+    <th>{% trans "Ack count" %}</th>
+</tr>
+{% for row in acks %}
+<tr>
+    <td>{{row.user.get_html_link}}</td>
+    <td><a href="{{row.grant.get_absolute_url}}">{{row.grant}}</a></td>
+    <td><a href="{{row.topic.get_absolute_url}}">{{row.topic}}</a></td>
+    <td>{{row.ack_count}}</td>
+</tr>{% endfor %}
+
+</table>
+
+<p><a href="{% url "topic_content_acks_per_user_csv" %}">download csv</a></p>
+
+{% endblock content %}

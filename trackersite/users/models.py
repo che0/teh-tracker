@@ -6,6 +6,9 @@ class UserWrapper(object):
     def __init__(self, user):
         self.user = user
     
+    def __unicode__(self):
+        return unicode(self.user)
+
     def get_absolute_url(self):
         return reverse('user_detail', kwargs={'username':self.user.username})
     

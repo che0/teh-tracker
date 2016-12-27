@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+from collections import namedtuple
 
-from django.db import models
+from django.db import models, connection
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model, inlineformset_factory, BaseInlineFormSet
@@ -20,6 +21,7 @@ from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
 from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
+from users.models import UserWrapper
 
 class TicketListView(ListView):
     model = Ticket
@@ -396,7 +398,55 @@ def topic_finance(request):
         'cluster_sums': csums,
         'total_transactions': csums['paid'] + csums['overpaid'], 
         'have_fuzzy': any([row['finance'].fuzzy for row in grants_out]),
-    })  
+    })
+
+class HttpResponseCsv(HttpResponse):
+    def __init__(self, fields, *args, **kwargs):
+        kwargs['content_type'] = 'text/csv'
+        super(HttpResponseCsv, self).__init__(*args, **kwargs)
+        self.writerow(fields)
+
+    def writerow(self, row):
+        self.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
+        self.write(u'\r\n')
+
+def _get_topic_content_acks_per_user():
+    """ Returns content acks counts per user and topic """
+    cursor = connection.cursor()
+    cursor.execute("""
+        select
+            ack.added_by_id user_id, topic.grant_id grant_id, ticket.topic_id topic_id, count(1) ack_count
+        from
+            tracker_ticketack ack
+            left join tracker_ticket ticket on ack.ticket_id = ticket.id
+            left join tracker_topic topic on ticket.topic_id = topic.id
+        where
+            ack_type = 'content'
+            and added_by_id is not null
+        group by user_id, grant_id, topic_id order by user_id, grant_id, topic_id
+    """)
+    row_tuple_type = namedtuple('Result', [col[0] for col in cursor.description])
+    result = [row_tuple_type(*row) for row in cursor]
+    users = User.objects.in_bulk([r.user_id for r in result])
+    grants = Grant.objects.in_bulk([r.grant_id for r in result])
+    topics = Topic.objects.in_bulk([r.topic_id for r in result])
+
+    final_row_type = namedtuple('AckRow', ('user', 'grant', 'topic', 'ack_count'))
+    return [
+        final_row_type(UserWrapper(users.get(r.user_id)), grants.get(r.grant_id), topics.get(r.topic_id), r.ack_count)
+        for r in result
+    ]
+
+def topic_content_acks_per_user(request):
+    return render(request, 'tracker/topic_content_acks_per_user.html', {
+        'acks': _get_topic_content_acks_per_user(),
+    })
+
+def topic_content_acks_per_user_csv(request):
+    response = HttpResponseCsv(['user', 'grant', 'topic', 'ack_count'])
+    for row in _get_topic_content_acks_per_user():
+        response.writerow([row.user, row.grant, row.topic, row.ack_count])
+    return response
 
 def transaction_list(request):
     return render(request, 'tracker/transaction_list.html', {
@@ -404,16 +454,15 @@ def transaction_list(request):
         'total': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
     })
 
+
+
 def transactions_csv(request):
-    response = HttpResponse(content_type='text/csv')
-    def writerow(row):
-        response.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
-        response.write(u'\r\n')
-    
-    writerow(['DATE', 'OTHER PARTY', 'AMOUNT ' + unicode(settings.TRACKER_CURRENCY), 'DESCRIPTION', 'TICKETS', 'GRANTS', 'ACCOUNTING INFO'])
+    response = HttpResponseCsv(
+        ['DATE', 'OTHER PARTY', 'AMOUNT ' + unicode(settings.TRACKER_CURRENCY), 'DESCRIPTION', 'TICKETS', 'GRANTS', 'ACCOUNTING INFO']
+    )
     
     for tx in Transaction.objects.all():
-        writerow([
+        response.writerow([
             tx.date.strftime('%Y-%m-%d'),
             tx.other_party(),
             tx.amount,

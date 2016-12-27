@@ -13,6 +13,9 @@
 {% include "tracker/topic_table.html" with show_grants="True" topic_list=closed_topics %}
 {% block below_list %}{% endblock %}
 
-<p><a href="{% url "topic_finance" %}">{% trans "topic finance" %}</a></p>
+<p>
+<a href="{% url "topic_finance" %}">{% trans "topic finance" %}</a>
+<a href="{% url "topic_content_acks_per_user" %}">{% trans "topic ack overview" %}</a>
+</p>
 
 {% endblock content %}
