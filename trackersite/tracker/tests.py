@@ -2,6 +2,7 @@
 
 import datetime
 import re
+from decimal import Decimal
 
 from django.test import TestCase
 from django.test.client import Client
@@ -787,7 +788,7 @@ class ClusterTest(TestCase):
         
         tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=397.94, other=self.user, description='payment')
         tr.tickets.add(ticket)
-        self.assertEqual(397.94, ticket.accepted_expeditures())
+        self.assertEqual(Decimal('397.94'), ticket.accepted_expeditures())
         self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
 
     def test_rounding2(self):
@@ -795,7 +796,7 @@ class ClusterTest(TestCase):
         tid = ticket.id
         Expediture.objects.create(ticket_id=tid, description='exp', amount=859.50)
         ticket.add_acks('content', 'docs', 'archive')
-        self.assertEqual('773.55', str(ticket.accepted_expeditures()))
+        self.assertEqual(Decimal('773.55'), ticket.accepted_expeditures())
     
     def test_real_cluster(self):
         ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)

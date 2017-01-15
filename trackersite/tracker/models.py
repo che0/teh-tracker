@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import decimal
 
 from django_comments.signals import comment_was_posted
 from django.db.models.signals import post_save, post_delete
@@ -16,7 +17,6 @@ from django.core.validators import RegexValidator
 from django.core.urlresolvers import NoReverseMatch
 from django.core.cache import cache
 from django import template
-from decimal import Decimal
 
 from users.models import UserWrapper
 from tracker.clusters import ClusterUpdate
@@ -202,11 +202,11 @@ class Ticket(CachedModel):
     @cached_getter
     def accepted_expeditures(self):
         if not self.has_all_acks('content', 'docs', 'archive') or (self.rating_percentage == None):
-            return 0
+            return decimal.Decimal(0)
         else:
-            total = sum([x.amount for x in self.expediture_set.all()])
+            total = sum([x.amount for x in self.expediture_set.all()], decimal.Decimal(0))
             reduced = total * self.rating_percentage / 100
-            return Decimal(round(reduced, 2))
+            return reduced.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP)
     
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
