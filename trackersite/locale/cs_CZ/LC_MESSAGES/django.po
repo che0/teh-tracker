@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-27 18:39+0100\n"
+"POT-Creation-Date: 2017-07-02 21:55+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -616,8 +616,6 @@ msgstr "stav"
 #: tracker/templates/feeds/transaction_description.html:2
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_detail.html:27
-#: tracker/templates/tracker/ticket_table.html:4
-#: tracker/templates/tracker/ticket_table.html:16
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
 msgid "Date"
@@ -886,6 +884,8 @@ msgid "Last changed"
 msgstr "Naposledy změněno"
 
 #: tracker/templates/tracker/ticket_common_detail.html:6
+#: tracker/templates/tracker/ticket_table.html:4
+#: tracker/templates/tracker/ticket_table.html:16
 msgid "Event date"
 msgstr "Datum akce"
 
