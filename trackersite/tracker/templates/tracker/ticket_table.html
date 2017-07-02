@@ -1,7 +1,7 @@
 {% load i18n trackertags %}
 <table class="ticket_list">
 {% if show_media %}
-<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Date" %}</th><th rowspan="2">{% trans "Summary" %}</th>
+<tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Event date" %}</th><th rowspan="2">{% trans "Summary" %}</th>
 {% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
 {% if show_topics %}<th rowspan="2">{% trans "Topic" %}</th>{% endif %}
 {% if show_requester %}<th rowspan="2">{% trans "Requested by" %}</th>{% endif %}
@@ -13,7 +13,7 @@
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
-<tr><th>{% trans "ID" %}</th><th>{% trans "Date" %}</th><th>{% trans "Summary" %}</th>
+<tr><th>{% trans "ID" %}</th><th>{% trans "Event date" %}</th><th>{% trans "Summary" %}</th>
 {% if show_grants %}<th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
 {% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}
 {% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
