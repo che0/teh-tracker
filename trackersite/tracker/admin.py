@@ -108,12 +108,5 @@ class GrantAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('short_name',)}
 admin.site.register(models.Grant, GrantAdmin)
 
-class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('date', 'other_party', 'amount', 'description', 'ticket_ids', 'accounting_info')
-    list_display_links = ('amount', 'description')
-    filter_vertical = ('tickets', )
-    exclude = ('cluster', )
-admin.site.register(models.Transaction, TransactionAdmin)
-
 # piggypatch admin site to display our own index template with some bonus links
 admin.site.index_template = 'tracker/admin_index_override.html'
