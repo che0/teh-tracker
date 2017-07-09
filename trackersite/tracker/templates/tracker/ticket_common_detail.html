@@ -35,11 +35,11 @@
 {% if ticket.expeditures.count > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th><th>{% trans "Paid" %}</th></tr>
 {% for item in ticket.expediture_set.all %}
-<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td></tr>
+<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td><td>{{item.paid}}</td></tr>
 {% endfor %}
-<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td></tr>
-<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td></tr>
+<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td><td></td></tr>
+<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td><td></td></tr>
 </table>
 {% endif %}
