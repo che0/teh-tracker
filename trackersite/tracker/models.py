@@ -153,7 +153,7 @@ class Ticket(CachedModel):
             else:
                 return _('waiting for document submission')
         elif 'precontent' in acks:
-            if self.event_date >= datetime.datetime.now():
+            if datetime.date.today() >= self.event_date:
                 return _('waiting for approval')
             else:
                 return _('waiting for event')
