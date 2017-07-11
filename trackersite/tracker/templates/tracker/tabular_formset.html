@@ -25,8 +25,8 @@
              {% endif %}
          {% endfor %}
      </tr></thead>
-
-     <tbody>
+     
+     <tbody id="{{section}}">
      {% for inline_admin_form in formset %}
         {% if inline_admin_form.form.non_field_errors %}
         <tr><td>{{ inline_admin_form.form.non_field_errors }}</td></tr>
