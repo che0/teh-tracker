@@ -238,7 +238,7 @@ msgstr ""
 
 #: tracker/models.py:105
 msgid "supervisor notes"
-msgstr "poznámky schvalovate"
+msgstr "poznámky schvalovatele"
 
 #: tracker/models.py:105
 msgid "This space is for notes of project supervisors and accounting staff."
