@@ -208,6 +208,10 @@ class Ticket(CachedModel):
     @cached_getter
     def expeditures(self):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def preexpeditures(self):
+        return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
     def accepted_expeditures(self):
@@ -364,6 +368,10 @@ class Topic(CachedModel):
     @cached_getter
     def expeditures(self):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def expeditures(self):
+        return Prexpediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
     def accepted_expeditures(self):
@@ -465,7 +473,7 @@ class Preexpediture(models.Model):
     def save(self, *args, **kwargs):
         cluster_update_only = kwargs.pop('cluster_update_only', False)
         super(Preexpediture, self).save(*args, **kwargs)
-        if not cluster_update_only and self_ticket.id != None:
+        if not cluster_update_only and self.ticket.id != None:
             ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
 
     class Meta:

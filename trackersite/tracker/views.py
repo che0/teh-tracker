@@ -225,6 +225,7 @@ def create_ticket(request):
             preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture')
             mediainfo.media   # trigger ValidationError when management form field are missing
             expeditures.media # this seems to be a regression between Django 1.3 and 1.6
+            preexpeditures.media # test
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         

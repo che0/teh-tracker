@@ -16,6 +16,9 @@ class MediaInfoAdmin(admin.TabularInline):
 class ExpeditureAdmin(admin.TabularInline):
     model = models.Expediture
 
+class PreexpeditureAdmin(admin.TabularInline):
+    model = models.Preexpediture
+
 class AddAckForm(forms.Form):
     ack_type = forms.ChoiceField(choices=models.ACK_TYPES, label=_('Type'))
     comment = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size':'40'}))
@@ -43,7 +46,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_filter = ('topic', 'payment_status')
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
-    inlines = [MediaInfoAdmin, ExpeditureAdmin]
+    inlines = [MediaInfoAdmin, PreexpeditureAdmin, ExpeditureAdmin]
     
     @staticmethod
     def _render(request, template_name, context_data):
