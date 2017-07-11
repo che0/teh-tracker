@@ -203,7 +203,7 @@ def mediainfo_formfield(f, **kwargs):
 mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo,
     formset=ExtraItemFormSet, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
 
-EXPEDITURE_FIELDS = ('description', 'amount')
+EXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
     formset=ExtraItemFormSet, fields=EXPEDITURE_FIELDS)
 
