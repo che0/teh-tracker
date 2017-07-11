@@ -279,11 +279,11 @@ def edit_ticket(request, pk):
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
-            preexpeditures = PreexpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
+            preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture', instance=ticket)
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
             expeditures.save()
