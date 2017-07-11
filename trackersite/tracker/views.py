@@ -151,7 +151,7 @@ class TicketForm(forms.ModelForm):
     
     def get_topic_queryset(self):
         return Topic.objects.filter(open_for_tickets=True)
-    
+
     def _media(self):
         return super(TicketForm, self).media + forms.Media(js=('ticketform.js', reverse('topics_js')))
     media = property(_media)
@@ -166,12 +166,25 @@ class TicketForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows':'4', 'cols':'60'}),
         }
 
+class PrecontentTicketForm(TicketForm):
+    def __init__(self, *args, **kwargs):
+        super(TicketForm, self).__init__(*args, **kwargs)
+        self.fields['topic'].queryset = self.get_topic_queryset()
+        self.fields['deposit'].widget.attrs['disabled'] = True
+
 def get_edit_ticket_form_class(ticket):
     class EditTicketForm(TicketForm):
         def get_topic_queryset(self):
             return Topic.objects.filter(Q(open_for_tickets=True) | Q(id=ticket.topic.id))
-    
-    return EditTicketForm
+
+    class PrecontentEditTicketForm(PrecontentTicketForm):
+        def get_topic_queryset(self):
+            return Topic.objects.filter(Q(open_for_tickets=True) | Q(id=ticket.topic.id))
+
+    if "precontent" in ticket.ack_set():
+        return PrecontentEditTicketForm
+    else:
+        return EditTicketForm
 
 adminCore = forms.Media(js=(
     settings.ADMIN_MEDIA_PREFIX + "js/jquery.min.js",
@@ -269,7 +282,7 @@ def edit_ticket(request, pk):
     if not ticket.can_edit(request.user):
         return HttpResponseForbidden(_('You cannot edit this ticket.'))
     TicketEditForm = get_edit_ticket_form_class(ticket)
-    
+
     MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
     ExpeditureFormSet = expeditureformset_factory(extra=1, can_delete=True)
     PreexpeditureFormSet = preexpeditureformset_factory(extra=1, can_delete=True)
