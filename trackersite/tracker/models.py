@@ -465,6 +465,7 @@ class Preexpediture(models.Model):
     """Preexpeditures related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this preexpediture belogns to'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this preexpediture'))
+    wage = models.BooleanField(_('wage'), default=False)
     amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=string_concat(_('Preexpediture amount in'), ' ', settings.TRACKER_CURRENCY))
 
     def __unicode__(self):

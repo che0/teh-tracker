@@ -207,7 +207,7 @@ EXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
     formset=ExtraItemFormSet, fields=EXPEDITURE_FIELDS)
 
-PREEXPEDITURE_FIELDS = ('description', 'amount')
+PREEXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpediture,
     formset=ExtraItemFormSet, fields=PREEXPEDITURE_FIELDS)
 
