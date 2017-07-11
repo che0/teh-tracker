@@ -403,6 +403,13 @@ class Topic(CachedModel):
                 tosum.append(expediture.amount)
         return sum(tosum)
 
+    def paid_together(self):
+        tosum = []
+        for ticket in self.ticket_set.filter(id__gt=0):
+            for expediture in ticket.expediture_set.filter(paid=True):
+                tosum.append(expediture.amount)
+        return sum(tosum)
+
     @cached_getter
     def payment_summary(self):
         finance = FinanceStatus()

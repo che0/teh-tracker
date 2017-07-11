@@ -5,6 +5,7 @@
 {% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
 <th rowspan="2">{% trans "Tickets" %}</th>
 <th rowspan="2">{% trans "Paid wages" %}</th>
+<th rowspan="2">{% trans "Paid together" %}</th>
 <th colspan="5" class="smaller">{% trans "Tickets per payment status" %}</th>
 <th rowspan="2">{% trans "Administrators" %}</th>
 </tr>
@@ -20,6 +21,7 @@
 {% if show_grants %}<td><a href="{{topic.grant.get_absolute_url}}" title="{{topic.grant.full_name}}">{{topic.grant.short_name}}</a></td>{% endif %}
 <td>{{topic.ticket_set.count}}</td>
 <td>{{topic.paid_wages}} {% trans "CZK" %}</td>
+<td>{{topic.paid_together}} {% trans "CZK" %}</td>
 <td{% if tpps.n_a %} class="payment_cell n_a" {% endif %}>{{tpps.n_a}}</td>
 <td{% if tpps.unpaid %} class="payment_cell unpaid"{% endif %}>{{tpps.unpaid}}</td>
 <td{% if tpps.partially_paid %} class="payment_cell partially_paid"{% endif %}>{{tpps.partially_paid}}</td>
