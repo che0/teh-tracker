@@ -211,7 +211,7 @@ class Ticket(CachedModel):
 
     @cached_getter
     def preexpeditures(self):
-        return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return self.preexpediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
     def accepted_expeditures(self):
