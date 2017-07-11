@@ -437,6 +437,7 @@ class Expediture(models.Model):
     amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=string_concat(_('Expediture amount in'), ' ', settings.TRACKER_CURRENCY))
     accounting_info = models.CharField(_('accounting info'), max_length=255, blank=True, help_text=_('Accounting info, this is editable only through admin field'))
     paid = models.BooleanField(_('paid'), default=False)
+    wage = models.BooleanField(_('wage'), default=False)
     
     def __unicode__(self):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}

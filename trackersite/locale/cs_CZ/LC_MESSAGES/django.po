@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 11:04+0200\n"
+"POT-Creation-Date: 2017-07-11 11:12+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -161,7 +161,7 @@ msgstr "archivováno"
 msgid "closed"
 msgstr "uzavřeno"
 
-#: tracker/models.py:97 tracker/models.py:662
+#: tracker/models.py:97 tracker/models.py:663
 msgid "created"
 msgstr "vytvořeno"
 
@@ -233,7 +233,7 @@ msgid "Rating percentage set by topic administrator"
 msgstr "Procentuální ohodnocení stanovené schvalovatelem"
 
 #: tracker/models.py:107 tracker/models.py:349 tracker/models.py:399
-#: tracker/models.py:422 tracker/models.py:436 tracker/models.py:523
+#: tracker/models.py:422 tracker/models.py:436 tracker/models.py:524
 msgid "description"
 msgstr "popis"
 
@@ -297,7 +297,7 @@ msgstr "stav"
 msgid "E-mail"
 msgstr "E-mail"
 
-#: tracker/models.py:194 tracker/models.py:494
+#: tracker/models.py:194 tracker/models.py:495
 #: tracker/templates/tracker/admin_user_list.html:29
 #: tracker/templates/tracker/admin_user_list.html:32
 msgid "Other contact"
@@ -473,7 +473,7 @@ msgstr "Tiket ke kterému tento výdaj patří"
 msgid "Description of this expediture"
 msgstr "Popis tohoto výdaje"
 
-#: tracker/models.py:437 tracker/models.py:522
+#: tracker/models.py:437 tracker/models.py:523
 msgid "amount"
 msgstr "částka"
 
@@ -481,7 +481,7 @@ msgstr "částka"
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:438 tracker/models.py:524
+#: tracker/models.py:438 tracker/models.py:525
 msgid "accounting info"
 msgstr "účetní údaje"
 
@@ -489,34 +489,38 @@ msgstr "účetní údaje"
 msgid "Accounting info, this is editable only through admin field"
 msgstr "Účetní poznámky; toto pole lze editovat jen v administraci"
 
-#: tracker/models.py:442
+#: tracker/models.py:440
+msgid "wage"
+msgstr "mzdový"
+
+#: tracker/models.py:443
 #, python-format
 msgid "%(description)s (%(amount)s %(currency)s)"
 msgstr "%(description)s (%(amount)s %(currency)s)"
 
-#: tracker/models.py:451
+#: tracker/models.py:452
 msgid "Ticket expediture"
 msgstr "Výdaj tiketu"
 
-#: tracker/models.py:452
+#: tracker/models.py:453
 msgid "Ticket expeditures"
 msgstr "Výdaje tiketu"
 
-#: tracker/models.py:461 tracker/views.py:295
+#: tracker/models.py:462 tracker/views.py:295
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
 "jako faktura-za-ocet123.jpg"
 
-#: tracker/models.py:493 tracker/templates/tracker/admin_user_list.html:28
+#: tracker/models.py:494 tracker/templates/tracker/admin_user_list.html:28
 msgid "Bank account"
 msgstr "Bankovní účet"
 
-#: tracker/models.py:493
+#: tracker/models.py:494
 msgid "Bank account information for money transfers"
 msgstr "Údaje o účtu pro bankovní převody"
 
-#: tracker/models.py:494
+#: tracker/models.py:495
 msgid ""
 "Other contact such as wiki account; can be useful in case of topic "
 "administrators need to clarify some information"
@@ -524,38 +528,38 @@ msgstr ""
 "Další kontakt (např. účet na wiki); může se hodit třeba pokud budou "
 "schvalovatelé potřebovat nějaká upřesnění"
 
-#: tracker/models.py:495 tracker/templates/tracker/admin_user_list.html:30
+#: tracker/models.py:496 tracker/templates/tracker/admin_user_list.html:30
 msgid "Other identification"
 msgstr "Další identifikační údaje"
 
-#: tracker/models.py:495
+#: tracker/models.py:496
 msgid ""
 "Address, or other identification information, so we know who are we sending "
 "money to"
 msgstr ""
 "Adresa, rodné číslo, nebo něco podobného pro případné doplnění do účetnictví"
 
-#: tracker/models.py:519
+#: tracker/models.py:520
 msgid "date"
 msgstr "datum"
 
-#: tracker/models.py:520 tracker/models.py:539
+#: tracker/models.py:521 tracker/models.py:540
 msgid "other party"
 msgstr "druhá strana"
 
-#: tracker/models.py:520
+#: tracker/models.py:521
 msgid "The other party; user who sent or received the payment"
 msgstr "Druhá strana převodu: uživatel který poslal nebo dostal platbu"
 
-#: tracker/models.py:521
+#: tracker/models.py:522
 msgid "other party (text)"
 msgstr "druhá strana (text)"
 
-#: tracker/models.py:521
+#: tracker/models.py:522
 msgid "The other party; this text is used when user is not selected"
 msgstr "Druhá strana převodu; tento text je použit není-li vyplněn uživatel"
 
-#: tracker/models.py:522
+#: tracker/models.py:523
 msgid ""
 "Payment amount; Positive value means transaction to the user, negative is a "
 "transaction from the user"
@@ -563,11 +567,11 @@ msgstr ""
 "Převedená částka. Kladná hodnota znamená platbu uživateli, záporná že "
 "uživatel dal peníze nám"
 
-#: tracker/models.py:523
+#: tracker/models.py:524
 msgid "Description of this transaction"
 msgstr "Popis převodu"
 
-#: tracker/models.py:524 tracker/templates/feeds/transaction_description.html:6
+#: tracker/models.py:525 tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:37
 #: tracker/templates/tracker/ticket_detail.html:27
@@ -576,19 +580,19 @@ msgstr "Popis převodu"
 msgid "Accounting info"
 msgstr "Účetní údaje"
 
-#: tracker/models.py:525
+#: tracker/models.py:526
 msgid "related tickets"
 msgstr "související tikety"
 
-#: tracker/models.py:525
+#: tracker/models.py:526
 msgid "Tickets this trackaction is related to"
 msgstr "Tikety ke kterým se tato platba vztahuje"
 
-#: tracker/models.py:567
+#: tracker/models.py:568
 msgid "Transaction"
 msgstr "Platba"
 
-#: tracker/models.py:568 tracker/templates/tracker/cluster_detail.html:18
+#: tracker/models.py:569 tracker/templates/tracker/cluster_detail.html:18
 #: tracker/templates/tracker/ticket_detail.html:25
 #: tracker/templates/tracker/user_detail.html:19
 msgid "Transactions"
@@ -966,6 +970,10 @@ msgstr "Položka"
 #: tracker/templates/tracker/ticket_common_detail.html:37
 msgid "Paid"
 msgstr "Proplaceno"
+
+#: tracker/templates/tracker/ticket_common_detail.html:37
+msgid "Wage expediture"
+msgstr "Mzdový výdaj"
 
 #: tracker/templates/tracker/ticket_common_detail.html:39
 msgid "Yes"
