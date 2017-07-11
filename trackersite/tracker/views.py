@@ -259,6 +259,7 @@ def create_ticket(request):
         'ticketform': ticketform,
         'mediainfo': mediainfo,
         'expeditures': expeditures,
+        'preexpeditures': preexpeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })
 
@@ -271,12 +272,14 @@ def edit_ticket(request, pk):
     
     MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
     ExpeditureFormSet = expeditureformset_factory(extra=1, can_delete=True)
+    PreexpeditureFormSet = preexpeditureformset_factory(extra=1, can_delete=True)
     
     if request.method == 'POST':
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
+            preexpeditures = PreexpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
@@ -284,6 +287,7 @@ def edit_ticket(request, pk):
             ticket = ticketform.save()
             mediainfo.save()
             expeditures.save()
+            preexpeditures.save()
                 
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
@@ -291,12 +295,14 @@ def edit_ticket(request, pk):
         ticketform = TicketEditForm(instance=ticket)
         mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
         expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
+        preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
     
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
         'mediainfo': mediainfo,
         'expeditures': expeditures,
+        'preexpeditures': preexpeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
         'user_can_edit_documents': ticket.can_edit_documents(request.user),
     })
