@@ -157,7 +157,7 @@ class Ticket(CachedModel):
                 return _('waiting for document submission')
         elif 'precontent' in acks:
             if 'user_content' in acks:
-                return _('waiting for approval')
+                return _('waiting for submitting')
             else:
                 return _('waiting for event')
         elif 'user_content' in acks and 'user_precontent' not in acks:
@@ -466,8 +466,8 @@ class Preexpediture(models.Model):
     """Preexpeditures related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this preexpediture belogns to'))
     description = models.CharField(_('description'), max_length=255, help_text=_('Description of this preexpediture'))
-    wage = models.BooleanField(_('wage'), default=False)
     amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=string_concat(_('Preexpediture amount in'), ' ', settings.TRACKER_CURRENCY))
+    wage = models.BooleanField(_('wage'), default=False)
 
     def __unicode__(self):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
