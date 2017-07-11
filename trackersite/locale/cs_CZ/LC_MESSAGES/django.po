@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 14:32+0200\n"
+"POT-Creation-Date: 2017-07-11 14:45+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -282,13 +282,17 @@ msgstr "čeká na přijetí účtenek"
 msgid "waiting for document submission"
 msgstr "čeká na odeslání účtenek"
 
-#: tracker/models.py:160 tracker/models.py:164
-msgid "waiting for approval"
-msgstr "čeká na schválení"
+#: tracker/models.py:160
+msgid "waiting for submitting"
+msgstr "čeká na podání ke schválení"
 
 #: tracker/models.py:162
 msgid "waiting for event"
 msgstr "čeká na akci"
+
+#: tracker/models.py:164
+msgid "waiting for approval"
+msgstr "čeká na schválení"
 
 #: tracker/models.py:167
 msgid "waiting for preapproval"
@@ -490,7 +494,7 @@ msgstr "Tiket ke kterému tento výdaj patří"
 msgid "Description of this expediture"
 msgstr "Popis tohoto výdaje"
 
-#: tracker/models.py:447 tracker/models.py:470 tracker/models.py:553
+#: tracker/models.py:447 tracker/models.py:469 tracker/models.py:553
 msgid "amount"
 msgstr "částka"
 
@@ -506,7 +510,7 @@ msgstr "účetní údaje"
 msgid "Accounting info, this is editable only through admin field"
 msgstr "Účetní poznámky; toto pole lze editovat jen v administraci"
 
-#: tracker/models.py:450 tracker/models.py:469
+#: tracker/models.py:450 tracker/models.py:470
 msgid "wage"
 msgstr "mzdový"
 
@@ -531,7 +535,7 @@ msgstr "Tiket ke kterému tento plánovaný výdaj patří"
 msgid "Description of this preexpediture"
 msgstr "Popis tohoto plánovaného výdaje"
 
-#: tracker/models.py:470
+#: tracker/models.py:469
 msgid "Preexpediture amount in"
 msgstr "Položka rozpočtu v "
 
