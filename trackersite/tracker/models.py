@@ -396,6 +396,14 @@ class Topic(CachedModel):
         return out
     
     @cached_getter
+    def paid_wages(self):
+        tosum = []
+        for ticket in self.ticket_set.filter(id__gt=0):
+            for expediture in ticket.expediture_set.filter(wage=True, paid=True):
+                tosum.append(expediture.amount)
+        return sum(tosum)
+
+    @cached_getter
     def payment_summary(self):
         finance = FinanceStatus()
         for ticket in self.ticket_set.all():
