@@ -20,7 +20,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
 from users.models import UserWrapper
 
 class TicketListView(ListView):
@@ -203,26 +203,33 @@ def mediainfo_formfield(f, **kwargs):
 mediainfoformset_factory = curry(inlineformset_factory, Ticket, MediaInfo,
     formset=ExtraItemFormSet, fields=MEDIAINFO_FIELDS, formfield_callback=mediainfo_formfield)
 
-EXPEDITURE_FIELDS = ('description', 'amount')
+EXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
     formset=ExtraItemFormSet, fields=EXPEDITURE_FIELDS)
+
+PREEXPEDITURE_FIELDS = ('description', 'amount', 'wage')
+preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpediture,
+    formset=ExtraItemFormSet, fields=PREEXPEDITURE_FIELDS)
 
 @login_required
 def create_ticket(request):
     MediaInfoFormSet = mediainfoformset_factory(extra=2, can_delete=False)
     ExpeditureFormSet = expeditureformset_factory(extra=2, can_delete=False)
+    PreexpeditureFormSet = preexpeditureformset_factory(extra=2, can_delete=False)
     
     if request.method == 'POST':
         ticketform = TicketForm(request.POST)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo')
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture')
+            preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture')
             mediainfo.media   # trigger ValidationError when management form field are missing
             expeditures.media # this seems to be a regression between Django 1.3 and 1.6
+            preexpeditures.media # test
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save(commit=False)
             ticket.requested_user = request.user
             ticket.save()
@@ -233,6 +240,9 @@ def create_ticket(request):
             if ticket.topic.ticket_expenses:
                 expeditures.instance = ticket
                 expeditures.save()
+            if ticket.topic.ticket_preexpenses:
+                preexpeditures.instance = ticket
+                preexpeditures.save()
             
             messages.success(request, _('Ticket %s created.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
@@ -243,11 +253,13 @@ def create_ticket(request):
         ticketform = TicketForm(initial=initial)
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
         expeditures = ExpeditureFormSet(prefix='expediture')
+        preexpeditures = PreexpeditureFormSet(prefix='preexpediture')
     
     return render(request, 'tracker/create_ticket.html', {
         'ticketform': ticketform,
         'mediainfo': mediainfo,
         'expeditures': expeditures,
+        'preexpeditures': preexpeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
     })
 
@@ -260,19 +272,22 @@ def edit_ticket(request, pk):
     
     MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
     ExpeditureFormSet = expeditureformset_factory(extra=1, can_delete=True)
+    PreexpeditureFormSet = preexpeditureformset_factory(extra=1, can_delete=True)
     
     if request.method == 'POST':
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
             expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
+            preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture', instance=ticket)
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid():
+        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
             expeditures.save()
+            preexpeditures.save()
                 
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
@@ -280,12 +295,14 @@ def edit_ticket(request, pk):
         ticketform = TicketEditForm(instance=ticket)
         mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
         expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
+        preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
     
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
         'mediainfo': mediainfo,
         'expeditures': expeditures,
+        'preexpeditures': preexpeditures,
         'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
         'user_can_edit_documents': ticket.can_edit_documents(request.user),
     })

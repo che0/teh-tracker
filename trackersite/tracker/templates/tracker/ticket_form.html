@@ -9,6 +9,9 @@
 {# mediainfo formset #}
 {% include "tracker/tabular_formset.html" with formset=mediainfo formset_title=_("Related files") formset_item_name=_("file") %}
 
+{# preexpediture formset #}
+{% include "tracker/tabular_formset.html" with formset=preexpeditures formset_title=_("Preexpeditures") formset_item_name=_("preexpediture") %}
+
 {# expediture formset #}
 {% include "tracker/tabular_formset.html" with formset=expeditures formset_title=_("Expeditures") formset_item_name=_("expediture") %}
 

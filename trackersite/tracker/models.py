@@ -209,6 +209,10 @@ class Ticket(CachedModel):
     @cached_getter
     def expeditures(self):
         return self.expediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def preexpeditures(self):
+        return self.preexpediture_set.aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
     def accepted_expeditures(self):
@@ -347,6 +351,7 @@ class Topic(CachedModel):
     open_for_tickets = models.BooleanField(_('open for tickets'), default=True, help_text=_('Is this topic open for ticket submissions from users?'))
     ticket_media = models.BooleanField(_('ticket media'), default=True, help_text=_('Does this topic track ticket media items?'))
     ticket_expenses = models.BooleanField(_('ticket expenses'), default=True, help_text=_('Does this topic track ticket expenses?'))
+    ticket_preexpenses = models.BooleanField(_('ticket preexpenses'), default=True, help_text=_('Does this topic track preexpenses?'))
     description = models.TextField(_('description'), blank=True, help_text=_('Detailed description; HTML is allowed for now, line breaks are auto-parsed'))
     form_description = models.TextField(_('form description'), blank=True, help_text=_('Description shown to users who enter tickets for this topic'))
     admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), blank=True, help_text=_('Selected users will have administration access to this topic.'))
@@ -364,6 +369,10 @@ class Topic(CachedModel):
     @cached_getter
     def expeditures(self):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def preexpeditures(self):
+        return Prexpediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
     def accepted_expeditures(self):
@@ -452,6 +461,26 @@ class Expediture(models.Model):
     class Meta:
         verbose_name = _('Ticket expediture')
         verbose_name_plural = _('Ticket expeditures')
+
+class Preexpediture(models.Model):
+    """Preexpeditures related to particular tickets. """
+    ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this preexpediture belogns to'))
+    description = models.CharField(_('description'), max_length=255, help_text=_('Description of this preexpediture'))
+    wage = models.BooleanField(_('wage'), default=False)
+    amount = models.DecimalField(_('amount'), max_digits=8, decimal_places=2, help_text=string_concat(_('Preexpediture amount in'), ' ', settings.TRACKER_CURRENCY))
+
+    def __unicode__(self):
+        return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
+
+    def save(self, *args, **kwargs):
+        cluster_update_only = kwargs.pop('cluster_update_only', False)
+        super(Preexpediture, self).save(*args, **kwargs)
+        if not cluster_update_only and self.ticket.id != None:
+            ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
+
+    class Meta:
+        verbose_name = _('Ticket preexpediture')
+        verbose_name_plural = _('Ticket preexpeditures')
 
 # introductory chunk for the template
 DOCUMENT_INTRO_TEMPLATE = template.Template('<a href="{% url "download_document" doc.ticket.id doc.filename %}">{{doc.filename}}</a>{% if detail and doc.description %}: {{doc.description}}{% endif %} <small>({{doc.content_type}}; {{doc.size|filesizeformat}})</small>')
