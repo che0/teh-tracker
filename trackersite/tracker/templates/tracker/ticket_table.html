@@ -8,7 +8,7 @@
 <th colspan="3" class="uber-th">{% trans "Media" %}</th>
 {% if show_expenses %}<th rowspan="2">{% trans "Expeditures" %}</th>{% endif %}
 <th rowspan="2">{% trans "Status" %}</th>
-{% if show_expenses %}<th rowspan="2">{% trans "Accepted expeditures" %}</th><th rowspan="2">{% trans "Payment status" %}</th>{% endif %}
+{% if show_expenses %}<th rowspan="2">{% trans "Accepted expeditures" %}</th>{% endif %}
 <th rowspan="2">{% trans "Last changed" %}</th></tr>
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
@@ -19,12 +19,11 @@
 {% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
 {% if show_expenses %}<th>{% trans "Expeditures" %}</th>{% endif %}
 <th>{% trans "State" %}</th>
-{% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th><th>{% trans "Payment status" %}</th>{% endif %}
+{% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th>{% endif %}
 <th>{% trans "Last changed" %}</th></tr>
 {% endif %}
 
 {% for ticket in ticket_list %}
-<tr class="payment_class_{{ticket.payment_status}}">
 <td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.id}}</a></a></td>
 <td>{{ticket.sort_date}}</td>
 <td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a></td>
@@ -43,7 +42,6 @@
 <td>{{ticket.state_str}}</td>
 {% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
 <td class="money">{% if accepted > 0 %}{{accepted|money}}{% endif %}</td>
-<td class="payment_status">{{ticket.get_payment_status_display}}</td>
 {% endwith %}{% endif %}
 
 
