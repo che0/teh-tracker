@@ -370,7 +370,7 @@ class Topic(CachedModel):
         return Expediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
     @cached_getter
-    def expeditures(self):
+    def preexpeditures(self):
         return Prexpediture.objects.extra(where=['ticket_id in (select id from tracker_ticket where topic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
     
     @cached_getter
