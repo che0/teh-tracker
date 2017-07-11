@@ -36,10 +36,10 @@ class TicketAdmin(admin.ModelAdmin):
         extra_context['add_ack_form'] = AddAckForm()
         return super(TicketAdmin, self).change_view(request, object_id, extra_context=extra_context)
     
-    exclude = ('updated', 'sort_date', 'cluster')
-    readonly_fields = ('state_str', 'payment_status', 'requested_user_details')
-    list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str', 'payment_status')
-    list_display_links = ('summary',)
+    exclude = ('updated', 'sort_date', 'cluster', 'payment_status')
+    readonly_fields = ('state_str', 'requested_user_details')
+    list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
+    list_display_links = ('summary')
     list_filter = ('topic', 'payment_status')
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
