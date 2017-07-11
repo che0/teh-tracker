@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 17:27+0200\n"
+"POT-Creation-Date: 2017-07-11 20:37+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -562,7 +562,7 @@ msgstr "Plánovaný výdaj tiketu"
 msgid "Ticket preexpeditures"
 msgstr "Plánované výdaje tiketu"
 
-#: tracker/models.py:517 tracker/views.py:312
+#: tracker/models.py:517 tracker/views.py:325
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
@@ -930,21 +930,25 @@ msgstr "předchozí"
 msgid "next"
 msgstr "následující"
 
-#: tracker/templates/tracker/tabular_formset.html:12
-#: tracker/templates/tracker/tabular_formset.html:40
+#: tracker/templates/tracker/tabular_formset.html:6
+msgid "Copy to expeditures"
+msgstr "Zkopíruj do výdajů"
+
+#: tracker/templates/tracker/tabular_formset.html:13
+#: tracker/templates/tracker/tabular_formset.html:41
 msgid "delete"
 msgstr "smazat"
 
-#: tracker/templates/tracker/tabular_formset.html:21
+#: tracker/templates/tracker/tabular_formset.html:22
 msgid "Delete the item"
 msgstr "Smazat položku"
 
-#: tracker/templates/tracker/tabular_formset.html:92
+#: tracker/templates/tracker/tabular_formset.html:93
 #, python-format
 msgid "Add another %(formset_item_name)s"
 msgstr "Přidat další %(formset_item_name)s"
 
-#: tracker/templates/tracker/tabular_formset.html:95
+#: tracker/templates/tracker/tabular_formset.html:96
 msgid "Remove"
 msgstr "Odebrat"
 
@@ -1377,35 +1381,35 @@ msgid ""
 "Ticket %(ticket_id)s confirmation \"%(confirmation)s\" has been deleted."
 msgstr "Schválení \"%(confirmation)s\" smazáno z tiketu %(ticket_id)s"
 
-#: tracker/views.py:247
+#: tracker/views.py:260
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:270
+#: tracker/views.py:283
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:292
+#: tracker/views.py:305
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
 
-#: tracker/views.py:335
+#: tracker/views.py:348
 msgid "You cannot see this ticket's documents."
 msgstr "Nemáte právo vidět doklady tohoto tiketu."
 
-#: tracker/views.py:353
+#: tracker/views.py:366
 #, python-format
 msgid "Document changes for ticket %s saved."
 msgstr "Změny dokladů pro tiket %s uloženy."
 
-#: tracker/views.py:379
+#: tracker/views.py:392
 #, python-format
 msgid "File %(filename)s has been saved."
 msgstr "Soubor %(filename)s uložen."
 
-#: tracker/views.py:559
+#: tracker/views.py:572
 msgid "Your details have been saved."
 msgstr "Vaše údaje byly uloženy"
 
