@@ -102,7 +102,7 @@ class TopicAdmin(admin.ModelAdmin):
         else:
             return request.user.topic_set.all()
     
-    list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses')
+    list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses')
     list_filter = ('grant', 'open_for_tickets')
     filter_horizontal = ('admin', )
 admin.site.register(models.Topic, TopicAdmin)
