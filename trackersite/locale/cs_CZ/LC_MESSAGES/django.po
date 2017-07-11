@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 17:23+0200\n"
+"POT-Creation-Date: 2017-07-11 17:27+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -17,7 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: common_settings.py:67 tracker/templates/tracker/topic_table.html:23
+#: common_settings.py:67 tracker/templates/tracker/ticket_common_detail.html:11
+#: tracker/templates/tracker/topic_table.html:23
 #: tracker/templates/tracker/topic_table.html:24
 msgid "CZK"
 msgstr "Kč"
@@ -628,7 +629,7 @@ msgstr "Popis převodu"
 
 #: tracker/models.py:580 tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
-#: tracker/templates/tracker/ticket_common_detail.html:49
+#: tracker/templates/tracker/ticket_common_detail.html:50
 #: tracker/templates/tracker/ticket_detail.html:27
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
@@ -707,8 +708,8 @@ msgstr "Uživatel"
 
 #: tracker/templates/feeds/transaction_description.html:4
 #: tracker/templates/tracker/cluster_detail.html:19
-#: tracker/templates/tracker/ticket_common_detail.html:38
-#: tracker/templates/tracker/ticket_common_detail.html:49
+#: tracker/templates/tracker/ticket_common_detail.html:39
+#: tracker/templates/tracker/ticket_common_detail.html:50
 #: tracker/templates/tracker/ticket_detail.html:27
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
@@ -979,81 +980,85 @@ msgid "State"
 msgstr "Stav"
 
 #: tracker/templates/tracker/ticket_common_detail.html:10
-#: tracker/templates/tracker/ticket_common_detail.html:51
+#: tracker/templates/tracker/ticket_common_detail.html:52
 msgid "Yes"
 msgstr "Ano"
 
 #: tracker/templates/tracker/ticket_common_detail.html:10
-#: tracker/templates/tracker/ticket_common_detail.html:51
+#: tracker/templates/tracker/ticket_common_detail.html:52
 msgid "No"
 msgstr "Ne"
 
 #: tracker/templates/tracker/ticket_common_detail.html:11
+msgid "Deposit"
+msgstr "Záloha"
+
+#: tracker/templates/tracker/ticket_common_detail.html:12
 msgid "Rating percentage"
 msgstr "Procento hodnocení"
 
-#: tracker/templates/tracker/ticket_common_detail.html:13
+#: tracker/templates/tracker/ticket_common_detail.html:14
 msgid "remove"
 msgstr "odebrat"
 
-#: tracker/templates/tracker/ticket_common_detail.html:16
+#: tracker/templates/tracker/ticket_common_detail.html:17
 #: tracker/templates/tracker/ticketack_add.html:4
 #: tracker/templates/tracker/ticketack_add.html:8
 msgid "Confirm"
 msgstr "Schválit"
 
-#: tracker/templates/tracker/ticket_common_detail.html:22
+#: tracker/templates/tracker/ticket_common_detail.html:23
 msgid "Supervisor notes"
 msgstr "Poznámky schvalovatele"
 
-#: tracker/templates/tracker/ticket_common_detail.html:25
+#: tracker/templates/tracker/ticket_common_detail.html:26
 #: tracker/templates/tracker/ticket_table.html:8
 #: tracker/templates/tracker/user_list.html:11
 msgid "Media"
 msgstr "Média"
 
-#: tracker/templates/tracker/ticket_common_detail.html:26
+#: tracker/templates/tracker/ticket_common_detail.html:27
 msgid "Number of objects"
 msgstr "Počet objektů"
 
-#: tracker/templates/tracker/ticket_common_detail.html:27
+#: tracker/templates/tracker/ticket_common_detail.html:28
 msgid "Number of media files"
 msgstr "Počet souborů"
 
-#: tracker/templates/tracker/ticket_common_detail.html:36
+#: tracker/templates/tracker/ticket_common_detail.html:37
 #: tracker/templates/tracker/ticket_form.html:13
 msgid "Preexpeditures"
 msgstr "Plánované výdaje"
 
-#: tracker/templates/tracker/ticket_common_detail.html:38
-#: tracker/templates/tracker/ticket_common_detail.html:49
+#: tracker/templates/tracker/ticket_common_detail.html:39
+#: tracker/templates/tracker/ticket_common_detail.html:50
 msgid "Item"
 msgstr "Položka"
 
-#: tracker/templates/tracker/ticket_common_detail.html:42
+#: tracker/templates/tracker/ticket_common_detail.html:43
 msgid "Total preexpeditures"
 msgstr "Celkem plánované výdaje"
 
-#: tracker/templates/tracker/ticket_common_detail.html:47
+#: tracker/templates/tracker/ticket_common_detail.html:48
 #: tracker/templates/tracker/ticket_form.html:16
 #: tracker/templates/tracker/ticket_table.html:9
 #: tracker/templates/tracker/ticket_table.html:20
 msgid "Expeditures"
 msgstr "Výdaje"
 
-#: tracker/templates/tracker/ticket_common_detail.html:49
+#: tracker/templates/tracker/ticket_common_detail.html:50
 msgid "Paid"
 msgstr "Proplaceno"
 
-#: tracker/templates/tracker/ticket_common_detail.html:49
+#: tracker/templates/tracker/ticket_common_detail.html:50
 msgid "Wage expediture"
 msgstr "Mzdový výdaj"
 
-#: tracker/templates/tracker/ticket_common_detail.html:53
+#: tracker/templates/tracker/ticket_common_detail.html:54
 msgid "Total expeditures"
 msgstr "Celkem výdaje"
 
-#: tracker/templates/tracker/ticket_common_detail.html:54
+#: tracker/templates/tracker/ticket_common_detail.html:55
 #: tracker/templates/tracker/ticket_table.html:11
 #: tracker/templates/tracker/ticket_table.html:22
 #: tracker/templates/tracker/user_list.html:11
