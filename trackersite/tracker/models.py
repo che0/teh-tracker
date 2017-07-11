@@ -32,6 +32,7 @@ PAYMENT_STATUS_CHOICES = (
 ACK_TYPES = (
     ('user_precontent', _('presubmitted')),
     ('precontent', _('preaccepted')),
+    ('user_content', _('submitted')),
     ('content', _('accepted')),
     ('user_docs', _('expense documents submitted')),
     ('docs', _('expense documents filed')),
@@ -39,12 +40,13 @@ ACK_TYPES = (
     ('close', _('closed')),
 )
 
-USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs')
+USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
 
 def uber_ack(ack_type):
     """ Return 'super-ack' for given user-editable ack. """
     return {
         'user_precontent': 'precontent',
+        'user_content': 'content',
         'user_docs':'docs',
     }[ack_type]
 
@@ -153,10 +155,12 @@ class Ticket(CachedModel):
             else:
                 return _('waiting for document submission')
         elif 'precontent' in acks:
-            if datetime.date.today() >= self.event_date:
+            if 'user_content' in acks:
                 return _('waiting for approval')
             else:
                 return _('waiting for event')
+        elif 'user_content' in acks and 'user_precontent' not in acks:
+            return _('waiting for approval')
         else:
             if 'user_precontent' in acks:
                 return _('waiting for preapproval')
