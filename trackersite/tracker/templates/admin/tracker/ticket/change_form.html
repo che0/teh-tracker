@@ -3,6 +3,7 @@
 
 {% block extrahead %}{{block.super}}
 <script type="text/javascript" src="{{STATIC_URL}}ticketack.js"></script>
+<!-- {{ user.get_username }} -->
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}ticketack.css" />
 {% endblock extrahead %}
 
@@ -18,7 +19,15 @@
 
 {% endblock form_top %}
 
-{% block after_related_objects %}{% if user_can_edit_documents or original.document_set.count > 0 %}
+{% block after_related_objects %}
+<script type="text/javascript">
+document.getElementById('id_supervisor_notes').onclick = function() {signSupervisor()};
+
+function signSupervisor() {
+	document.getElementById('id_supervisor_notes').value += "\n\nSem napište svou poznámku supervizora anebo tento text smažte --" + "{{user.get_username}}";
+}
+</script>
+{% if user_can_edit_documents or original.document_set.count > 0 %}
 <fieldset class="module">
 	<h2>{% trans "Ticket documents" %}</h2>
 	{% if user_can_see_documents %}
