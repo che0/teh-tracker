@@ -169,11 +169,9 @@ class Ticket(CachedModel):
                 return _('waiting for document submission')
         elif 'precontent' in acks:
             if 'user_content' in acks:
-                return _('waiting for submitting')
+                return _('waiting for approval')
             else:
-                return _('waiting for event')
-        elif 'user_content' in acks and 'user_precontent' not in acks:
-            return _('waiting for approval')
+                return _('waiting for submitting')
         else:
             if 'user_precontent' in acks:
                 return _('waiting for preapproval')
