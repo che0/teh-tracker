@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% block head %}
+{{block.super}}
+<script type="text/javascript">
+function cloneRow() {
+      event.preventDefault();
+      var row = document.getElementById('preexpediture-0'); //zkopiruj row
+      var desc = row.cells[1].children[0].value;
+      var ammount = row.cells[2].children[0].value;
+      var tmp = document.getElementById('expediture');
+      tmp.children[1].children[0].children[0].click();
+      row = document.getElementById('expediture-1');
+      row.cells[1].children[0].value = desc;
+      row.cells[2].children[0].value = ammount;
+    };
+</script>
+{% endblock %}
 {% load i18n %}
 
 {% block title %}{% trans "Edit" %}: {{ticket.summary}}{% endblock %}
