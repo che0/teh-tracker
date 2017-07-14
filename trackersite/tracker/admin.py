@@ -42,7 +42,7 @@ class TicketAdmin(admin.ModelAdmin):
     exclude = ('updated', 'sort_date', 'cluster', 'payment_status')
     readonly_fields = ('state_str', 'requested_user_details')
     list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
-    list_display_links = ('summary')
+    list_display_links = ('summary',)
     list_filter = ('topic', 'payment_status')
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
