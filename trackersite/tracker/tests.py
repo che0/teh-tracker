@@ -190,6 +190,8 @@ class TicketTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
@@ -202,6 +204,8 @@ class TicketTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
@@ -230,6 +234,8 @@ class TicketTests(TestCase):
                 'mediainfo-2-url': 'http://www.example.com/imagegroup/',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
@@ -254,6 +260,8 @@ class TicketTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -271,6 +279,8 @@ class TicketTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -333,6 +343,8 @@ class TicketEditTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         
@@ -369,6 +381,8 @@ class TicketEditTests(TestCase):
                 'expediture-TOTAL_FORMS': '1',
                 'expediture-0-description': 'foo',
                 'expediture-0-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('This field is required.', response.context['expeditures'].forms[0].errors['amount'][0])
@@ -395,6 +409,8 @@ class TicketEditTests(TestCase):
                 'expediture-0-amount': '10.50',
                 'expediture-1-description': 'hundred',
                 'expediture-1-amount': '100',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.order_by('description')
@@ -442,6 +458,8 @@ class TicketEditTests(TestCase):
                 'expediture-1-amount': '101',
                 'expediture-2-description': '',
                 'expediture-2-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.all()
