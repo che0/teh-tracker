@@ -1,7 +1,0 @@
-= Teh Tracker =
-
-Teh tracker is a provisionary app intended to keep track of some [http://www.wikimedia.cz/ Wikimedia Czech Republic] projects.
-
-== Requirements ==
-
-see support/requirements.txt
