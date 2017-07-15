@@ -8,7 +8,7 @@ import tracker.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracker', '0001_initial'),
+        ('tracker', '0002_myisam_to_innodb'),
     ]
 
     operations = [
