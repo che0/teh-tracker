@@ -190,18 +190,24 @@ class TicketTests(TestCase):
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
+        self.assertFormError(response, 'ticketform', 'deposit', 'This field is required.')
         
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': self.open_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
@@ -217,6 +223,7 @@ class TicketTests(TestCase):
                 'summary': 'ticket',
                 'topic': self.open_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
@@ -230,6 +237,8 @@ class TicketTests(TestCase):
                 'mediainfo-2-url': 'http://www.example.com/imagegroup/',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
@@ -250,10 +259,13 @@ class TicketTests(TestCase):
                 'summary': 'ticket',
                 'topic': 'gogo',
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -267,10 +279,13 @@ class TicketTests(TestCase):
                 'summary': 'ticket',
                 'topic': closed_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
@@ -329,10 +344,13 @@ class TicketEditTests(TestCase):
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         
@@ -347,6 +365,7 @@ class TicketEditTests(TestCase):
                 'summary': 'ticket',
                 'topic': ticket.topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '1',
                 'mediainfo-0-count': 'foo',
@@ -354,6 +373,8 @@ class TicketEditTests(TestCase):
                 'mediainfo-0-url': 'http://www.example.com/image1.jpg',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('Enter a whole number.', response.context['mediainfo'].forms[0].errors['count'][0])
@@ -363,12 +384,15 @@ class TicketEditTests(TestCase):
                 'summary': 'ticket',
                 'topic': ticket.topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '1',
                 'expediture-0-description': 'foo',
                 'expediture-0-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('This field is required.', response.context['expeditures'].forms[0].errors['amount'][0])
@@ -378,6 +402,7 @@ class TicketEditTests(TestCase):
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
@@ -395,6 +420,8 @@ class TicketEditTests(TestCase):
                 'expediture-0-amount': '10.50',
                 'expediture-1-description': 'hundred',
                 'expediture-1-amount': '100',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.order_by('description')
@@ -417,6 +444,7 @@ class TicketEditTests(TestCase):
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '2',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-id': media[0].id,
@@ -442,6 +470,8 @@ class TicketEditTests(TestCase):
                 'expediture-1-amount': '101',
                 'expediture-2-description': '',
                 'expediture-2-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.all()
@@ -467,13 +497,16 @@ class TicketAckTests(TestCase):
     def test_ack_user_edit(self):
         # two user acks are possible
         self.assertEqual(
-            set(['user_content', 'user_docs']),
-            set([a.ack_type for a in self.ticket.possible_user_acks()])
+            {'user_precontent', 'user_content', 'user_docs'},
+            {a.ack_type for a in self.ticket.possible_user_acks()}
         )
         
         # add some acks, now only user_content is possible to add
-        self.ticket.add_acks('user_docs')
-        self.assertEqual(['user_content'], [a.ack_type for a in self.ticket.possible_user_acks()])
+        self.ticket.add_acks('user_docs', 'user_precontent')
+        self.assertEqual(
+            {'user_content',},
+            {a.ack_type for a in self.ticket.possible_user_acks()}
+        )
         
         # user_docs can be removed
         ud = self.ticket.ticketack_set.get(ack_type='user_docs')
