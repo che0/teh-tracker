@@ -36,11 +36,11 @@
 {% if ticket.preexpeditures.count > 0 %}
 <h2>{% trans "Preexpeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th></tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Wage preexpediture" %}</th></tr>
 {% for item in ticket.preexpediture_set.all %}
-<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td></tr>
+<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>
 {% endfor %}
-<tr class="total first_total"><td>{% trans "Total preexpeditures" %}</td><td class="money">{{ticket.preexpeditures.amount|money}}</td></tr>
+<tr class="total first_total"><td>{% trans "Total preexpeditures" %}</td><td class="money">{{ticket.preexpeditures.amount|money}}</td><td></td></tr>
 </table>
 {% endif %}
 
