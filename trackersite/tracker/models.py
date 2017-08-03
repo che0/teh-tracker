@@ -116,7 +116,7 @@ class Ticket(CachedModel):
     mandatory_report = models.BooleanField(_('report mandatory'), default=False, help_text=_('Is report mandatory?'))
     description = models.TextField(_('description'), blank=True, help_text=_("Space for further notes. If you're entering a trip tell us where did you go and what you did there."))
     supervisor_notes = models.TextField(_('supervisor notes'), blank=True, help_text=_("This space is for notes of project supervisors and accounting staff."))
-    deposit = DecimalRangeField(_('deposit'), default=0, min_value=0, max_value=10,
+    deposit = DecimalRangeField(_('deposit'), default=0, min_value=0,
                                 decimal_places=2, max_digits=8,
                                 help_text=_("If you are requesting a financial deposit, please fill here its amount. Maximum amount is sum of preexpeditures. If you aren't requesting a deposit, fill here 0."))
     cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)

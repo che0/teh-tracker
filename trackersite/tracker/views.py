@@ -155,6 +155,16 @@ class TicketForm(forms.ModelForm):
     def _media(self):
         return super(TicketForm, self).media + forms.Media(js=('ticketform.js', reverse('topics_js')))
     media = property(_media)
+
+    def clean(self):
+        cleaned_data = super(TicketForm, self).clean()
+        deposit = cleaned_data.get("deposit")
+        preexpeditures = cleaned_data.get("preexpeditures")
+
+        if deposit > sum(preexpeditures):
+            raise forms.ValidationError(
+                "Your deposit is bigger than your preexpeditures"
+            )
     
     class Meta:
         model = Ticket
