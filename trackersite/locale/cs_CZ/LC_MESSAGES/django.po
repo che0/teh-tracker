@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-11 20:37+0200\n"
+"POT-Creation-Date: 2017-08-04 12:50+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -155,11 +155,11 @@ msgstr "účtenky poslány"
 msgid "expense documents filed"
 msgstr "účtenky přijaty"
 
-#: tracker/models.py:39 tracker/models.py:157
+#: tracker/models.py:39 tracker/models.py:159
 msgid "archived"
 msgstr "archivováno"
 
-#: tracker/models.py:40 tracker/models.py:155
+#: tracker/models.py:40 tracker/models.py:157
 msgid "closed"
 msgstr "uzavřeno"
 
@@ -268,7 +268,7 @@ msgstr "Místo pro poznámky schvalovatelů nebo účetních."
 msgid "deposit"
 msgstr "záloha"
 
-#: tracker/models.py:119
+#: tracker/models.py:121
 msgid ""
 "If you are requesting a financial deposit, please fill here its amount. "
 "Maximum amount is sum of preexpeditures. If you aren't requesting a deposit, "
@@ -277,37 +277,33 @@ msgstr ""
 "Pokud žádáte finanční zálohu, vyplňte zde její výši. Maximální výše je výše "
 "plánovaných výdajů. Pokud zálohu nežádáte, vyplňte nulu."
 
-#: tracker/models.py:121
+#: tracker/models.py:123
 msgid "payment status"
 msgstr "stav platby"
 
-#: tracker/models.py:160
+#: tracker/models.py:162
 msgid "waiting for content rating"
 msgstr "čeká na posouzení obsahu"
 
-#: tracker/models.py:163
+#: tracker/models.py:165
 msgid "complete"
 msgstr "hotovo"
 
-#: tracker/models.py:165
+#: tracker/models.py:167
 msgid "waiting for filing of documents"
 msgstr "čeká na přijetí účtenek"
 
-#: tracker/models.py:167
+#: tracker/models.py:169
 msgid "waiting for document submission"
 msgstr "čeká na odeslání účtenek"
 
-#: tracker/models.py:170
-msgid "waiting for submitting"
-msgstr "čeká na podání ke schválení"
-
 #: tracker/models.py:172
-msgid "waiting for event"
-msgstr "čeká na akci"
-
-#: tracker/models.py:174
 msgid "waiting for approval"
 msgstr "čeká na schválení"
+
+#: tracker/models.py:174
+msgid "waiting for submitting"
+msgstr "čeká na podání ke schválení"
 
 #: tracker/models.py:177
 msgid "waiting for preapproval"
@@ -562,7 +558,7 @@ msgstr "Plánovaný výdaj tiketu"
 msgid "Ticket preexpeditures"
 msgstr "Plánované výdaje tiketu"
 
-#: tracker/models.py:517 tracker/views.py:325
+#: tracker/models.py:517 tracker/views.py:361
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
@@ -630,7 +626,7 @@ msgstr "Popis převodu"
 #: tracker/models.py:580 tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:50
-#: tracker/templates/tracker/ticket_detail.html:27
+#: tracker/templates/tracker/ticket_detail.html:28
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
 msgid "Accounting info"
@@ -649,36 +645,36 @@ msgid "Transaction"
 msgstr "Platba"
 
 #: tracker/models.py:624 tracker/templates/tracker/cluster_detail.html:18
-#: tracker/templates/tracker/ticket_detail.html:25
+#: tracker/templates/tracker/ticket_detail.html:26
 #: tracker/templates/tracker/user_detail.html:19
 msgid "Transactions"
 msgstr "Platby"
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:9
+#: tracker/templates/admin/tracker/ticket/change_form.html:10
 #: tracker/templates/tracker/ticket_common_detail.html:3
 msgid "Ticket ID"
 msgstr "ID tiketu"
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:11
+#: tracker/templates/admin/tracker/ticket/change_form.html:12
 msgid "Approvals"
 msgstr "Schválení"
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:23
+#: tracker/templates/admin/tracker/ticket/change_form.html:32
 msgid "Ticket documents"
 msgstr "Doklady tiketu"
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:26
-#: tracker/templates/tracker/edit_ticket.html:10
+#: tracker/templates/admin/tracker/ticket/change_form.html:35
+#: tracker/templates/tracker/edit_ticket.html:36
 #: tracker/templates/tracker/ticket_detail.html:19
 msgid "edit ticket documents"
 msgstr "upravit doklady"
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:33
+#: tracker/templates/admin/tracker/ticket/change_form.html:42
 msgid "There are no documents uploaded for this ticket."
 msgstr "K tiketu nebyly nahrány žádné doklady."
 
-#: tracker/templates/admin/tracker/ticket/change_form.html:36
-#: tracker/templates/tracker/ticket_detail.html:46
+#: tracker/templates/admin/tracker/ticket/change_form.html:45
+#: tracker/templates/tracker/ticket_detail.html:47
 #, python-format
 msgid "There is 1 document uploaded."
 msgid_plural "There are %(counter)s documents uploaded."
@@ -692,7 +688,7 @@ msgstr "stav"
 
 #: tracker/templates/feeds/transaction_description.html:2
 #: tracker/templates/tracker/cluster_detail.html:19
-#: tracker/templates/tracker/ticket_detail.html:27
+#: tracker/templates/tracker/ticket_detail.html:28
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
 msgid "Date"
@@ -700,7 +696,7 @@ msgstr "Datum"
 
 #: tracker/templates/feeds/transaction_description.html:3
 #: tracker/templates/tracker/cluster_detail.html:19
-#: tracker/templates/tracker/ticket_detail.html:27
+#: tracker/templates/tracker/ticket_detail.html:28
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_list.html:11
 msgid "User"
@@ -710,7 +706,7 @@ msgstr "Uživatel"
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:39
 #: tracker/templates/tracker/ticket_common_detail.html:50
-#: tracker/templates/tracker/ticket_detail.html:27
+#: tracker/templates/tracker/ticket_detail.html:28
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
 msgid "Amount"
@@ -718,7 +714,7 @@ msgstr "Částka"
 
 #: tracker/templates/feeds/transaction_description.html:5
 #: tracker/templates/tracker/cluster_detail.html:19
-#: tracker/templates/tracker/ticket_detail.html:27
+#: tracker/templates/tracker/ticket_detail.html:28
 #: tracker/templates/tracker/transaction_list.html:15
 #: tracker/templates/tracker/user_detail.html:20
 msgid "Description"
@@ -785,7 +781,7 @@ msgid "Cluster %(cid)s"
 msgstr "Slepenec %(cid)s"
 
 #: tracker/templates/tracker/cluster_detail.html:7
-#: tracker/templates/tracker/edit_ticket.html:7
+#: tracker/templates/tracker/edit_ticket.html:33
 #: tracker/templates/tracker/edit_ticket_docs.html:7
 #: tracker/templates/tracker/generic/create_ticket.html:7
 #: tracker/templates/tracker/generic/ticket_list.html:12
@@ -811,7 +807,7 @@ msgid "transactions"
 msgstr "platby"
 
 #: tracker/templates/tracker/cluster_detail.html:10
-#: tracker/templates/tracker/ticket_detail.html:26
+#: tracker/templates/tracker/ticket_detail.html:27
 msgid "Payment status"
 msgstr "Stav platby"
 
@@ -824,16 +820,16 @@ msgid "Total transactions"
 msgstr "Celkem platby"
 
 #: tracker/templates/tracker/dumpaccounts/ticket_detail.html:13
-#: tracker/templates/tracker/ticket_detail.html:40
+#: tracker/templates/tracker/ticket_detail.html:41
 msgid "Documents"
 msgstr "Doklady"
 
-#: tracker/templates/tracker/edit_ticket.html:4
-#: tracker/templates/tracker/edit_ticket.html:8
+#: tracker/templates/tracker/edit_ticket.html:30
+#: tracker/templates/tracker/edit_ticket.html:34
 msgid "Edit"
 msgstr "Upravit"
 
-#: tracker/templates/tracker/edit_ticket.html:14
+#: tracker/templates/tracker/edit_ticket.html:40
 #: tracker/templates/tracker/edit_ticket_docs.html:16
 msgid "save"
 msgstr "uložit"
@@ -984,11 +980,13 @@ msgid "State"
 msgstr "Stav"
 
 #: tracker/templates/tracker/ticket_common_detail.html:10
+#: tracker/templates/tracker/ticket_common_detail.html:41
 #: tracker/templates/tracker/ticket_common_detail.html:52
 msgid "Yes"
 msgstr "Ano"
 
 #: tracker/templates/tracker/ticket_common_detail.html:10
+#: tracker/templates/tracker/ticket_common_detail.html:41
 #: tracker/templates/tracker/ticket_common_detail.html:52
 msgid "No"
 msgstr "Ne"
@@ -1039,6 +1037,10 @@ msgstr "Plánované výdaje"
 msgid "Item"
 msgstr "Položka"
 
+#: tracker/templates/tracker/ticket_common_detail.html:39
+msgid "Wage preexpediture"
+msgstr "Mzdový plánovaný výdaj"
+
 #: tracker/templates/tracker/ticket_common_detail.html:43
 msgid "Total preexpeditures"
 msgstr "Celkem plánované výdaje"
@@ -1077,7 +1079,11 @@ msgstr "upravit tiket"
 msgid "edit in admin"
 msgstr "editovat v administraci"
 
-#: tracker/templates/tracker/ticket_detail.html:26
+#: tracker/templates/tracker/ticket_detail.html:20
+msgid "duplicate"
+msgstr "duplikovat"
+
+#: tracker/templates/tracker/ticket_detail.html:27
 #, python-format
 msgid ""
 "part of <a href=\"%(c_link)s\">cluster %(c_id)s</a>: total tickets "
@@ -1088,24 +1094,24 @@ msgstr ""
 "%(total_tickets)s&nbsp;%(cr)s, platby celkem %(total_transactions)s&nbsp;"
 "%(cr)s"
 
-#: tracker/templates/tracker/ticket_detail.html:32
+#: tracker/templates/tracker/ticket_detail.html:33
 msgid "Associated transactions total"
 msgstr "Přiřazené platby celkem"
 
-#: tracker/templates/tracker/ticket_detail.html:52
-#: tracker/templates/tracker/ticket_detail.html:56
+#: tracker/templates/tracker/ticket_detail.html:53
+#: tracker/templates/tracker/ticket_detail.html:57
 #: tracker/templates/tracker/topic_detail.html:33
 #: tracker/templates/tracker/topic_detail.html:36
 msgid "Comments"
 msgstr "Komentáře"
 
-#: tracker/templates/tracker/ticket_detail.html:57
+#: tracker/templates/tracker/ticket_detail.html:58
 #: tracker/templates/tracker/topic_detail.html:37
 msgid "There are no comments yet."
 msgstr "Zatím žádné komentáře."
 
-#: tracker/templates/tracker/ticket_detail.html:62
-#: tracker/templates/tracker/ticket_detail.html:64
+#: tracker/templates/tracker/ticket_detail.html:63
+#: tracker/templates/tracker/ticket_detail.html:65
 #: tracker/templates/tracker/topic_detail.html:40
 #: tracker/templates/tracker/topic_detail.html:42
 msgid "Add comment"
@@ -1381,35 +1387,39 @@ msgid ""
 "Ticket %(ticket_id)s confirmation \"%(confirmation)s\" has been deleted."
 msgstr "Schválení \"%(confirmation)s\" smazáno z tiketu %(ticket_id)s"
 
-#: tracker/views.py:260
+#: tracker/views.py:184
+msgid "Your deposit is bigger than your preexpeditures"
+msgstr "Vámi požadovaná záloha je vyšší než vámi zadané plánované výdaje"
+
+#: tracker/views.py:280
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:283
+#: tracker/views.py:318
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:305
+#: tracker/views.py:341
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
 
-#: tracker/views.py:348
+#: tracker/views.py:384
 msgid "You cannot see this ticket's documents."
 msgstr "Nemáte právo vidět doklady tohoto tiketu."
 
-#: tracker/views.py:366
+#: tracker/views.py:402
 #, python-format
 msgid "Document changes for ticket %s saved."
 msgstr "Změny dokladů pro tiket %s uloženy."
 
-#: tracker/views.py:392
+#: tracker/views.py:428
 #, python-format
 msgid "File %(filename)s has been saved."
 msgstr "Soubor %(filename)s uložen."
 
-#: tracker/views.py:572
+#: tracker/views.py:608
 msgid "Your details have been saved."
 msgstr "Vaše údaje byly uloženy"
 
@@ -1612,6 +1622,9 @@ msgstr ""
 #, python-format
 msgid "User %s created."
 msgstr "Vytvořen uživatel %s."
+
+#~ msgid "waiting for event"
+#~ msgstr "čeká na akci"
 
 #~ msgid "Accepted wages"
 #~ msgstr "Schváleno mezd"
