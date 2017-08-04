@@ -290,6 +290,75 @@ class TicketTests(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
 
+    def test_too_big_deposit(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '100',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'ticketform', 'deposit', 'Your deposit is bigger than your preexpeditures')
+
+    def test_too_big_deposit2(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '50.01',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '1',
+                'preexpediture-0-description': 'foo',
+                'preexpediture-0-amount': '50',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'ticketform', 'deposit', 'Your deposit is bigger than your preexpeditures')
+
+    def test_correct_deposit(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '30.1',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '2',
+                'preexpediture-0-description': 'pre1',
+                'preexpediture-0-amount': '10.0',
+                'preexpediture-1-description': 'pre2',
+                'preexpediture-1-amount': '20.1',
+                'preexpediture-1-wage': 'true',
+            })
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(1, Ticket.objects.count())
+        ticket = Ticket.objects.order_by('-created')[0]
+        self.assertEqual(Decimal('30.1'), ticket.deposit)
+
+        preexpeditures = ticket.preexpediture_set.order_by('description')
+        self.assertEqual(2, len(preexpeditures))
+        self.assertEqual('pre1', preexpeditures[0].description)
+        self.assertEqual(Decimal(10), preexpeditures[0].amount)
+        self.assertEqual(False, preexpeditures[0].wage)
+        self.assertEqual('pre2', preexpeditures[1].description)
+        self.assertEqual(Decimal('20.1'), preexpeditures[1].amount)
+        self.assertEqual(True, preexpeditures[1].wage)
+
 class TicketEditTests(TestCase):
     def test_correct_choices(self):
         grant = Grant.objects.create(full_name='g', short_name='g', slug='g')

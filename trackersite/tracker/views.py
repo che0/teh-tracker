@@ -156,16 +156,6 @@ class TicketForm(forms.ModelForm):
         return super(TicketForm, self).media + forms.Media(js=('ticketform.js', reverse('topics_js')))
     media = property(_media)
 
-    def clean(self):
-        cleaned_data = super(TicketForm, self).clean()
-        deposit = cleaned_data.get("deposit")
-        preexpeditures = cleaned_data.get("preexpeditures")
-
-        if deposit > sum(preexpeditures):
-            raise forms.ValidationError(
-                "Your deposit is bigger than your preexpeditures"
-            )
-    
     class Meta:
         model = Ticket
         exclude = ('created', 'updated', 'sort_date', 'requested_user', 'requested_text',
@@ -175,6 +165,25 @@ class TicketForm(forms.ModelForm):
             'summary': forms.TextInput(attrs={'size':'40'}),
             'description': forms.Textarea(attrs={'rows':'4', 'cols':'60'}),
         }
+
+def check_ticket_form_deposit(ticketform, preexpeditures):
+    """
+    Checks ticket deposit form field against preexpediture form.
+    Injects error there if there is a problem.
+    """
+    if not (ticketform.is_valid() and preexpeditures.is_valid()):
+        return
+
+    deposit = ticketform.cleaned_data.get('deposit')
+    if deposit is None:
+        return
+
+    total_preexpeditures = sum([pe.cleaned_data.get('amount', 0) for pe in preexpeditures])
+    if deposit > total_preexpeditures:
+        ticketform.add_error('deposit', forms.ValidationError(
+            _("Your deposit is bigger than your preexpeditures")
+        ))
+
 
 class PrecontentTicketForm(TicketForm):
     def __init__(self, *args, **kwargs):
@@ -252,6 +261,7 @@ def create_ticket(request):
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
+        check_ticket_form_deposit(ticketform, preexpeditures)
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save(commit=False)
             ticket.requested_user = request.user
@@ -306,6 +316,7 @@ def edit_ticket(request, pk):
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
+        check_ticket_form_deposit(ticketform, preexpeditures)
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
