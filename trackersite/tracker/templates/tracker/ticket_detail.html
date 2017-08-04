@@ -13,10 +13,11 @@
 <p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt; <a href="{{ticket.topic.grant.get_absolute_url}}">{{ticket.topic.grant.short_name}}</a> &gt; <a href="{% url "topic_detail" ticket.topic.id %}">{{ticket.topic}}</a> &gt;</p>
 <div id="ticket_id">{{ticket.id}}</div>
 <h1>{{ ticket.summary }}</h1>
-{% if user_can_edit_ticket or user_can_edit_ticket_in_admin %}<p class="screenonly">
+{% if user_can_edit_ticket or user_can_edit_ticket_in_admin or user.is_authenticated %}<p class="screenonly">
 	{% if user_can_edit_ticket %}<a href="{% url "edit_ticket" ticket.id %}">{% trans "edit ticket" %}</a>{% endif %}
 	{% if user_can_edit_ticket_in_admin %}<a href="{% url "admin:tracker_ticket_change" ticket.id %}">{% trans "edit in admin" %}</a>{% endif %}
 	{% if user_can_edit_documents %}<a href="{% url "edit_ticket_docs" ticket.id %}">{% trans "edit ticket documents" %}</a>{% endif %}
+	{% if user.is_authenticated %}<a href="{% url "create_ticket"%}?ticket={{ticket.id}}">{% trans "duplicate" %}</a>{% endif %}
 </p>{% endif %}
 
 {% include "tracker/ticket_common_detail.html" with active_links=True %}

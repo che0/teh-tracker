@@ -283,10 +283,25 @@ def create_ticket(request):
         initial = {'event_date': datetime.date.today()}
         if 'topic' in request.GET:
             initial['topic'] = request.GET['topic']
+        if 'ticket' in request.GET:
+            ticket = get_object_or_404(Ticket, id=request.GET['ticket'])
+            initial['summary'] = ticket.summary
+            initial['topic'] = ticket.topic
+            initial['description'] = ticket.description
+            initial['deposit'] = ticket.deposit
         ticketform = TicketForm(initial=initial)
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
         expeditures = ExpeditureFormSet(prefix='expediture')
-        preexpeditures = PreexpeditureFormSet(prefix='preexpediture')
+        initialPreexpeditures = []
+        if 'ticket' in request.GET:
+            for pe in Preexpediture.objects.filter(ticket=ticket):
+                initialPe = {}
+                initialPe['description'] = pe.description
+                initialPe['amount'] = pe.amount
+                initialPe['wage'] = pe.wage
+                initialPreexpeditures.append(initialPe)
+        PreexpeditureFormSet = preexpeditureformset_factory(extra=2+len(initialPreexpeditures), can_delete=False)
+        preexpeditures = PreexpeditureFormSet(prefix='preexpediture', initial=initialPreexpeditures)
     
     return render(request, 'tracker/create_ticket.html', {
         'ticketform': ticketform,
