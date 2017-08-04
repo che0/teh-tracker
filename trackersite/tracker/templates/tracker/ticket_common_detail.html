@@ -37,7 +37,7 @@
 {% if ticket.preexpeditures.count > 0 %}
 <h2>{% trans "Preexpeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Wage preexpediture" %}</th></tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Wage?" %}</th></tr>
 {% for item in ticket.preexpediture_set.all %}
 <tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>
 {% endfor %}
@@ -48,7 +48,7 @@
 {% if ticket.expeditures.count > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
 <table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th><th>{% trans "Paid" %}</th><th>{% trans "Wage expediture" %}</th></tr>
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th><th>{% trans "Paid?" %}</th><th>{% trans "Wage?" %}</th></tr>
 {% for item in ticket.expediture_set.all %}
 <tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td><td>{% if item.paid %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>
 {% endfor %}
