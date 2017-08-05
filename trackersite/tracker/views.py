@@ -34,7 +34,13 @@ class TicketListView(ListView):
             return super(TicketListView, self).get(request, *args, **kwargs)
     
     def get_queryset(self):
-        return super(TicketListView, self).get_queryset().select_related()
+        orderget = self.request.GET.get('order', 'sort_date')
+        descasc = self.request.GET.get('descasc', 'desc')
+        if descasc == 'asc':
+            finalorder = orderget
+        else:
+            finalorder = '-' + orderget
+        return super(TicketListView, self).get_queryset().select_related().order_by(finalorder)
 ticket_list = TicketListView.as_view()
 
 class CommentPostedCatcher(object):
