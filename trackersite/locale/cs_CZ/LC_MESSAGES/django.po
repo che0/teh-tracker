@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-04 13:13+0200\n"
+"POT-Creation-Date: 2017-08-10 12:06+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -566,7 +566,7 @@ msgstr "Plánovaný výdaj tiketu"
 msgid "Ticket preexpeditures"
 msgstr "Plánované výdaje tiketu"
 
-#: tracker/models.py:518 tracker/views.py:361
+#: tracker/models.py:518 tracker/views.py:377
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
@@ -861,7 +861,7 @@ msgid "document"
 msgstr "doklad"
 
 #: tracker/templates/tracker/edit_ticket_docs.html:17
-#: tracker/templates/tracker/ticket_form.html:20
+#: tracker/templates/tracker/ticket_form.html:24
 #: tracker/templates/tracker/upload_ticket_doc.html:36
 #, python-format
 msgid "Fields marked with %(mark)s are required."
@@ -1040,7 +1040,7 @@ msgid "Number of media files"
 msgstr "Počet souborů"
 
 #: tracker/templates/tracker/ticket_common_detail.html:38
-#: tracker/templates/tracker/ticket_form.html:13
+#: tracker/templates/tracker/ticket_form.html:14
 msgid "Preexpeditures"
 msgstr "Plánované výdaje"
 
@@ -1059,7 +1059,7 @@ msgid "Total preexpeditures"
 msgstr "Celkem plánované výdaje"
 
 #: tracker/templates/tracker/ticket_common_detail.html:49
-#: tracker/templates/tracker/ticket_form.html:16
+#: tracker/templates/tracker/ticket_form.html:19
 #: tracker/templates/tracker/ticket_table.html:9
 #: tracker/templates/tracker/ticket_table.html:20
 msgid "Expeditures"
@@ -1134,15 +1134,15 @@ msgstr "Odkazy na soubory"
 msgid "file"
 msgstr "soubor"
 
-#: tracker/templates/tracker/ticket_form.html:13
+#: tracker/templates/tracker/ticket_form.html:14
 msgid "preexpediture"
 msgstr "plánovaný výdaj"
 
-#: tracker/templates/tracker/ticket_form.html:16
+#: tracker/templates/tracker/ticket_form.html:19
 msgid "expediture"
 msgstr "výdaj"
 
-#: tracker/templates/tracker/ticket_form.html:19
+#: tracker/templates/tracker/ticket_form.html:23
 msgid "submit"
 msgstr "odeslat"
 
@@ -1377,58 +1377,58 @@ msgstr "Tikety nepřiřazené žádnému uživateli trackeru"
 msgid "unassigned"
 msgstr "neurčen"
 
-#: tracker/views.py:47
+#: tracker/views.py:53
 msgid "Comment posted, thank you."
 msgstr "Komentář přidán, děkujeme."
 
-#: tracker/views.py:87
+#: tracker/views.py:93
 #, python-format
 msgid "Ticket %(ticket_id)s confirmation \"%(confirmation)s\" has been added."
 msgstr "Schválení \"%(confirmation)s\" přidáno k tiketu %(ticket_id)s"
 
-#: tracker/views.py:115
+#: tracker/views.py:121
 msgid "You cannot edit this"
 msgstr "Nemáte práva k této změně"
 
-#: tracker/views.py:120
+#: tracker/views.py:126
 #, python-format
 msgid ""
 "Ticket %(ticket_id)s confirmation \"%(confirmation)s\" has been deleted."
 msgstr "Schválení \"%(confirmation)s\" smazáno z tiketu %(ticket_id)s"
 
-#: tracker/views.py:184
+#: tracker/views.py:190
 msgid "Your deposit is bigger than your preexpeditures"
 msgstr "Vámi požadovaná záloha je vyšší než vámi zadané plánované výdaje"
 
-#: tracker/views.py:280
+#: tracker/views.py:286
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:318
+#: tracker/views.py:324
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:341
+#: tracker/views.py:349
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
 
-#: tracker/views.py:384
+#: tracker/views.py:400
 msgid "You cannot see this ticket's documents."
 msgstr "Nemáte právo vidět doklady tohoto tiketu."
 
-#: tracker/views.py:402
+#: tracker/views.py:418
 #, python-format
 msgid "Document changes for ticket %s saved."
 msgstr "Změny dokladů pro tiket %s uloženy."
 
-#: tracker/views.py:428
+#: tracker/views.py:444
 #, python-format
 msgid "File %(filename)s has been saved."
 msgstr "Soubor %(filename)s uložen."
 
-#: tracker/views.py:608
+#: tracker/views.py:624
 msgid "Your details have been saved."
 msgstr "Vaše údaje byly uloženy"
 
