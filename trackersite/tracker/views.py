@@ -351,8 +351,16 @@ def edit_ticket(request, pk):
     else:
         ticketform = TicketEditForm(instance=ticket)
         mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
-        expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
-        preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
+        if 'content' not in ticket.ack_set():
+            expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
+            form_media = adminCore + ticketform.media + mediainfo.media + expeditures.media
+        else:
+            expeditures = None # Hide expeditures in the edit form
+            form_media = adminCore + ticketform.media + mediainfo.media
+        if 'precontent' not in ticket.ack_set():
+            preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
+        else:
+            preexpeditures = None # Hide preexpeditures in the edit form
     
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
@@ -360,7 +368,7 @@ def edit_ticket(request, pk):
         'mediainfo': mediainfo,
         'expeditures': expeditures,
         'preexpeditures': preexpeditures,
-        'form_media': adminCore + ticketform.media + mediainfo.media + expeditures.media,
+        'form_media': form_media,
         'user_can_edit_documents': ticket.can_edit_documents(request.user),
     })
 

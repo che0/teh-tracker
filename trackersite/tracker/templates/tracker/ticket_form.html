@@ -9,11 +9,15 @@
 {# mediainfo formset #}
 {% include "tracker/tabular_formset.html" with formset=mediainfo formset_title=_("Related files") formset_item_name=_("file") section="file" %}
 
+{% if preexpeditures %}
 {# preexpediture formset #}
 {% include "tracker/tabular_formset.html" with formset=preexpeditures formset_title=_("Preexpeditures") formset_item_name=_("preexpediture") section="preexpediture" show_copy=True %}
+{% endif %}
 
+{% if expeditures %}
 {# expediture formset #}
 {% include "tracker/tabular_formset.html" with formset=expeditures formset_title=_("Expeditures") formset_item_name=_("expediture") section="expediture" %}
+{% endif %}
 
 {% csrf_token %}
 <input type="submit" value="{{ submit|default:_("submit") }}" />
