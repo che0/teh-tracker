@@ -341,8 +341,10 @@ def edit_ticket(request, pk):
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save()
             mediainfo.save()
-            expeditures.save()
-            preexpeditures.save()
+            if 'content' not in ticket.ack_set():
+                expeditures.save()
+            if 'precontent' not in ticket.ack_set():
+                preexpeditures.save()
                 
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
