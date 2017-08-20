@@ -492,6 +492,17 @@ class HttpResponseCsv(HttpResponse):
         self.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
         self.write(u'\r\n')
 
+def get_tickets_filtered(fields, **kwargs):
+	tickets = Ticket.objects.filter(kwargs)
+	resp = HttpResponseCsv(fields)
+	for ticket in tickets:
+		dictticket = ticket.__dict__
+		row = []
+		for field in fields:
+			row.append(dictticket[field])
+		resp.writerow(row)
+	return resp
+
 def _get_topic_content_acks_per_user():
     """ Returns content acks counts per user and topic """
     cursor = connection.cursor()
@@ -654,3 +665,6 @@ class AdminUserListView(ListView):
             context['is_tracker_supervisor'] = self.request.user.has_perm('tracker.supervisor')
             return context
 admin_user_list = login_required(AdminUserListView.as_view())
+
+def export(request):
+    return render(request, 'tracker/export.html', {})
