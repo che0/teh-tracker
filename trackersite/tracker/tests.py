@@ -552,6 +552,48 @@ class TicketEditTests(TestCase):
         self.assertEqual(1, len(expeditures))
         self.assertEqual('hundred+1', expeditures[0].description)
         self.assertEqual(101, expeditures[0].amount)
+
+        # add preexpeditures, and amount flag preack
+        deposit_amount = Decimal('12324.37')
+        ticket = Ticket.objects.get(id=ticket.id)
+        ticket.deposit = deposit_amount
+        ticket.preexpediture_set.create(description='some preexp', amount=15)
+        ticket.save()
+        ticket.add_acks('precontent')
+
+        # edit should work and ignore new data
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+            'summary': 'new summary',
+            'topic': ticket.topic.id,
+            'description': 'new desc',
+            'deposit': '333',
+            'mediainfo-INITIAL_FORMS': '0',
+            'mediainfo-TOTAL_FORMS': '0',
+            'expediture-INITIAL_FORMS': '0',
+            'expediture-TOTAL_FORMS': '0',
+            'preexpediture-INITIAL_FORMS': '0',
+            'preexpediture-TOTAL_FORMS': '0',
+        })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        ticket = Ticket.objects.get(id=ticket.id)
+        self.assertEqual(deposit_amount, ticket.deposit)
+        self.assertEqual(1, ticket.preexpediture_set.count())
+
+        # also, edit should work and not fail on missing preack-ignored fields
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+            'summary': 'new summary',
+            'topic': ticket.topic.id,
+            'description': 'new desc',
+            'mediainfo-INITIAL_FORMS': '0',
+            'mediainfo-TOTAL_FORMS': '0',
+            'expediture-INITIAL_FORMS': '0',
+            'expediture-TOTAL_FORMS': '0',
+        })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        ticket = Ticket.objects.get(id=ticket.id)
+        self.assertEqual(deposit_amount, ticket.deposit)
+        self.assertEqual(1, ticket.preexpediture_set.count())
+
     
 class TicketAckTests(TestCase):
     def setUp(self):
