@@ -6,7 +6,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tracker',
-        'USER': 'travis',
+        'USER': 'root',
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
