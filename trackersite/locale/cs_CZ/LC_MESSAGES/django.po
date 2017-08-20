@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-10 12:06+0200\n"
+"POT-Creation-Date: 2017-08-20 21:27+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -657,6 +657,11 @@ msgstr "Platba"
 #: tracker/templates/tracker/user_detail.html:19
 msgid "Transactions"
 msgstr "Platby"
+
+#: tracker/templates/admin/tracker/ticket/ack_norating_error.html:2
+msgid ""
+"You must fill rating percentage before you will be able to accept the ticket."
+msgstr "Musíte vyplnit ohodnocení předtím, než budete moci tento ticket schválit."
 
 #: tracker/templates/admin/tracker/ticket/change_form.html:10
 #: tracker/templates/tracker/ticket_common_detail.html:3
@@ -1428,7 +1433,7 @@ msgstr "Změny dokladů pro tiket %s uloženy."
 msgid "File %(filename)s has been saved."
 msgstr "Soubor %(filename)s uložen."
 
-#: tracker/views.py:624
+#: tracker/views.py:635
 msgid "Your details have been saved."
 msgstr "Vaše údaje byly uloženy"
 

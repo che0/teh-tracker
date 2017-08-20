@@ -58,6 +58,12 @@ class TicketAdmin(admin.ModelAdmin):
         if (request.method == 'POST'):
             form = AddAckForm(request.POST)
             if form.is_valid():
+                if form.cleaned_data['ack_type'] == 'content' and ticket.rating_percentage == None:
+                    return HttpResponse(json.dumps({
+                        'form':self._render(request, 'admin/tracker/ticket/ack_norating_error.html', {}),
+                        'id':-1,
+                        'success':False,
+                    }))
                 ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
                 return HttpResponse(json.dumps({
                     'form':self._render(request, 'admin/tracker/ticket/ack_line.html', {'ack':ack}),
@@ -87,6 +93,7 @@ class TicketAdmin(admin.ModelAdmin):
             url(r'^(?P<object_id>\d+)/acks/add/$', self.add_ack),
             url(r'^(?P<object_id>\d+)/acks/remove/$', self.remove_ack),
         ) + super(TicketAdmin, self).get_urls()
+
 admin.site.register(models.Ticket, TicketAdmin)
 
 class TopicAdmin(admin.ModelAdmin):
