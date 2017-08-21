@@ -191,20 +191,22 @@ def check_ticket_form_deposit(ticketform, preexpeditures):
         ))
 
 
-class PrecontentTicketForm(TicketForm):
-    def __init__(self, *args, **kwargs):
-        super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['topic'].queryset = self.get_topic_queryset()
-        self.fields['deposit'].widget.attrs['disabled'] = True
-
 def get_edit_ticket_form_class(ticket):
     class EditTicketForm(TicketForm):
         def get_topic_queryset(self):
             return Topic.objects.filter(Q(open_for_tickets=True) | Q(id=ticket.topic.id))
 
-    class PrecontentEditTicketForm(PrecontentTicketForm):
-        def get_topic_queryset(self):
-            return Topic.objects.filter(Q(open_for_tickets=True) | Q(id=ticket.topic.id))
+    class PrecontentEditTicketForm(EditTicketForm):
+        """ Ticket edit form with disabled deposit field """
+        # NOTE in Django 1.9+, this can be set directly on the field:
+        # https://docs.djangoproject.com/en/dev/ref/forms/fields/#disabled
+        def __init__(self, *args, **kwargs):
+            super(PrecontentEditTicketForm, self).__init__(*args, **kwargs)
+            self.fields['deposit'].widget.attrs['disabled'] = True
+            self.fields['deposit'].required = False
+
+        def clean_deposit(self):
+            return self.instance.deposit
 
     if "precontent" in ticket.ack_set():
         return PrecontentEditTicketForm
@@ -332,13 +334,23 @@ def edit_ticket(request, pk):
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
             mediainfo = MediaInfoFormSet(request.POST, prefix='mediainfo', instance=ticket)
-            expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
-            preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture', instance=ticket)
+            if 'content' not in ticket.ack_set():
+                expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
+            else:
+                expeditures = None
+            if 'precontent' not in ticket.ack_set():
+                preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture', instance=ticket)
+            else:
+                preexpeditures = None
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
         
-        check_ticket_form_deposit(ticketform, preexpeditures)
-        if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
+        if 'precontent' not in ticket.ack_set():
+            check_ticket_form_deposit(ticketform, preexpeditures)
+
+        if ticketform.is_valid() and mediainfo.is_valid() \
+                and (expeditures.is_valid() if 'content' not in ticket.ack_set() else True) \
+                and (preexpeditures.is_valid() if 'precontent' not in ticket.ack_set() else True):
             ticket = ticketform.save()
             mediainfo.save()
             if 'content' not in ticket.ack_set():
@@ -351,17 +363,21 @@ def edit_ticket(request, pk):
     else:
         ticketform = TicketEditForm(instance=ticket)
         mediainfo = MediaInfoFormSet(prefix='mediainfo', instance=ticket)
-    if 'content' not in ticket.ack_set():
-        expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
-        form_media = adminCore + ticketform.media + mediainfo.media + expeditures.media
-    else:
-        expeditures = None # Hide expeditures in the edit form
-        form_media = adminCore + ticketform.media + mediainfo.media
-    if 'precontent' not in ticket.ack_set():
-        preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
-    else:
-        preexpeditures = None # Hide preexpeditures in the edit form
+        if 'content' not in ticket.ack_set():
+            expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
+        else:
+            expeditures = None # Hide expeditures in the edit form
+        if 'precontent' not in ticket.ack_set():
+            preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
+        else:
+            preexpeditures = None # Hide preexpeditures in the edit form
     
+    form_media = adminCore + ticketform.media + mediainfo.media
+    if 'content' not in ticket.ack_set():
+        form_media += expeditures.media
+    if 'precontent' not in ticket.ack_set():
+        form_media += preexpeditures.media
+
     return render(request, 'tracker/edit_ticket.html', {
         'ticket': ticket,
         'ticketform': ticketform,
