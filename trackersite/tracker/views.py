@@ -684,3 +684,6 @@ admin_user_list = login_required(AdminUserListView.as_view())
 
 def export(request):
     return render(request, 'tracker/export.html', {})
+
+def import(request):
+    return render(request, 'tracker/import.html', {})
