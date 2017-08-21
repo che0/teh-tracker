@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Import" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Import" %}</h1>
+
+<form enctype="multipart/form-data" class="form-horizontal" method="POST">
+    {% trans "What kind of objects are you importing?" %}
+    <div class="form-group">
+        <div class="radio">
+          <label>
+            <input type="radio" name="type" id="type1" value="ticket" checked="">
+            {% trans "Tickets" %}
+          </label>
+        </div>
+	{% if request.user.is_staff %}
+        <div class="radio">
+          <label>
+            <input type="radio" name="type" id="type2" value="topic">
+	    {% trans "Topics" %}
+	  </label>
+        </div>
+	{% endif %}
+	{% if request.user.is_staff %}
+        <div class="radio">
+          <label>
+            <input type="radio" name="type" id="type3" value="grant">
+	    {% trans "Grants" %}
+	  </label>
+        </div>
+	{% endif %}
+        <div class="radio">
+	  <label>
+	    <input type="radio" name="type" id="type4" value="preexpense">
+	    {% trans "Preexpenses" %}
+	  </label>
+	</div>
+	<div class="radio">
+	  <label>
+	    <input type="radio" name="type" id="type5" value="expense">
+	    {% trans "Expenses" %}
+	  </label>
+	</div>
+	{% if request.user.is_superuser %}
+	<div class="radio">
+	  <label>
+	    <input type="radio" name="type" id="type6" value="user">
+	    {% trans "Users" %}
+	  </label>
+	</div>
+	{% endif %}
+    </div>
+    <div class="form-group">
+	<input class="form-control" type="file" accept=".csv" name="csvfile">
+    </div>
+    <div class="form-group">
+	<input class="form-control" type="submit">
+    </div>
+    {% csrf_token %}
+</form>
+{% endblock content %}

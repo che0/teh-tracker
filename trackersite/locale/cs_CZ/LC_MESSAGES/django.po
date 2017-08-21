@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-20 21:27+0200\n"
+"POT-Creation-Date: 2017-08-21 20:56+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -17,7 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: common_settings.py:67 tracker/templates/tracker/ticket_common_detail.html:11
+#: common_settings.py:67
+#: tracker/templates/tracker/ticket_common_detail.html:11
 #: tracker/templates/tracker/topic_table.html:23
 #: tracker/templates/tracker/topic_table.html:24
 msgid "CZK"
@@ -238,7 +239,8 @@ msgstr "Procentuální ohodnocení stanovené schvalovatelem"
 msgid "report mandatory"
 msgstr "povinný report"
 
-#: tracker/models.py:116 tracker/templates/tracker/ticket_common_detail.html:10
+#: tracker/models.py:116
+#: tracker/templates/tracker/ticket_common_detail.html:10
 msgid "Is report mandatory?"
 msgstr "Je report povinný?"
 
@@ -349,6 +351,7 @@ msgstr "Tiket"
 
 #: tracker/models.py:294 tracker/templates/tracker/cluster_detail.html:12
 #: tracker/templates/tracker/cluster_detail.html:19
+#: tracker/templates/tracker/import.html:15
 #: tracker/templates/tracker/topic_detail.html:27
 #: tracker/templates/tracker/topic_finance.html:12
 #: tracker/templates/tracker/topic_table.html:6
@@ -432,7 +435,7 @@ msgstr "Zvolení uživatelé budou mít správcovský přístup k tématu."
 msgid "Topic"
 msgstr "Téma"
 
-#: tracker/models.py:424
+#: tracker/models.py:424 tracker/templates/tracker/import.html:22
 msgid "Topics"
 msgstr "Témata"
 
@@ -469,7 +472,7 @@ msgstr "Zkratka pro použití v adresách URL"
 msgid "Grant"
 msgstr "Grant"
 
-#: tracker/models.py:445
+#: tracker/models.py:445 tracker/templates/tracker/import.html:30
 msgid "Grants"
 msgstr "Granty"
 
@@ -566,7 +569,7 @@ msgstr "Plánovaný výdaj tiketu"
 msgid "Ticket preexpeditures"
 msgstr "Plánované výdaje tiketu"
 
-#: tracker/models.py:518 tracker/views.py:377
+#: tracker/models.py:518 tracker/views.py:393
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
@@ -631,7 +634,8 @@ msgstr ""
 msgid "Description of this transaction"
 msgstr "Popis převodu"
 
-#: tracker/models.py:581 tracker/templates/feeds/transaction_description.html:6
+#: tracker/models.py:581
+#: tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:51
 #: tracker/templates/tracker/ticket_detail.html:28
@@ -661,7 +665,8 @@ msgstr "Platby"
 #: tracker/templates/admin/tracker/ticket/ack_norating_error.html:2
 msgid ""
 "You must fill rating percentage before you will be able to accept the ticket."
-msgstr "Musíte vyplnit ohodnocení předtím, než budete moci tento ticket schválit."
+msgstr ""
+"Musíte vyplnit ohodnocení předtím, než budete moci tento ticket schválit."
 
 #: tracker/templates/admin/tracker/ticket/change_form.html:10
 #: tracker/templates/tracker/ticket_common_detail.html:3
@@ -767,6 +772,7 @@ msgid "You don't have permission to edit anything."
 msgstr "Nemáte právo nic editovat"
 
 #: tracker/templates/tracker/admin_user_list.html:6
+#: tracker/templates/tracker/import.html:50
 msgid "Users"
 msgstr "Uživatelé"
 
@@ -930,6 +936,23 @@ msgstr "platby dle témat"
 #: tracker/templates/tracker/generic/topic_list.html:18
 msgid "topic ack overview"
 msgstr "přehled schválení"
+
+#: tracker/templates/tracker/import.html:4
+#: tracker/templates/tracker/import.html:7
+msgid "Import"
+msgstr "Import"
+
+#: tracker/templates/tracker/import.html:10
+msgid "What kind of objects are you importing?"
+msgstr "Jaký druh objektů hodláte importovat?"
+
+#: tracker/templates/tracker/import.html:37
+msgid "Preexpenses"
+msgstr "Plánované výdaje"
+
+#: tracker/templates/tracker/import.html:43
+msgid "Expenses"
+msgstr "Výdaje"
 
 #: tracker/templates/tracker/paginator.html:4
 msgid "previous"
@@ -1405,37 +1428,57 @@ msgstr "Schválení \"%(confirmation)s\" smazáno z tiketu %(ticket_id)s"
 msgid "Your deposit is bigger than your preexpeditures"
 msgstr "Vámi požadovaná záloha je vyšší než vámi zadané plánované výdaje"
 
-#: tracker/views.py:286
+#: tracker/views.py:288
 #, python-format
 msgid "Ticket %s created."
 msgstr "Vytvořen tiket %s."
 
-#: tracker/views.py:324
+#: tracker/views.py:326
 msgid "You cannot edit this ticket."
 msgstr "Nemáte práva k úpravám tohoto tiketu."
 
-#: tracker/views.py:349
+#: tracker/views.py:361
 #, python-format
 msgid "Ticket %s saved."
 msgstr "Tiket %s uložen."
 
-#: tracker/views.py:400
+#: tracker/views.py:416
 msgid "You cannot see this ticket's documents."
 msgstr "Nemáte právo vidět doklady tohoto tiketu."
 
-#: tracker/views.py:418
+#: tracker/views.py:434
 #, python-format
 msgid "Document changes for ticket %s saved."
 msgstr "Změny dokladů pro tiket %s uloženy."
 
-#: tracker/views.py:444
+#: tracker/views.py:460
 #, python-format
 msgid "File %(filename)s has been saved."
 msgstr "Soubor %(filename)s uložen."
 
-#: tracker/views.py:635
+#: tracker/views.py:651
 msgid "Your details have been saved."
 msgstr "Vaše údaje byly uloženy"
+
+#: tracker/views.py:715
+msgid "You must be staffer in order to be able import topics."
+msgstr "Pro import témat musíte být administrátor."
+
+#: tracker/views.py:738
+msgid "You must be staffer in order to be able import grants."
+msgstr "Pro import grantů musíte být administrátor."
+
+#: tracker/views.py:774
+msgid "You can't add expenses to ticket that you did not created."
+msgstr "Nemůžete přidávat výdaje k ticketům, které jste nevytvořili"
+
+#: tracker/views.py:791
+msgid "You can't add preexpenses to ticket that you did not created."
+msgstr "Nemůžete přidávat plánované výdaje k ticketům, které jste nevytvořeli"
+
+#: tracker/views.py:794
+msgid "You must be superuser in order to be able import users."
+msgstr "Pro import uživatelů musíte být superuživatel."
 
 #: users/templates/users/login.html:4
 msgid "Login"

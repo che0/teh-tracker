@@ -684,3 +684,139 @@ admin_user_list = login_required(AdminUserListView.as_view())
 
 def export(request):
     return render(request, 'tracker/export.html', {})
+
+@login_required
+def importcsv(request):
+    if request.method == 'POST' and not request.FILES['csvfile']:
+        return render(request, 'tracker/import.html', {})
+    elif request.method == 'POST' and request.FILES['csvfile']:
+        csvfile = request.FILES['csvfile']
+        header = None
+        if request.POST['type'] == 'ticket':
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+                for lineraw in lines:
+                    line = lineraw.split(',')
+                    if not header:
+                        header = line
+                        continue
+                    event_date = line[header.index('event_date')]
+                    summary = line[header.index('summary')]
+                    topic = Topic.objects.get(name=line[header.index('topic')])
+                    event_url = line[header.index('event_url')]
+                    description = line[header.index('description')]
+                    deposit = float(line[header.index('deposit')])
+                    ticket = Ticket.objects.create(event_date=event_date, summary=summary, topic=topic, event_url=event_url, description=description, deposit=deposit)
+                    ticket.requested_user = request.user
+                    ticket.save()
+        elif request.POST['type'] == 'topic':
+            if not request.user.is_staff:
+                return HttpResponseForbidden(_('You must be staffer in order to be able import topics.'))
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+                for lineraw in lines:
+                    line = lineraw.split(',')
+                    if not header:
+                        header = line
+                        continue
+                    name = line[header.index('name')]
+                    grant = Grant.objects.get(full_name=line[header.index('grant')]).id
+                    new_tickets = line[header.index('new_tickets')]
+                    media = line[header.index('media')]
+                    preexpenses = line[header.index('preexpenses')]
+                    expenses = line[header.index('expenses')]
+                    description = line[header.index('description')]
+                    form_description = line[header.index('form_description')]
+                    topic = Topic.objects.create(name=name, grant_id=grant, open_for_tickets=new_tickets, ticket_media=media, ticket_preexpenses=preexpenses, ticket_expenses=expenses, description=description, form_description=form_description)
+                    adminsraw = line[header.index('admins')].split(';')
+                    for admin in adminsraw:
+                        topic.admin.add(User.objects.get(username=admin).id)
+        elif request.POST['type'] == 'grant':
+            if not request.user.is_staff:
+                return HttpResponseForbidden(_('You must be staffer in order to be able import grants.'))
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+                for lineraw in lines:
+                    line = lineraw.split(',')
+                    if not header:
+                        header = line
+                        continue
+                    full_name = line[header.index('full_name')]
+                    short_name = line[header.index('short_name')]
+                    slug = line[header.index('slug')]
+                    description = line[header.index('description')]
+                    grant = Grant.objects.create(full_name=full_name, short_name=short_name, slug=slug, description=description)
+        elif request.POST['type'] == 'expense':
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+                for lineraw in lines:
+                    line = lineraw.split(',')
+                    if not header:
+                        header = line
+                        continue
+                    ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                    description = line[header.index('description')]
+                    amount = line[header.index('amount')]
+                    wage = int(line[header.index('wage')])
+                    if request.user.is_staff:
+                        accounting_info = line[header.index('accounting_info')]
+                        paid = int(line[header.index('paid')])
+                    else:
+                        accounting_info = ''
+                        paid = 0
+                    if ticket.can_edit(request.user) or request.user.is_staff:
+                        expediture = Expediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage, accounting_info=accounting_info, paid=paid)
+                    else:
+                        return HttpResponseForbidden(_("You can't add expenses to ticket that you did not created."))
+        elif request.POST['type'] == 'preexpense':
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+                for lineraw in lines:
+                    line = lineraw.split(',')
+                    if not header:
+                        header = line
+                        continue
+                    ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                    description = line[header.index('description')]
+                    amount = line[header.index('amount')]
+                    wage = int(line[header.index('wage')])
+                    if ticket.can_edit(request.user) or request.user.is_staff:
+                        expediture = Preexpediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage)
+                    else:
+                        return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
+        elif request.POST['type'] == 'user':
+            if not request.user.is_superuser:
+                return HttpResponseForbidden(_('You must be superuser in order to be able import users.'))
+            for chunk in csvfile.chunks():
+                lines = chunk.split('\n')
+                lines.pop()
+            for lineraw in lines:
+                line = lineraw.split(',')
+                if not header:
+                    header = line
+                    continue
+                username = line[header.index('username')]
+                password = line[header.index('password')]
+                first_name = line[header.index('first_name')]
+                last_name = line[header.index('last_name')]
+                is_superuser = int(line[header.index('is_superuser')])
+                is_staff = int(line[header.index('is_staff')])
+                is_active = int(line[header.index('is_active')])
+                email = line[header.index('email')]
+                user = User.objects.create_user(username=username, password=password, email=email)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.is_superuser = is_superuser
+                user.is_staff = is_staff
+                user.is_active = is_active
+                user.save()
+        else:
+            return render(request, 'tracker/import.html', {})
+        return HttpResponseRedirect(reverse('index'))
+    else:
+        return render(request, 'tracker/import.html', {})
