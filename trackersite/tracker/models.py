@@ -331,18 +331,9 @@ class FinanceStatus(object):
             self.unpaid += ticket.accepted_expeditures()
         elif ticket.payment_status == 'paid':
             self.paid += ticket.accepted_expeditures()
-        elif ticket.payment_status in ('partially_paid', 'overpaid'):
-            cluster_topics = ticket.cluster.get_topic_count()
-            if cluster_topics > 1:
-                self.fuzzy = True
-            if ticket.cluster.id not in self.seen_cluster_ids:
-                self.seen_cluster_ids.add(ticket.cluster.id)
-                if ticket.payment_status == 'partially_paid':
-                    self.paid += ticket.cluster.total_transactions / cluster_topics
-                    self.unpaid += (ticket.cluster.total_tickets - ticket.cluster.total_transactions) / cluster_topics
-                else: # overpaid
-                    self.paid += ticket.cluster.total_tickets / cluster_topics
-                    self.overpaid += (ticket.cluster.total_transactions - ticket.cluster.total_tickets) / cluster_topics
+        elif ticket.payment_status == 'partially_paid':
+            self.paid += sum([e.amount for e in Expediture.objects.filter(ticket_id=ticket.id, paid=True)])*ticket.rating_percentage/100
+            self.unpaid += sum([e.amount for e in Expediture.objects.filter(ticket_id=ticket.id, paid=False)])*ticket.rating_percentage/100
     
     def add_finance(self, other):
         self.fuzzy = self.fuzzy or other.fuzzy
@@ -670,19 +661,12 @@ class Cluster(models.Model):
     def cluster_sums():
         sums = {'unpaid':0, 'paid':0, 'overpaid':0}
         for cluster in Cluster.objects.all():
-            tickets = cluster.total_tickets or 0
-            transactions = cluster.total_transactions or 0
-            if tickets == transactions:
-                # paid
-                sums['paid'] += tickets
-            elif tickets > transactions:
-                # unpaid or partially paid
-                sums['paid'] += transactions
-                sums['unpaid'] += tickets - transactions
-            else:
-                # overpaid
-                sums['paid'] += tickets
-                sums['overpaid'] += transactions - tickets
+            for ticket in cluster.ticket_set.all():
+                for exp in Expediture.objects.filter(ticket_id=ticket.id):
+                    if exp.paid:
+                        sums['paid'] += exp.amount*ticket.rating_percentage/100
+                    else:
+                        sums['unpaid'] += exp.amount*ticket.rating_percentage/100
         return sums
 
 @receiver(models.signals.m2m_changed)
