@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd /var/www/tracker2.wikimedia.cz \
+	&& git fetch origin \
+	&& git checkout origin/master \
+	&& source deploy/pyenv/bin/activate \
+	&& pip install -U pip \
+	&& pip install -U -r support/requirements.txt \
+	&& pip install -U python-memcached \
+	&& ( cd trackersite \
+		&& python manage.py syncdb \
+		&& python manage.py migrate \
+		&& python manage.py collectstatic --noinput \
+		&& python manage.py compilemessages \
+	) \
+	&& touch deploy/reload
