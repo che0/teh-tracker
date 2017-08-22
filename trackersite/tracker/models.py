@@ -636,22 +636,19 @@ class Cluster(models.Model):
         return reverse('cluster_detail', kwargs={'pk':self.id})
     
     def get_status(self):
-        paid = self.total_transactions or 0
-        tickets = self.total_tickets or 0
-
-        if abs(paid - tickets) < 0.01: # float-friendly equality
-            if tickets == 0:
+        tickets = self.ticket_set.all()
+        for ticket in tickets:
+            expeditures = Expediture.objects.filter(ticket_id=ticket.id)
+            paid_expeditures = Expediture.objects.filter(ticket_id=ticket.id, paid=True)
+            if 'content' not in ticket.ack_set() or len(expeditures) == 0:
                 return 'n_a'
-            else:
-                return 'paid'
-        elif paid < tickets:
-            if paid == 0:
+            elif len(paid_expeditures) == 0:
                 return 'unpaid'
-            else:
+            elif len(paid_expeditures) < len(expeditures):
                 return 'partially_paid'
-        else: # paid > tickets
-            return 'overpaid'
-    
+            elif len(paid_expeditures) == len(expeditures):
+                return 'paid'
+   
     def get_topic_count(self):
         """ Retuns number of topic this cluster spans """
         topic_set = set([t.topic_id for t in self.ticket_set.only('topic').select_related('topic')])
@@ -660,7 +657,6 @@ class Cluster(models.Model):
     def update_status(self):
         """ Recounts all the summaries and updates payment status in tickets. """
         self.total_tickets = sum([t.accepted_expeditures() for t in self.ticket_set.all()])
-        self.total_transactions = self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
         status = self.get_status()
         for t in self.ticket_set.all():
             t.payment_status = status
