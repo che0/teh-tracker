@@ -508,17 +508,6 @@ class HttpResponseCsv(HttpResponse):
         self.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
         self.write(u'\r\n')
 
-def get_tickets_filtered(fields, **kwargs):
-	tickets = Ticket.objects.filter(kwargs)
-	resp = HttpResponseCsv(fields)
-	for ticket in tickets:
-		dictticket = ticket.__dict__
-		row = []
-		for field in fields:
-			row.append(dictticket[field])
-		resp.writerow(row)
-	return resp
-
 def _get_topic_content_acks_per_user():
     """ Returns content acks counts per user and topic """
     cursor = connection.cursor()
@@ -683,7 +672,179 @@ class AdminUserListView(ListView):
 admin_user_list = login_required(AdminUserListView.as_view())
 
 def export(request):
-    return render(request, 'tracker/export.html', {})
+    if request.method == 'POST':
+        typ = request.POST['type']
+        if typ == 'ticket':
+            states = ['draft', 'wfpreapproval', 'wfsubmiting', 'wfapproval', 'wfdocssub', 'wffill', 'complete', 'archived', 'closed', 'custom']
+            tickets = []
+            for state in states:
+                if state in request.POST:
+                    tickets += Ticket.get_tickets_with_state(request.POST[state])
+            if len(tickets) == 0:
+                tickets = list(Ticket.objects.all())
+            tickets = list(set(tickets))
+            topics = []
+            for item in request.POST:
+                if item.startswith('ticket-topic-'):
+                    topics.append(Topic.objects.get(id=long(request.POST[item])))
+            tmp = []
+            if len(topics) != 0:
+                for topic in topics:
+                    for ticket in tickets:
+                        if ticket.topic == topic:
+                            tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            users = []
+            for item in request.POST:
+                if item.startswith('ticket-user-'):
+                    users.append(User.objects.get(id=long(request.POST[item])))
+            if len(users) != 0:
+                for user in users:
+                    for ticket in tickets:
+                        if ticket.requested_user == user:
+                            tmp.append(ticket)
+                    tickets = tmp
+                    tmp = []
+            larger = request.POST['preexpeditures-larger']
+            smaller = request.POST['preexpeditures-smaller']
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.preexpeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real >= larger and real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            larger = request.POST['expeditures-larger']
+            smaller = request.POST['preexpeditures-smaller']
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.expeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real >= larger and real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            larger = request.POST['acceptedexpeditures-larger']
+            smaller = request.POST['acceptedexpeditures-smaller']
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.accepted_expeditures()
+                    if real >= larger and real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            response = HttpResponseCsv(['id', 'created', 'updated', 'event_date', 'event_url', 'summary', 'requested_by', 'grant', 'topic', 'state', 'deposit', 'description', 'mandatory_report'])
+            for ticket in tickets:
+                response.writerow([ticket.id, ticket.created, ticket.updated, ticket.event_date, ticket.event_url, ticket.summary, ticket.requested_by(), ticket.topic.grant.full_name, ticket.topic.name, ticket.state_str(), ticket.deposit, ticket.description, ticket.mandatory_report])
+            return response
+        elif typ == 'grant':
+            response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
+            grants = Grant.objects.all()
+            for grant in grants:
+                response.writerow([grant.full_name, grant.short_name, grant.slug, grant.description])
+            return response
+        elif typ == 'preexpediture':
+            larger = request.POST['preexpediture-amount-larger']
+            smaller = request.POST['preexpediture-amount-larger']
+            wage = 'preexpediture-wage' in request.POST
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                preexpeditures = Preexpediture.objects.filter(amount__gte=larger, amount__lte=smaller, wage=wage)
+            else:
+                preexpeditures = Preexpediture.objects.filter(wage=wage)
+            response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
+            for preexpediture in preexpeditures:
+                response.writerow([preexpediture.ticket_id, preexpediture.description, preexpediture.amount, preexpediture.wage])
+            return response
+        elif typ == 'expediture':
+            larger = request.POST['expediture-amount-larger']
+            smaller = request.POST['expediture-amount-smaller']
+            wage = 'expediture-wage' in request.POST
+            paid = 'expediture-paid' in request.POST
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                expeditures = Expediture.objects.filter(amount__gte=larger, amount__lte=smaller, wage=wage, paid=paid)
+            else:
+                expeditures = Expediture.objects.filter(wage=wage, paid=paid)
+            response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage', 'paid'])
+            for expediture in expeditures:
+                response.writerow([expediture.ticket_id, expediture.description, expediture.amount, expediture.wage, expediture.paid])
+            return response
+        elif typ == 'topic':
+            users = []
+            for item in request.POST:
+                if item.startswith('topics-user-'):
+                    users.append(User.objects.get(id=long(request.POST[item])))
+            topics = Topic.objects.all()
+            if len(users) != 0:
+                tmp = []
+                for user in users:
+                    for topic in topics:
+                        if user in topic.admin.all():
+                            tmp.append(topic)
+                topics = list(set(tmp))
+                tmp = []
+            larger = request.POST['topics-tickets-larger']
+            smaller = request.POST['topics-tickets-smaller']
+            if larger != '' and smaller != '':
+                larger = int(larger)
+                smaller = int(smaller)
+                tmp = []
+                for topic in topics:
+                    if topic.ticket_set.count >= larger and topic.ticket_set.count <= smaller:
+                        tmp.append(topic)
+                topics = tmp
+                tmp = []
+            if request.POST['topics-paymentstate'] != 'default':
+                paymentstatus = request.POST['topics-paymentstate']
+                larger = request.POST['topics-paymentstate-larger']
+                smaller = request.POST['topics-paymentstate-smaller']
+                if larger != '' and smaller != '':
+                    larger = int(larger)
+                    smaller = int(smaller)
+                    tmp = []
+                    for topic in topics:
+                        number = -1
+                        if paymentstatus in topic.tickets_per_payment_status():
+                            number = topic.tickets_per_payment_status()[paymentstatus]
+                        else:
+                            number = 0
+                        if number >= larger and number <= smaller:
+                            tmp.append(topic)
+                    topics = tmp
+                    del(tmp)
+            response = HttpResponseCsv(['name', 'grant', 'open_for_new_tickets', 'media', 'expenses', 'preexpenses', 'description', 'form_description', 'admins'])
+            for topic in topics:
+                names = []
+                for ad in topic.admin.all():
+                    names.append(ad.username)
+                admins = ", ".join(names)
+                response.writerow([topic.name, topic.grant.full_name, topic.open_for_tickets, topic.ticket_media, topic.ticket_expenses, topic.ticket_preexpenses, topic.description, topic.form_description, admins])
+            return response
+        elif typ == 'user':
+            pass
+        return HttpResponseBadRequest('You must fill the form validly')
+    else:
+        return render(
+            request,
+            'tracker/export.html',
+            {
+                'topics': Topic.objects.all(),
+                'users': User.objects.all(),
+                'tickets': Ticket.objects.all(),
+            })
 
 @login_required
 def importcsv(request):
