@@ -16,7 +16,7 @@
 
 {% if cluster.transaction_set.all.count > 0 %}
 <h2>{% trans "Transactions" %}</h2>
-<table><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
+<table class="table table-striped table-hover"><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Tickets" %}</th><th>{% trans "Accounting info" %}</th></tr>
 {% for t in cluster.transaction_set.all %}
 <tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td class="money">{{t.amount|money}}</td><td>{{t.description}}</td>
 <td>{% for ticket in t.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>

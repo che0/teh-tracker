@@ -7,7 +7,7 @@
 <h1>Overview of {{grant.full_name}}</h1>
 <p>Generated on {{date|date:'r'}}</p>
 
-<table>
+<table class="table table-striped table-hover">
 <tr><th>Topic</th><th>Unpaid</th><th>Paid</th><th>Overpaid</th></tr>
 {% for t in finance.topics %}<tr><td><a href="#topic-{{t.topic.id}}">{{t.topic.name}}</a></td>
 <td class="money payment_cell {% if t.finance.unpaid %}unpaid{% else %}n_a{% endif %}">{{t.finance.unpaid|money}}</td>
@@ -24,7 +24,7 @@
 <h2 id="topic-{{topic.id}}">{{topic.name}}</h2>
 
 {% if topic.ticket_set.all %}
-<table>
+<table class="table table-striped table-hover">
 <tr><th>ID</th><th>Ticket</th><th>Status</th><th>Accepted</th><th>Payment</th></tr>
 {% for ticket in topic.ticket_set.all %}<tr class="payment_class_{{ticket.payment_status}}">
 <td><a href="{{ticket.id}}/index.html">{{ticket.id}}</a></td><td><a href="{{ticket.id}}/index.html">{{ticket.summary}}</a></td>

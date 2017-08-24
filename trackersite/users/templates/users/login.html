@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n widget_tweaks %}
 
 {% block title %}{% trans "Login" %}{% endblock %}
 
@@ -10,15 +10,22 @@
 <p>{% trans "Your username and password didn't match. Please try again." %}</p>
 {% endif %}
 
-<form method="post" action="{% url "login" %}">
+<form class="form-horizontal" method="post" action="{% url "login" %}">
 {% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="{% trans "login" %}" />
-<input type="hidden" name="next" value="{{ next }}" />
+<div class="form-group">
+{% for field in form %}
+{{ field.errors }}
+{{ field.label_tag }} {{field|add_class:"form-control"}}
+{% endfor %}
+<br>
+<button class="btn btn-primary" type="submit" value="{% trans "login" %}">Login</button>
+<button class="btn btn-secundary hidden" type="hidden" name="next" value="{{ next }}"></button>
+</div>
 </form>
 
+<div style="margin-top: 25px;">
 <p>{% trans "Don't have an acount?" %} <a href="{% url "register" %}">{% trans "Register" %}</a><br />
 {% trans "Forgot password?" %} <a href="{% url "password_reset" %}">{% trans "Reset password" %}</a></p>
-
+</div>
 
 {% endblock %}

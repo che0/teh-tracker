@@ -1,8 +1,8 @@
-{% load i18n %}
-<form method="post" action="{{action}}">
+{% load i18n widget_tweaks %}
+<form class="form-horizontal" method="post" action="{{action}}">
 {{ ticketform.non_field_errors }}
 {% for field in ticketform %}
-<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
+<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field|add_class:"form-control" }}<span class="helptext">{{ field.help_text }}</span></p>
 {% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 
@@ -20,6 +20,6 @@
 {% endif %}
 
 {% csrf_token %}
-<input type="submit" value="{{ submit|default:_("submit") }}" />
+<button class="btn btn-primary" type="submit" value="{{ submit|default:_("submit") }}">{% trans "Save" %}</button>
 <p>{% blocktrans with mark='<span style="color:red">*</span>' %}Fields marked with {{mark}} are required.{% endblocktrans %}</p>
 </form>

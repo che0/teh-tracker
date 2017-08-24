@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n widget_tweaks %}
 
 {% block title %}{% trans "Confirm" %}: {{ticket.summary}}{% endblock %}
 
@@ -8,8 +8,13 @@
 <h1>{% trans "Confirm" %}: {{ticketack.display}}</h1>
 
 <form method="POST" action="">
-{{form.as_p}}
-<input type="submit" value="{% trans "Add confirmation" %}">
+{% for field in form %}
+{{ field.error }}
+{{ field.label_tag }} {{ field|add_class:"form-control" }}
+{% endfor %}
+<br />
+<input class="form-control" type="submit" value="{% trans "Add confirmation" %}">
+<br />
 <a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
 {% csrf_token %}</form></p>
 {% endblock %}

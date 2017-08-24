@@ -10,7 +10,7 @@
 {% if "content" in ticket.ack_set %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />{% endif %}
 {% trans "Deposit" %}: {{ ticket.deposit }} {% trans "CZK" %}<br />
 {% if ticket.event_url != "" %}{% trans "Event URL" %}: <a href="{{ ticket.event_url }}">{{ ticket.event_url }}</a><br />{% endif %}
-{% if "content" in ticket.ack_set %}<br />{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;%{% endif %}
+{% if "content" in ticket.ack_set %}{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;%<br /><br />{% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
@@ -36,7 +36,7 @@
 
 {% if ticket.preexpeditures.count > 0 %}
 <h2>{% trans "Preexpeditures" %}</h2>
-<table>
+<table class="table table-striped table-hover">
 <tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Wage?" %}</th></tr>
 {% for item in ticket.preexpediture_set.all %}
 <tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>
@@ -47,7 +47,7 @@
 
 {% if ticket.expeditures.count > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
-<table>
+<table class="table table-striped table-hover">
 <tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th><th>{% trans "Paid?" %}</th><th>{% trans "Wage?" %}</th></tr>
 {% for item in ticket.expediture_set.all %}
 <tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td><td>{% if item.paid %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>

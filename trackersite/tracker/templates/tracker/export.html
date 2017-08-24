@@ -251,6 +251,12 @@
 	    </div>
 	    </div>
 	    </div>
+	    </div>
+	    <div class="col">
+	       <div class="radio">
+	           <label><input type="radio" name="type" value="topic" data-toggle="collapse" data-target="#topics">{% trans "Topics" %}</label>
+	       </div>
+	    </div>
 	    <p style="font-weight: bold">{% trans "Users" %}</p>
 	    {% for user in users %}
 	    <input id="tickets-user-{{ user.id }}" type="checkbox" name="ticket-user-{{ user.id }}" value="{{ user.id }}">

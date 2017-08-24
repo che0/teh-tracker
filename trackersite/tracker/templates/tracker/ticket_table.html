@@ -1,5 +1,66 @@
 {% load i18n trackertags %}
-<table class="ticket_list">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+<script type="text/javascript">
+$( document ).ready(function() {
+	$( "i" ).each(function() {
+		//console.log($( this ).parent().attr("onclick").split("'")[1]);
+		if( $( this ).parent().attr("onclick").split("'")[1] == getUrlParameter("order") && getUrlParameter("state") == "1") {
+			$( this ).addClass("fa-caret-up");
+			console.log("state 1")
+		} else if( $( this).parent().attr("onclick").split("'")[1] == getUrlParameter("order") && getUrlParameter("state") == "2") {
+			$( this ).addClass("fa-caret-down");
+		} else {
+			$( this ).addClass("fa-sort");
+		}
+	});
+})
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+var state = 0;
+function order(by) {
+    state = getUrlParameter('state');
+    if (state == '0') {state = 0;}
+    if (state == '1') {state = 1;}
+    if (state == '2') {state = 2;}
+    if (state == undefined) {
+    	state = 0;
+    }
+    var tmp = getUrlParameter('order'); 
+    if (by != tmp && tmp != undefined) {
+        state = 0;
+    } else if (tmp == undefined) {
+     	tmp = by;
+	state = 1;
+    } else {
+	state += 1;
+        if (state > 2) {
+            state = 0;
+        }
+    }
+    var target = window.location.href.split('?')[0];
+    if(state == 1) {
+        window.location = target + "?order=" + tmp + "&descasc=asc&state=" + state;
+    } else if(state == 2) {
+        window.location = target + "?order=" + tmp + "&descasc=desc&state=" + state;
+    } else {
+        window.location = target;
+    }
+}
+</script>
+<table class="ticket_list table table-striped table-hover">
 {% if show_media %}
 <tr><th rowspan="2">{% trans "ID" %}</th><th rowspan="2">{% trans "Event date" %}</th><th rowspan="2">{% trans "Summary" %}</th>
 {% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
@@ -13,14 +74,14 @@
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
-<tr><th>{% trans "ID" %}</th><th>{% trans "Event date" %}</th><th>{% trans "Summary" %}</th>
+<tr><th onclick="order('id')">{% trans "ID" %} <i class="fa "></i></th><th>{% trans "Event date" %}</th><th onclick="order('summary')">{% trans "Summary" %} <i class="fa "></i></th>
 {% if show_grants %}<th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
-{% if show_topics %}<th>{% trans "Topic" %}</th>{% endif %}
+{% if show_topics %}<th onclick="order('topic')">{% trans "Topic" %} <i class="fa "></i></th>{% endif %}
 {% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
 {% if show_expenses %}<th>{% trans "Expeditures" %}</th>{% endif %}
 <th>{% trans "State" %}</th>
 {% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th>{% endif %}
-<th>{% trans "Last changed" %}</th></tr>
+<th onclick="order('updated')">{% trans "Last changed" %} <i class="fa "></i></th></tr>
 {% endif %}
 
 {% for ticket in ticket_list %}

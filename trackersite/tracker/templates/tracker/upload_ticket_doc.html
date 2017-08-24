@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n widget_tweaks %}
 
 {% block head %}{{block.super}}
 <script type="text/javascript"><!--
@@ -27,12 +27,12 @@ $(document).ready(function() {
 
 <form action="{% url "upload_ticket_doc" ticket.id %}" method="POST" enctype="multipart/form-data">
 {% for field in upload %}
-<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field }}<span class="helptext">{{ field.help_text }}</span></p>
+<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field|add_class:"form-control" }}<span class="helptext">{{ field.help_text }}</span></p>
 {% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 
 {% csrf_token %}
-<input type="submit" value="{% trans "upload" %}" /> <input type="submit" name="add-another" value="{% trans "upload and add another" %}" />
+<input class="form-control" type="submit" value="{% trans "upload" %}" /> <input class="form-control" type="submit" name="add-another" value="{% trans "upload and add another" %}" />
 <p>{% blocktrans with mark='<span style="color:red">*</span>' %}Fields marked with {{mark}} are required.{% endblocktrans %} {% trans "This document, including its file name and description, will be visible only to the ticket owner and specially privileged users." %}</p>
 </form>
 
