@@ -6,6 +6,7 @@ function refresh_description()
 		$('#topic_desc').hide();
 		$('#mediainfo-group').hide();
 		$('#expediture-group').hide();
+		$('#preexpediture-group').hide();
 		return;
 	}
 
@@ -13,6 +14,7 @@ function refresh_description()
 	$('#topic_desc').html(topic['form_description']).toggle(topic['form_description'] != "");
 	$('#mediainfo-group').toggle(topic['ticket_media']);
 	$('#expediture-group').toggle(topic['ticket_expenses']);
+	$('#preexpediture-group').toggle(topic['ticket_preexpenses']);
 }
 
 $(document).ready(function() {

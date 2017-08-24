@@ -144,7 +144,7 @@ def topics_js(request):
     data = {}
     for t in Topic.objects.all():
         data[t.id] = {}
-        for attr in ('form_description', 'ticket_media', 'ticket_expenses'):
+        for attr in ('form_description', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses'):
             data[t.id][attr] = getattr(t, attr)
     
     content = 'topics_table = %s;' % json.dumps(data)

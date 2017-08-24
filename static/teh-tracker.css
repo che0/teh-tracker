@@ -12,7 +12,7 @@ tr.first_total td { border-top: 2px solid black; }
 tr.grand_total td { border-bottom: double 3px black; }
 .ticket_list tr.total td { border-top: 2px solid black; }
 .hide-switch > .unhide { display: none; }
-.hidden { display: none; }
+.hiddencomment { display: none; }
 .tools { float: right; padding:0.3em; background-color:#eee; }
 
 span.helptext { display: block; }
