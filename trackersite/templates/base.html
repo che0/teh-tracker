@@ -5,6 +5,13 @@
 <link href="{{STATIC_URL}}teh-tracker.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
 <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
+<style>
+input[type=checkbox] {    
+    max-width: 20px;
+    max-height: 20px;
+}
+</style>
+
 {{form_media}}{% endblock %}
 
 {% block language_code %}{{LANGUAGE_CODE}}{% endblock %}
