@@ -834,70 +834,73 @@ def export(request):
                 response.writerow([topic.name, topic.grant.full_name, topic.open_for_tickets, topic.ticket_media, topic.ticket_expenses, topic.ticket_preexpenses, topic.description, topic.form_description, admins])
             return response
         elif typ == 'user':
-            users = TrackerProfile.objects.all()
-            larger = request.POST['users-created-larger']
-            smaller = request.POST['users-created-smaller']
-            if larger != '' and smaller != '':
-                larger = int(larger)
-                smaller = int(smaller)
-                tmp = []
-                for user in users:
-                    real = user.count_ticket_created()
-                    if real >= larger and real <= smaller:
-                        tmp.append(user)
-                users = tmp
-                del(tmp)
-            
-            larger = request.POST['users-accepted-larger']
-            smaller = request.POST['users-accepted-smaller']
-            if larger != '' and smaller != '':
-                larger = int(larger)
-                smaller = int(smaller)
-                tmp = []
-                for user in users:
-                    real = user.accepted_expeditures()
-                    if real >= larger and real <= smaller:
-                        tmp.append(user)
-                users = tmp
-                del(tmp)
+			if request.user.is_authenticated():
+				if request.user.is_staff:
+					users = TrackerProfile.objects.all()
+		            larger = request.POST['users-created-larger']
+		            smaller = request.POST['users-created-smaller']
+		            if larger != '' and smaller != '':
+		                larger = int(larger)
+		                smaller = int(smaller)
+		                tmp = []
+		                for user in users:
+		                    real = user.count_ticket_created()
+		                    if real >= larger and real <= smaller:
+		                        tmp.append(user)
+		                users = tmp
+		                del(tmp)
 
-            larger = request.POST['users-paid-larger']
-            smaller = request.POST['users-paid-larger']
-            if larger != '' and smaller != '':
-                larger = int(larger)
-                smaller = int(larger)
-                tmp = []
-                for user in users:
-                    real = user.paid_expeditures()
-                    if real >= larger and real <= smaller:
-                        tmp.append(user)
-                users = tmp
-                del(tmp)
+		            larger = request.POST['users-accepted-larger']
+		            smaller = request.POST['users-accepted-smaller']
+		            if larger != '' and smaller != '':
+		                larger = int(larger)
+		                smaller = int(smaller)
+		                tmp = []
+		                for user in users:
+		                    real = user.accepted_expeditures()
+		                    if real >= larger and real <= smaller:
+		                        tmp.append(user)
+		                users = tmp
+		                del(tmp)
 
-            if 'user-permision' in request.POST:
-                priv = request.POST['user-permision']
-                tmp = []
-                if priv == 'normal':
-                    for user in users:
-                        if not user.is_staff and not user.is_superuser:
-                            tmp.append(user)
-                elif priv == 'staff':
-                    for user in users:
-                        if user.is_staff:
-                            tmp.append(user)
-                elif priv == 'superuser':
-                    for user in users:
-                        if user.is_superuser:
-                            tmp.append(user)
-                else:
-                    return HttpResponseBadRequest('You must fill the form validly')
-                users = tmp
-                del(tmp)
-            
-            response = HttpResponseCsv(['id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'created_tickets', 'accepted_expeditures', 'paid_expeditures'])
-            for user in users:
-                response.writerow([user.user.id, user.user.username, user.user.first_name, user.user.last_name, user.user.email, user.user.is_active, user.user.is_staff, user.user.is_superuser, user.user.last_login, user.user.date_joined, user.count_ticket_created(), user.accepted_expeditures(), user.paid_expeditures()])
-            return response
+		            larger = request.POST['users-paid-larger']
+		            smaller = request.POST['users-paid-larger']
+		            if larger != '' and smaller != '':
+		                larger = int(larger)
+		                smaller = int(larger)
+		                tmp = []
+		                for user in users:
+		                    real = user.paid_expeditures()
+		                    if real >= larger and real <= smaller:
+		                        tmp.append(user)
+		                users = tmp
+		                del(tmp)
+
+		            if 'user-permision' in request.POST:
+		                priv = request.POST['user-permision']
+		                tmp = []
+		                if priv == 'normal':
+		                    for user in users:
+		                        if not user.is_staff and not user.is_superuser:
+		                            tmp.append(user)
+		                elif priv == 'staff':
+		                    for user in users:
+		                        if user.is_staff:
+		                            tmp.append(user)
+		                elif priv == 'superuser':
+		                    for user in users:
+		                        if user.is_superuser:
+		                            tmp.append(user)
+		                else:
+		                    return HttpResponseBadRequest('You must fill the form validly')
+		                users = tmp
+		                del(tmp)
+
+		            response = HttpResponseCsv(['id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'created_tickets', 'accepted_expeditures', 'paid_expeditures'])
+		            for user in users:
+		                response.writerow([user.user.id, user.user.username, user.user.first_name, user.user.last_name, user.user.email, user.user.is_active, user.user.is_staff, user.user.is_superuser, user.user.last_login, user.user.date_joined, user.count_ticket_created(), user.accepted_expeditures(), user.paid_expeditures()])
+		            return response
+				return HttpResponseForbidden('You must be staffer in order to export users')
 
         return HttpResponseBadRequest('You must fill the form validly')
     else:
