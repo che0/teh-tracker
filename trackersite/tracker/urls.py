@@ -36,5 +36,6 @@ urlpatterns = patterns('',
     url(r'^old/(?P<url>(?:tickets?/|topics?/|)(?:\d+/|new/)?)$', RedirectView.as_view(url='/%(url)s', permanent=True)),
     url(r'^js/topics\.js$', 'tracker.views.topics_js', name='topics_js'),
     url(r'^admin/users/$', 'tracker.views.admin_user_list', name='admin_user_list'),
+    url(r'^export/$', 'tracker.views.export', name='export'),
     url(r'^import/$', 'tracker.views.importcsv', name='importcsv'),
 )
