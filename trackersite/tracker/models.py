@@ -148,6 +148,19 @@ class Ticket(CachedModel):
     
     def _note_comment(self, **kwargs):
         self.save()
+
+    @staticmethod
+    def get_tickets_with_state(state):
+        tickets = Ticket.objects.all()
+        result = []
+        for ticket in tickets:
+            if state != 'custom':
+                if ticket.state_str() == state:
+                    result.append(ticket)
+            else:
+                if ticket.custom_state != '':
+                    result.append(ticket)
+        return result
     
     def state_str(self):
         if self.custom_state:
