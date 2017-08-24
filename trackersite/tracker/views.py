@@ -980,4 +980,37 @@ def importcsv(request):
             return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
     else:
-        return render(request, 'tracker/import.html', {})
+        if 'examplefile' in request.GET:
+            giveexample = request.GET['examplefile']
+            if giveexample == 'ticket':
+                response = HttpResponseCsv(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
+                response.writerow([u'23. 4. 2010', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
+                return response
+            elif giveexample == 'topic':
+                response = HttpResponseCsv(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
+                response.writerow([u'Jméno tématu', u'Název grantu', u'True/False', u'True/False', u'True/False', u'True/False', u'Popis tématu', u'Popis formuláře tématu'])
+                return response
+            elif giveexample == 'expense':
+                fields = ['ticket_id', 'description', 'amount', 'wage']
+                if request.user.is_staff:
+                    fields.append('accounting_info')
+                    fields.append('paid')
+                response = HttpResponseCsv(fields)
+                row = [u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False']
+                if request.user.is_staff:
+                    row.append(u'Účetní údaje')
+                    row.append(u'True/False')
+                response.writerow(row)
+                return response
+            elif giveexample == 'preexpense':
+                response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
+                response.writerow([u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False'])
+                return response
+            elif giveexample == 'user':
+                response = HttpResponseCsv(['username', 'password', 'first_name', 'last_name', 'is_superuser', 'is_staff', 'is_active', 'email'])
+                response.writerow([u'Uživatelské jméno', u'Heslo', u'KřestníJméno', u'Příjmení', u'True/False', u'True/False', u'True/False', u'emailova@adresa.cz'])
+                return response
+            else:
+                return HttpResponseBadRequest("You can't want example file of invalid object")
+        else:
+            return render(request, 'tracker/import.html', {})
