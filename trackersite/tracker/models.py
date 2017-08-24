@@ -563,6 +563,16 @@ class TrackerProfile(models.Model):
     
     def accepted_expeditures(self):
         return sum([t.accepted_expeditures() for t in self.user.ticket_set.filter(rating_percentage__gt=0)])
+
+    def paid_expeditures(self):
+        tickets = self.user.ticket_set.all()
+        res = 0
+        for ticket in tickets:
+            res += sum(e.amount for e in Expediture.objects.filter(ticket_id=ticket.id, paid=True))
+        return res
+    
+    def count_ticket_created(self):
+        return len(self.user.ticket_set.all())
     
     def transactions(self):
         return Transaction.objects.filter(other=self.user).aggregate(count=models.Count('id'), amount=models.Sum('amount'))

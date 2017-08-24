@@ -237,7 +237,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-larger" min="0" class="form-control">
+	    <input type="number" name="topics-paymentstate-larger" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -245,7 +245,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-smaller" min="0" class="form-control">
+	    <input type="number" name="topics-paymentstate-smaller" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -258,17 +258,12 @@
 	    </div>
 	</div>
 	<div class="col collapse container" id="users">
-	    {% for user in users %}
-	    <input id="tickets-user-{{ user.id }}" type="checkbox" name="ticket-user-{{ user.id }}" value="{{ user.id }}">
-	    <label for="tickets-user-{{ user.id }}">{{ user.username }}</label>
-	    <br>
-	    {% endfor %}
 	    <label class="control-label">{% trans "Number of tickets created" %}</label>
 	    <div class="row">
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-larger" min="0" class="form-control">
+	    <input type="number" name="users-created-larger" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -276,7 +271,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-smaller" min="0" class="form-control">
+	    <input type="number" name="users-created-smaller" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -287,7 +282,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-larger" min="0" class="form-control">
+	    <input type="number" name="users-accepted-larger" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -295,7 +290,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-smaller" min="0" class="form-control">
+	    <input type="number" name="users-accepted-smaller" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -306,7 +301,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-larger" min="0" class="form-control">
+	    <input type="number" name="users-paid-larger" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -314,7 +309,7 @@
 	    <div class="col-xs-6">
  	    <div class="input-group">
 	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
-	    <input type="number" value="topics-paymentstate-smaller" min="0" class="form-control">
+	    <input type="number" name="users-paid-smaller" min="0" class="form-control">
 	    <span class="input-group-btn">
 	    </span>
 	    </div>
@@ -323,17 +318,17 @@
 	    <div class="row container">
 		<div class="col">
 	    	    <div class="radio">
-	    		<label><input type="radio" name="permision" value="normal">{% trans "normal" %}</label>
+	    		<label><input type="radio" name="user-permision" value="normal">{% trans "normal" %}</label>
 	     	    </div>
 		</div>
 		<div class="col">
 	    	    <div class="radio">
-	    		<label><input type="radio" name="permision" value="staff">{% trans "staff" %}</label>
+	    		<label><input type="radio" name="user-permision" value="staff">{% trans "staff" %}</label>
 	     	    </div>
 		</div>
 		<div class="col">
 	    	    <div class="radio">
-	    		<label><input type="radio" name="permision" value="superuser">{% trans "superuser" %}</label>
+	    		<label><input type="radio" name="user-permision" value="superuser">{% trans "superuser" %}</label>
 	     	    </div>
 		</div>
 	    </div>
