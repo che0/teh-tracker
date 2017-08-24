@@ -858,7 +858,7 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-                    line = lineraw.split(',')
+                    line = lineraw.split(';')
                     if not header:
                         header = line
                         continue
@@ -901,7 +901,7 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-                    line = lineraw.split(',')
+                    line = lineraw.split(';')
                     if not header:
                         header = line
                         continue
@@ -915,7 +915,7 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-                    line = lineraw.split(',')
+                    line = lineraw.split(';')
                     if not header:
                         header = line
                         continue
@@ -938,7 +938,7 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-                    line = lineraw.split(',')
+                    line = lineraw.split(';')
                     if not header:
                         header = line
                         continue
@@ -957,7 +957,7 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
             for lineraw in lines:
-                line = lineraw.split(',')
+                line = lineraw.split(';')
                 if not header:
                     header = line
                     continue
