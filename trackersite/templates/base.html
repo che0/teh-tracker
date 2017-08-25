@@ -65,11 +65,11 @@ input[type=checkbox] {
     <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% else %} class="alert alert-info" {% endif %}>{{ message }}</div>
     {% endfor %}
 </div>
-<script>
-$('.tristate').tristate()
-</script>
 {% endif %}
 <div class="container">
 {% block content %}{% endblock %}
 </div>
+<script>
+$('.tristate').tristate()
+</script>
 {% endblock body %}
