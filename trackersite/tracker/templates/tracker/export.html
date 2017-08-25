@@ -252,6 +252,7 @@
 	    </div>
 	    </div>
 	</div>
+	{% if request.user.is_staff %}
 	<div class="col">
 	   <div class="radio">
 	           <label><input type="radio" name="type" value="user" data-toggle="collapse" data-target="#users">{% trans "Users" %}</label>
@@ -333,6 +334,7 @@
 		</div>
 	    </div>
 	</div>
+	{% endif %}
 	<div class="col">
 	    <br>
 	    <input class="form-control" type="submit">
