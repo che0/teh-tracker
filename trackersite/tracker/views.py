@@ -744,6 +744,7 @@ def export(request):
                 tickets = tmp
                 tmp = []
             response = HttpResponseCsv(['id', 'created', 'updated', 'event_date', 'event_url', 'summary', 'requested_by', 'grant', 'topic', 'state', 'deposit', 'description', 'mandatory_report'])
+            response['Content-Disposition'] = 'attachment; filename="exported-tickets.csv"'
             for ticket in tickets:
                 response.writerow([ticket.id, ticket.created, ticket.updated, ticket.event_date, ticket.event_url, ticket.summary, ticket.requested_by(), ticket.topic.grant.full_name, ticket.topic.name, ticket.state_str(), ticket.deposit, ticket.description, ticket.mandatory_report])
             return response
@@ -764,6 +765,7 @@ def export(request):
             else:
                 preexpeditures = Preexpediture.objects.filter(wage=wage)
             response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
+            response['Content-Disposition'] = 'attachment; filename="exported-preexpeditures.csv"'
             for preexpediture in preexpeditures:
                 response.writerow([preexpediture.ticket_id, preexpediture.description, preexpediture.amount, preexpediture.wage])
             return response
@@ -779,6 +781,7 @@ def export(request):
             else:
                 expeditures = Expediture.objects.filter(wage=wage, paid=paid)
             response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage', 'paid'])
+            response['Content-Disposition'] = 'attachment; filename="exported-expeditures.csv"'
             for expediture in expeditures:
                 response.writerow([expediture.ticket_id, expediture.description, expediture.amount, expediture.wage, expediture.paid])
             return response
@@ -826,6 +829,7 @@ def export(request):
                     topics = tmp
                     del(tmp)
             response = HttpResponseCsv(['name', 'grant', 'open_for_new_tickets', 'media', 'expenses', 'preexpenses', 'description', 'form_description', 'admins'])
+            response['Content-Disposition'] = 'attachment; filename="exported-topics.csv"'
             for topic in topics:
                 names = []
                 for ad in topic.admin.all():
@@ -897,6 +901,7 @@ def export(request):
                         del(tmp)
             
                     response = HttpResponseCsv(['id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'created_tickets', 'accepted_expeditures', 'paid_expeditures'])
+                    response['Content-Disposition'] = 'attachment; filename="exported-users.csv"'
                     for user in users:
                         response.writerow([user.user.id, user.user.username, user.user.first_name, user.user.last_name, user.user.email, user.user.is_active, user.user.is_staff, user.user.is_superuser, user.user.last_login, user.user.date_joined, user.count_ticket_created(), user.accepted_expeditures(), user.paid_expeditures()])
                     return response
@@ -1051,6 +1056,7 @@ def importcsv(request):
             giveexample = request.GET['examplefile']
             if giveexample == 'ticket':
                 response = HttpResponseCsv(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
+                response['Content-Disposition'] = 'attachment; filename="example-ticket.csv"'
                 response.writerow([u'23. 4. 2010', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
                 return response
             elif giveexample == 'topic':
@@ -1063,6 +1069,7 @@ def importcsv(request):
                     fields.append('accounting_info')
                     fields.append('paid')
                 response = HttpResponseCsv(fields)
+                response['Content-Disposition'] = 'attachment; filename="example-expense.csv"'
                 row = [u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False']
                 if request.user.is_staff:
                     row.append(u'Účetní údaje')
@@ -1071,10 +1078,12 @@ def importcsv(request):
                 return response
             elif giveexample == 'preexpense':
                 response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
+                response['Content-Disposition'] = 'attachment; filename="example-preexpense.csv"'
                 response.writerow([u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False'])
                 return response
             elif giveexample == 'user':
                 response = HttpResponseCsv(['username', 'password', 'first_name', 'last_name', 'is_superuser', 'is_staff', 'is_active', 'email'])
+                response['Content-Disposition'] = 'attachment; filename="example-user.csv"'
                 response.writerow([u'Uživatelské jméno', u'Heslo', u'KřestníJméno', u'Příjmení', u'True/False', u'True/False', u'True/False', u'emailova@adresa.cz'])
                 return response
             else:
