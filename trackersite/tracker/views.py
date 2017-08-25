@@ -720,7 +720,7 @@ def export(request):
                 tickets = tmp
                 tmp = []
             larger = request.POST['expeditures-larger']
-            smaller = request.POST['preexpeditures-smaller']
+            smaller = request.POST['expeditures-smaller']
             if larger != '' and smaller != '':
                 larger = int(larger)
                 smaller = int(smaller)
