@@ -678,13 +678,13 @@ def export(request):
             states = ['draft', 'wfpreapproval', 'wfsubmiting', 'wfapproval', 'wfdocssub', 'wffill', 'complete', 'archived', 'closed', 'custom']
             tickets = []
             for state in states:
-                if state in request.POST:
+                if state in list(request.POST):
                     tickets += Ticket.get_tickets_with_state(request.POST[state])
             if len(tickets) == 0:
                 tickets = list(Ticket.objects.all())
             tickets = list(set(tickets))
             topics = []
-            for item in request.POST:
+            for item in list(request.POST):
                 if item.startswith('ticket-topic-'):
                     topics.append(Topic.objects.get(id=long(request.POST[item])))
             tmp = []
@@ -696,7 +696,7 @@ def export(request):
                 tickets = tmp
                 tmp = []
             users = []
-            for item in request.POST:
+            for item in list(request.POST):
                 if item.startswith('ticket-user-'):
                     users.append(User.objects.get(id=long(request.POST[item])))
             if len(users) != 0:
@@ -787,7 +787,7 @@ def export(request):
             return response
         elif typ == 'topic':
             users = []
-            for item in request.POST:
+            for item in list(request.POST):
                 if item.startswith('topics-user-'):
                     users.append(User.objects.get(id=long(request.POST[item])))
             topics = Topic.objects.all()
