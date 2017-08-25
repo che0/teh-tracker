@@ -885,15 +885,15 @@ def export(request):
                         tmp = []
                         if priv == 'normal':
                             for user in users:
-                                if not user.is_staff and not user.is_superuser:
+                                if not user.user.is_staff and not user.user.is_superuser:
                                     tmp.append(user)
                         elif priv == 'staff':
                             for user in users:
-                                if user.is_staff:
+                                if user.user.is_staff:
                                     tmp.append(user)
                         elif priv == 'superuser':
                             for user in users:
-                                if user.is_superuser:
+                                if user.user.is_superuser:
                                     tmp.append(user)
                         else:
                             return HttpResponseBadRequest('You must fill the form validly')
