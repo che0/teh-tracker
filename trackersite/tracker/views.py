@@ -576,7 +576,7 @@ def user_list(request):
         'ticket_count': Ticket.objects.count(),
         'media': MediaInfo.objects.aggregate(objects=models.Count('id'), media=models.Sum('count')),
         'accepted_expeditures': sum([t.accepted_expeditures() for t in Ticket.objects.filter(rating_percentage__gt=0)]),
-        'transactions': Transaction.objects.aggregate(amount=models.Sum('amount'))['amount'],
+        'transactions': Expediture.objects.filter(paid=True).aggregate(amount=models.Sum('amount'))['amount'],
     }
     
     userless = Ticket.objects.filter(requested_user=None)
