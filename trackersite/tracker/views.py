@@ -799,6 +799,14 @@ def export(request):
                         tmp.append(ticket)
                 tickets = tmp
                 tmp = []
+            mandatory_report = 'ticket-report-mandatory' in request.POST
+            if mandatory_report:
+                tmp = []
+                for ticket in tickets:
+                    if ticket.mandatory_report:
+                        tmp.append(ticket)
+                tickets = tmp
+                del(tmp)
             response = HttpResponseCsv(['id', 'created', 'updated', 'event_date', 'event_url', 'summary', 'requested_by', 'grant', 'topic', 'state', 'deposit', 'description', 'mandatory_report', 'accepted_expeditures', 'preexpeditures', 'expeditures'])
             response['Content-Disposition'] = 'attachment; filename="exported-tickets.csv"'
             for ticket in tickets:
