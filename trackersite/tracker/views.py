@@ -799,10 +799,10 @@ def export(request):
                         tmp.append(ticket)
                 tickets = tmp
                 tmp = []
-            response = HttpResponseCsv(['id', 'created', 'updated', 'event_date', 'event_url', 'summary', 'requested_by', 'grant', 'topic', 'state', 'deposit', 'description', 'mandatory_report'])
+            response = HttpResponseCsv(['id', 'created', 'updated', 'event_date', 'event_url', 'summary', 'requested_by', 'grant', 'topic', 'state', 'deposit', 'description', 'mandatory_report', 'accepted_expeditures', 'preexpeditures', 'expeditures'])
             response['Content-Disposition'] = 'attachment; filename="exported-tickets.csv"'
             for ticket in tickets:
-                response.writerow([ticket.id, ticket.created, ticket.updated, ticket.event_date, ticket.event_url, ticket.summary, ticket.requested_by(), ticket.topic.grant.full_name, ticket.topic.name, ticket.state_str(), ticket.deposit, ticket.description, ticket.mandatory_report])
+                response.writerow([ticket.id, ticket.created, ticket.updated, ticket.event_date, ticket.event_url, ticket.summary, ticket.requested_by(), ticket.topic.grant.full_name, ticket.topic.name, ticket.state_str(), ticket.deposit, ticket.description, ticket.mandatory_report, ticket.accepted_expeditures(), ticket.preexpeditures()['amount'], ticket.expeditures()['amount']])
             return response
         elif typ == 'grant':
             response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
