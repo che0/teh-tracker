@@ -905,9 +905,9 @@ def export(request):
                     for user in users:
                         response.writerow([user.user.id, user.user.username, user.user.first_name, user.user.last_name, user.user.email, user.user.is_active, user.user.is_staff, user.user.is_superuser, user.user.last_login, user.user.date_joined, user.count_ticket_created(), user.accepted_expeditures(), user.paid_expeditures(), user.bank_account, user.other_contact, user.bank_account])
                     return response
-            return HttpResponseForbidden('You must be staffer in order to export users')
+            return HttpResponseForbidden(_('You must be staffer in order to export users'))
 
-        return HttpResponseBadRequest('You must fill the form validly')
+        return HttpResponseBadRequest(_('You must fill the form validly'))
     else:
         return render(
             request,
