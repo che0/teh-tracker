@@ -16,31 +16,31 @@
         <div class="col collapse container" id="tickets">
 	    <br>
 	    <p style="font-weight: bold;">{% trans "state" %}:</p>
-            <input id="draft" type="checkbox" name="draft" value="draft">
+            <input id="draft" type="checkbox" name="draft" value="{%trans "draft" %}">
 	    <label for="draft">{% trans "draft" %}</label>
 	    <br>
-	    <input id="wfpreapproval" type="checkbox" name="wfpreapproval" value="wating for preapproval">
+	    <input id="wfpreapproval" type="checkbox" name="wfpreapproval" value="{% trans "waiting for preapproval" %}">
 	    <label for="wfpreapproval">{% trans "waiting for preapproval" %}</label>
 	    <br>
-	    <input id="wfsubmiting" type="checkbox" name="wfsubmiting" value="wating for submiting">
+	    <input id="wfsubmiting" type="checkbox" name="wfsubmiting" value="{% trans "waiting for submitting" %}">
 	    <label for="wfsubmiting">{% trans "waiting for submitting "%}</label>
 	    <br>
-	    <input id="wfaprroval" type="checkbox" name="wfapproval" value="wating for approval">
+	    <input id="wfaprroval" type="checkbox" name="wfapproval" value="{% trans "waiting for approval" %}">
 	    <label for="wfapproval">{% trans "waiting for approval "%}</label>
 	    <br>
-	    <input id="wfdocssub" type="checkbox" name="wfdocssub" value="wating for document submission">
+	    <input id="wfdocssub" type="checkbox" name="wfdocssub" value="{% trans "waiting for document submission" %}">
 	    <label for"wfdocssub">{% trans "waiting for document submission" %}</label>
 	    <br>
-	    <input id="wffill" type="checkbox" name="wffill" value="wating for filing of documents">
+	    <input id="wffill" type="checkbox" name="wffill" value="{% trans "waiting for filing of documents" %}">
 	    <label for="wffill">{% trans "waiting for filing of documents "%}</label>
 	    <br>
-	    <input id="complete" type="checkbox" name="complete" value="complete">
+	    <input id="complete" type="checkbox" name="complete" value="{% trans "complete" %}">
 	    <label for="complete">{% trans "complete" %}</label>
 	    <br>
-	    <input id="archived" type="checkbox" name="archived" value="archived">
+	    <input id="archived" type="checkbox" name="archived" value="{% trans "archived" %}">
 	    <label for="archived">{% trans "archived" %}</label>
 	    <br>
-	    <input id="closed" type="checkbox" name="closed" value="closed">
+	    <input id="closed" type="checkbox" name="closed" value="{% trans "closed" %}">
 	    <label for="closed">{% trans "closed" %}</label>
 	    <br>
 	    <input id="custom" type="checkbox" name="custom" value="custom">
