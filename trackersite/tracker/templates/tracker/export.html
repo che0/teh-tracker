@@ -58,6 +58,10 @@
 	    <label for="tickets-user-{{ user.id }}">{{ user.username }}</label>
 	    <br>
 	    {% endfor %}
+	    <p style="font-weight: bold;">{% trans "Is report mandatory?" %}</p>
+            <input id="ticket-report-mandatory" type="checkbox" name="ticket-report-mandatory" value="yes">
+	    <label for="ticket-report-mandatory">{% trans "Is report mandatory?" %}</label>
+	    <br>
 	    <br>
 	    <label class="control-label">{% trans "Preexpeditures" %}</label>
 	    <div class="row">
