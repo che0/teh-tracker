@@ -719,6 +719,26 @@ def export(request):
                         tmp.append(ticket)
                 tickets = tmp
                 tmp = []
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                for ticket in tickets:
+                    real = ticket.preexpeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real >= larger:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.preexpeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
             larger = request.POST['expeditures-larger']
             smaller = request.POST['expeditures-smaller']
             if larger != '' and smaller != '':
@@ -732,6 +752,26 @@ def export(request):
                         tmp.append(ticket)
                 tickets = tmp
                 tmp = []
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                for ticket in tickets:
+                    real = ticket.expeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real >= larger:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.expeditures()['amount']
+                    if real == None:
+                        real = 0
+                    if real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
             larger = request.POST['acceptedexpeditures-larger']
             smaller = request.POST['acceptedexpeditures-smaller']
             if larger != '' and smaller != '':
@@ -740,6 +780,22 @@ def export(request):
                 for ticket in tickets:
                     real = ticket.accepted_expeditures()
                     if real >= larger and real <= smaller:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                for ticket in tickets:
+                    real = ticket.accepted_expeditures()
+                    if real >= larger:
+                        tmp.append(ticket)
+                tickets = tmp
+                tmp = []
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                for ticket in tickets:
+                    real = ticket.accepted_expeditures()
+                    if real <= smaller:
                         tmp.append(ticket)
                 tickets = tmp
                 tmp = []
@@ -762,6 +818,12 @@ def export(request):
                 larger = int(larger)
                 smaller = int(smaller)
                 preexpeditures = Preexpediture.objects.filter(amount__gte=larger, amount__lte=smaller, wage=wage)
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                preexpeditures = Preexpediture.objects.filter(amount__gte=larger, wage=wage)
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                preexpeditures = Preexpediture.objects.filter(amount__lte=smaller, wage=wage)
             else:
                 preexpeditures = Preexpediture.objects.filter(wage=wage)
             response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
@@ -778,6 +840,12 @@ def export(request):
                 larger = int(larger)
                 smaller = int(smaller)
                 expeditures = Expediture.objects.filter(amount__gte=larger, amount__lte=smaller, wage=wage, paid=paid)
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                expeditures = Expediture.objects.filter(amount__gte=larger, wage=wage, paid=paid)
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                expeditures = Expediture.objects.filter(amount__lte=smaller, wage=wage, paid=paid)
             else:
                 expeditures = Expediture.objects.filter(wage=wage, paid=paid)
             response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage', 'paid'])
@@ -810,6 +878,22 @@ def export(request):
                         tmp.append(topic)
                 topics = tmp
                 tmp = []
+            elif larger != '' and smaller == '':
+                larger = int(larger)
+                tmp = []
+                for topic in topics:
+                    if topic.ticket_set.count >= larger:
+                        tmp.append(topic)
+                topics = tmp
+                tmp = []
+            elif larger == '' and smaller != '':
+                smaller = int(smaller)
+                tmp = []
+                for topic in topics:
+                    if topic.ticket_set.count <= smaller:
+                        tmp.append(topic)
+                topics = tmp
+                tmp = []
             if request.POST['topics-paymentstate'] != 'default':
                 paymentstatus = request.POST['topics-paymentstate']
                 larger = request.POST['topics-paymentstate-larger']
@@ -825,6 +909,32 @@ def export(request):
                         else:
                             number = 0
                         if number >= larger and number <= smaller:
+                            tmp.append(topic)
+                    topics = tmp
+                    del(tmp)
+                elif larger != '' and smaller == '':
+                    larger = int(larger)
+                    tmp = []
+                    for topic in topics:
+                        number = -1
+                        if paymentstatus in topic.tickets_per_payment_status():
+                            number = topic.tickets_per_payment_status()[paymentstatus]
+                        else:
+                            number = 0
+                        if number >= larger:
+                            tmp.append(topic)
+                    topics = tmp
+                    del(tmp)
+                elif larger == '' and smaller != '':
+                    smaller = int(smaller)
+                    tmp = []
+                    for topic in topics:
+                        number = -1
+                        if paymentstatus in topic.tickets_per_payment_status():
+                            number = topic.tickets_per_payment_status()[paymentstatus]
+                        else:
+                            number = 0
+                        if number <= smaller:
                             tmp.append(topic)
                     topics = tmp
                     del(tmp)
@@ -853,7 +963,24 @@ def export(request):
                                 tmp.append(user)
                         users = tmp
                         del(tmp)
-                    
+                    elif larger != '' and smaller == '':
+                        larger = int(larger)
+                        tmp = []
+                        for user in users:
+                            real = user.count_ticket_created()
+                            if real >= larger:
+                                tmp.append(user)
+                        users = tmp
+                        del(tmp)
+                    elif larger == '' and smaller != '':
+                        smaller = int(smaller)
+                        tmp = []
+                        for user in users:
+                            real = user.count_ticket_created()
+                            if real <= smaller:
+                                tmp.append(user)
+                        users = tmp
+                        del(tmp)
                     larger = request.POST['users-accepted-larger']
                     smaller = request.POST['users-accepted-smaller']
                     if larger != '' and smaller != '':
@@ -863,6 +990,24 @@ def export(request):
                         for user in users:
                             real = user.accepted_expeditures()
                             if real >= larger and real <= smaller:
+                                tmp.append(user)
+                        users = tmp
+                        del(tmp)
+                    elif larger != '' and smaller == '':
+                        larger = int(larger)
+                        tmp = []
+                        for user in users:
+                            real = user.accepted_expeditures()
+                            if real >= larger:
+                                tmp.append(user)
+                        users = tmp
+                        del(tmp)
+                    elif larger == '' and smaller != '':
+                        smaller = int(smaller)
+                        tmp = []
+                        for user in users:
+                            real = user.accepted_expeditures()
+                            if real <= smaller:
                                 tmp.append(user)
                         users = tmp
                         del(tmp)
@@ -879,6 +1024,24 @@ def export(request):
                                 tmp.append(user)
                         users = tmp
                         del(tmp)
+                    elif larger != '' and smaller == '':
+                        larger = int(larger)
+                        tmp = []
+                        for user in users:
+                            real = user.paid_expeditures()
+                            if real >= larger:
+                                tmp.append(user)
+                        users = tmp
+                        del(tmp)
+                    elif larger == '' and smaller != '':
+                        smaller = int(smaller)
+                        tmp = []
+                        for user in users:
+                            real = user.paid_expeditures()
+                            if real <= smaller:
+                                tmp.append(user)
+                            users = tmp
+                            del(tmp)
         
                     if 'user-permision' in request.POST:
                         priv = request.POST['user-permision']
