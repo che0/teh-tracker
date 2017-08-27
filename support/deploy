@@ -1,6 +1,6 @@
 #!/bin/bash
-
-cd /var/www/tracker2.wikimedia.cz \
+scriptdir="`dirname \"$0\"`"
+cd $scriptdir/../ \
 	&& git fetch origin \
 	&& git checkout origin/master \
 	&& source deploy/pyenv/bin/activate \
