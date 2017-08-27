@@ -62,7 +62,7 @@ input[type=checkbox] {
 {% if messages %}
 <div class="container">
     {% for message in messages %}
-    <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% else %} class="alert alert-info" {% endif %}>{{ message }}</div>
+    <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissable"{% else %} class="alert alert-info alert-dismissable" {% endif %}><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{ message }}</div>
     {% endfor %}
 </div>
 {% endif %}
