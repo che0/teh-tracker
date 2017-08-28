@@ -8,12 +8,18 @@
 <h1>{% trans "Confirm" %}: {{ticketack.display}}</h1>
 
 <form method="POST" action="">
+<div class="row">
+<div class="col-xs-9">
 {% for field in form %}
 {{ field.error }}
 {{ field.label_tag }} {{ field|add_class:"form-control" }}
 {% endfor %}
-<br />
+</div>
+<div class="col-xs-3" style="margin-top:27px">
 <input class="form-control" type="submit" value="{% trans "Add confirmation" %}">
+</div>
+</div>
+</form>
 <br />
 <a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
 {% csrf_token %}</form></p>
