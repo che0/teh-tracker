@@ -1236,7 +1236,7 @@ def importcsv(request):
                 return response
             elif giveexample == 'grant':
 	    	response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
-		response.writerow(['Plné jméno', 'Krátké jméno', 'Slug', 'Popis'])
+		response.writerow([u'Plné jméno', u'Krátké jméno', u'Slug', u'Popis'])
 		return response
 	    elif giveexample == 'expense':
                 fields = ['ticket_id', 'description', 'amount', 'wage']
