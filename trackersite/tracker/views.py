@@ -1232,10 +1232,12 @@ def importcsv(request):
                 return response
             elif giveexample == 'topic':
                 response = HttpResponseCsv(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
+                response['Content-Disposition'] = 'attachment; filename="example-topic.csv"'
                 response.writerow([u'Jméno tématu', u'Název grantu', u'True/False', u'True/False', u'True/False', u'True/False', u'Popis tématu', u'Popis formuláře tématu'])
                 return response
             elif giveexample == 'grant':
 	    	response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
+                response['Content-Disposition'] = 'attachment; filename="example-grant.csv"'
 		response.writerow([u'Plné jméno', u'Krátké jméno', u'Slug', u'Popis'])
 		return response
 	    elif giveexample == 'expense':
