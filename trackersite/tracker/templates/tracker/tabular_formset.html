@@ -1,5 +1,28 @@
 {% load i18n widget_tweaks %}
 <div id="{{ formset.prefix }}-group">
+<script type="text/javascript">
+function cloneRow() {
+  //event.preventDefault();
+  var table = $('*[id^="preexpediture"].dynamic-preexpediture');
+  console.log(table.rows);
+  for (var i = 0, row; row = table[i]; i++) {
+    var desc = row.cells[1].children[0].value;
+    var amount = row.cells[2].children[0].value;
+    var wage = row.cells[3].children[0].checked;
+    var tmp = document.getElementById('expediture');
+    tmp.children[i+1].children[0].children[0].click();
+    if (i != 0) {
+      var tt = i + 1
+      var exp_row = document.getElementById('expediture-' + tt);
+    } else {
+      var exp_row = document.getElementById('expediture-' + 1);
+    }
+    exp_row.cells[1].children[0].value = desc;
+    exp_row.cells[2].children[0].value = amount;
+    exp_row.cells[3].children[0].checked = wage;
+  }
+}
+</script>
 {{ formset.management_form }}
 <fieldset{% if not formset_title %} class="noframe"{% endif %}>
    {% if formset_title %}<h2>{{ formset_title }}</h2>{% endif %}
@@ -25,7 +48,7 @@
              {% endif %}
          {% endfor %}
      </tr></thead>
-     
+
      <tbody id="{{section}}">
      {% for inline_admin_form in formset %}
         {% if inline_admin_form.form.non_field_errors %}
@@ -37,7 +60,7 @@
             </td>
             {% if use_inline_intro %}<td>{{inline_admin_form.instance.inline_intro}}</td>{% endif %}
             {% for field in inline_admin_form.visible_fields %}
-              <td class="field_{{ field.name }}{% if field.field.required %} required{% endif %}">             
+              <td class="field_{{ field.name }}{% if field.field.required %} required{% endif %}">
                   {% if field.name == "DELETE" %}<span class="delete">{% trans "delete" %}</span>{% else %}{% trans field.name %}{% endif %}
                   {{ field.errors.as_ul }}
                   {{ field|add_class:"form-control" }}
