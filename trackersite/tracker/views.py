@@ -1234,7 +1234,11 @@ def importcsv(request):
                 response = HttpResponseCsv(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
                 response.writerow([u'Jméno tématu', u'Název grantu', u'True/False', u'True/False', u'True/False', u'True/False', u'Popis tématu', u'Popis formuláře tématu'])
                 return response
-            elif giveexample == 'expense':
+            elif giveexample == 'grant':
+	    	response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
+		response.writerow(['Plné jméno', 'Krátké jméno', 'Slug', 'Popis'])
+		return response
+	    elif giveexample == 'expense':
                 fields = ['ticket_id', 'description', 'amount', 'wage']
                 if request.user.is_staff:
                     fields.append('accounting_info')
