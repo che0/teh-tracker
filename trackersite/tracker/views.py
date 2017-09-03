@@ -505,7 +505,7 @@ class HttpResponseCsv(HttpResponse):
         self.writerow(fields)
 
     def writerow(self, row):
-        self.write(u';'.join(map(lambda s: unicode(s).replace(';', ',').replace('\n', ' '), row)))
+        self.write(u';'.join(map(lambda s: unicode('"' + str(s) + '"'), row)))
         self.write(u'\r\n')
 
 def _get_topic_content_acks_per_user():
