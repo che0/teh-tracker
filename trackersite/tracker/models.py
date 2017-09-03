@@ -396,10 +396,8 @@ class Topic(CachedModel):
     @cached_getter
     def tickets_per_payment_status(self):
         out = {}
-        for row in PAYMENT_STATUS_CHOICES:
-            out[row[0]] = 0
-        for ticket in self.ticket_set.all():
-            out[ticket.payment_status] += 1
+        for s in self.ticket_set.values('payment_status').annotate(models.Count('payment_status')):
+            out[s['payment_status']] = s['payment_status__count']
         return out
     
     @cached_getter
