@@ -20,7 +20,7 @@ class CustomCommentForm(CommentSecurityForm):
     comment = forms.CharField(label=_('Comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH)
     captcha = ReCaptchaField(widget=ReCaptchaWidget())
 
-    def get_comment_object(self):
+    def get_comment_object(self, site_id=None):
         """
         Return a new (unsaved) comment object based on the information in this
         form. Assumes that the form is already validated and will throw a
@@ -33,7 +33,7 @@ class CustomCommentForm(CommentSecurityForm):
             raise ValueError("get_comment_object may only be called on valid forms")
 
         CommentModel = self.get_comment_model()
-        new = CommentModel(**self.get_comment_create_data())
+        new = CommentModel(**self.get_comment_create_data(site_id=site_id))
         new = self.check_for_duplicate_comment(new)
 
         return new
@@ -46,7 +46,7 @@ class CustomCommentForm(CommentSecurityForm):
         """
         return Comment
 
-    def get_comment_create_data(self):
+    def get_comment_create_data(self, site_id=None):
         """
         Returns the dict of data to be used to create a comment. Subclasses in
         custom comment apps that override get_comment_model can override this
@@ -58,7 +58,7 @@ class CustomCommentForm(CommentSecurityForm):
             user_name    = self.cleaned_data["name"],
             comment      = self.cleaned_data["comment"],
             submit_date  = datetime.datetime.now(),
-            site_id      = settings.SITE_ID,
+            site_id      = site_id or settings.SITE_ID,
             is_public    = True,
             is_removed   = False,
         )
