@@ -526,11 +526,11 @@ msgstr "Média tiketu"
 
 #: tracker/models.py:475
 msgid "Ticket this expediture belongs to"
-msgstr "Tiket ke kterému tento výdaj patří"
+msgstr "Tiket ke kterému tento reálný výdaj patří"
 
 #: tracker/models.py:476
 msgid "Description of this expediture"
-msgstr "Popis tohoto výdaje"
+msgstr "Popis tohoto reálného výdaje"
 
 #: tracker/models.py:477 tracker/models.py:499 tracker/models.py:593
 msgid "amount"
@@ -559,11 +559,11 @@ msgstr "%(description)s (%(amount)s %(currency)s)"
 
 #: tracker/models.py:492
 msgid "Ticket expediture"
-msgstr "Výdaj tiketu"
+msgstr "Reálný výdaj tiketu"
 
 #: tracker/models.py:493
 msgid "Ticket expeditures"
-msgstr "Výdaje tiketu"
+msgstr "Reálné výdaje tiketu"
 
 #: tracker/models.py:497
 msgid "Ticket this preexpediture belogns to"
@@ -960,7 +960,7 @@ msgstr "Menší nebo rovno"
 #: tracker/templates/tracker/ticket_table.html:70
 #: tracker/templates/tracker/ticket_table.html:81
 msgid "Expeditures"
-msgstr "Výdaje"
+msgstr "Reálné výdaje"
 
 #: tracker/templates/tracker/export.html:102
 #: tracker/templates/tracker/ticket_common_detail.html:56
@@ -968,7 +968,7 @@ msgstr "Výdaje"
 #: tracker/templates/tracker/ticket_table.html:83
 #: tracker/templates/tracker/user_list.html:11
 msgid "Accepted expeditures"
-msgstr "Schválené výdaje"
+msgstr "Schválené reálné výdaje"
 
 #: tracker/templates/tracker/export.html:129
 msgid "You can't filter grants by any fields"
@@ -1001,11 +1001,11 @@ msgstr "Počet vytvořených ticketů"
 
 #: tracker/templates/tracker/export.html:280
 msgid "Amount of accepted expeditures"
-msgstr "Suma schválených výdajů"
+msgstr "Suma schválených reálných výdajů"
 
 #: tracker/templates/tracker/export.html:299
 msgid "Amount of paid expeditures"
-msgstr "Suma placených výdajů"
+msgstr "Suma placených reálných výdajů"
 
 #: tracker/templates/tracker/export.html:321
 msgid "normal"
@@ -1106,7 +1106,7 @@ msgstr "následující"
 
 #: tracker/templates/tracker/tabular_formset.html:6
 msgid "Copy to expeditures"
-msgstr "Zkopíruj do výdajů"
+msgstr "Zkopíruj do reálných výdajů"
 
 #: tracker/templates/tracker/tabular_formset.html:13
 #: tracker/templates/tracker/tabular_formset.html:41
@@ -1229,7 +1229,7 @@ msgstr "Proplaceno?"
 
 #: tracker/templates/tracker/ticket_common_detail.html:55
 msgid "Total expeditures"
-msgstr "Celkem výdaje"
+msgstr "Celkem reálné výdaje"
 
 #: tracker/templates/tracker/ticket_detail.html:16
 msgid "edit ticket"
@@ -1291,7 +1291,7 @@ msgstr "plánovaný výdaj"
 
 #: tracker/templates/tracker/ticket_form.html:19
 msgid "expediture"
-msgstr "výdaj"
+msgstr "reálný výdaj"
 
 #: tracker/templates/tracker/ticket_form.html:23
 msgid "submit"
@@ -1514,7 +1514,7 @@ msgstr "Celkem tento uživatel"
 
 #: tracker/templates/tracker/user_detail.html:26
 msgid "Accepted expeditures total"
-msgstr "Schválené výdaje celkem"
+msgstr "Schválené reálné výdaje celkem"
 
 #: tracker/templates/tracker/user_details_change.html:4
 #: tracker/templates/tracker/user_details_change.html:8
