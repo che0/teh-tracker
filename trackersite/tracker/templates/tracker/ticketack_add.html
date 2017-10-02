@@ -16,11 +16,12 @@
 {% endfor %}
 </div>
 <div class="col-xs-3" style="margin-top:27px">
+{% csrf_token %}
 <input class="form-control" type="submit" value="{% trans "Add confirmation" %}">
 </div>
 </div>
 </form>
 <br />
 <a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
-{% csrf_token %}</form></p>
+</form></p>
 {% endblock %}
