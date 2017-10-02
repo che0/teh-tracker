@@ -13,7 +13,7 @@
 {% if ticketack.comment %}<br>{% trans "Comment" %}: {{ticketack.comment}}{% endif %}</p>
 
 <form method="POST" action="">
-<input type="submit" value="{% trans "Remove confirmation" %}">
+<input type="submit" value="{% trans "Submit" %}">
 <a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
 {% csrf_token %}</form></p>
 {% endblock %}
