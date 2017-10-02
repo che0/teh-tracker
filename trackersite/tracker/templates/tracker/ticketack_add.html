@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n widget_tweaks %}
 
-{% block title %}{% trans "Confirm" %}: {{ticket.summary}}{% endblock %}
+{% block title %}{% trans "Add" %}: {{ticket.summary}}{% endblock %}
 
 {% block content %}
 <p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a> &gt; {% trans "confirmations" %} &gt;</p>
-<h1>{% trans "Confirm" %}: {{ticketack.display}}</h1>
+<h1>{% trans "Add" %}: {{ticketack.display}}</h1>
 
 <form method="POST" action="">
 <div class="row">

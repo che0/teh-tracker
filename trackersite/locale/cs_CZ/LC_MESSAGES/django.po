@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 21:18+0200\n"
+"POT-Creation-Date: 2017-10-02 21:33+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -766,6 +766,8 @@ msgid "%(name)s"
 msgstr "%(name)s"
 
 #: tracker/templates/tracker/admin_index_override.html:21
+#: tracker/templates/tracker/ticketack_add.html:4
+#: tracker/templates/tracker/ticketack_add.html:8
 msgid "Add"
 msgstr "Přidat"
 
@@ -1122,6 +1124,8 @@ msgid "Add another %(formset_item_name)s"
 msgstr "Přidat další %(formset_item_name)s"
 
 #: tracker/templates/tracker/tabular_formset.html:96
+#: tracker/templates/tracker/ticketack_confirm_delete.html:4
+#: tracker/templates/tracker/ticketack_confirm_delete.html:8
 msgid "Remove"
 msgstr "Odebrat"
 
@@ -1185,8 +1189,6 @@ msgid "remove"
 msgstr "odebrat"
 
 #: tracker/templates/tracker/ticket_common_detail.html:18
-#: tracker/templates/tracker/ticketack_add.html:4
-#: tracker/templates/tracker/ticketack_add.html:8
 msgid "Confirm"
 msgstr "Schválit"
 
@@ -1345,6 +1347,7 @@ msgid "confirmations"
 msgstr "schválení"
 
 #: tracker/templates/tracker/ticketack_add.html:20
+#: tracker/templates/tracker/ticketack_confirm_delete.html:16
 msgid "Submit"
 msgstr "Odeslat"
 
@@ -1352,15 +1355,6 @@ msgstr "Odeslat"
 #: tracker/templates/tracker/ticketack_confirm_delete.html:17
 msgid "back to ticket"
 msgstr "zpět na tiket"
-
-#: tracker/templates/tracker/ticketack_confirm_delete.html:4
-msgid "Edit confirmation"
-msgstr "Upravit schválení"
-
-#: tracker/templates/tracker/ticketack_confirm_delete.html:8
-#: tracker/templates/tracker/ticketack_confirm_delete.html:16
-msgid "Remove confirmation"
-msgstr "Zrušit schválení"
 
 #: tracker/templates/tracker/ticketack_confirm_delete.html:11
 msgid "Added"
@@ -1810,6 +1804,12 @@ msgstr ""
 #, python-format
 msgid "User %s created."
 msgstr "Vytvořen uživatel %s."
+
+#~ msgid "Edit confirmation"
+#~ msgstr "Upravit schválení"
+
+#~ msgid "Remove confirmation"
+#~ msgstr "Zrušit schválení"
 
 #~ msgid "Add confirmation"
 #~ msgstr "Přidat schválení"
