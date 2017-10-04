@@ -22,9 +22,11 @@
 {% block after_related_objects %}
 <script type="text/javascript">
 document.getElementById('id_supervisor_notes').onclick = function() {signSupervisor()};
-
 function signSupervisor() {
-	document.getElementById('id_supervisor_notes').value += "\n\nSem napište svou poznámku supervizora anebo tento text smažte --" + "{{user.get_username}}";
+	    var param = "\n\nSem napište svou poznámku supervizora anebo tento text smažte --" + "{{user.get_username}}";
+	        if(!(document.getElementById('id_supervisor_notes').value.indexOf(param) > -1)) {
+			      document.getElementById('id_supervisor_notes').value += param;
+			          }
 }
 </script>
 {% if user_can_edit_documents or original.document_set.count > 0 %}
