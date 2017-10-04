@@ -189,7 +189,7 @@ msgstr "datum akce"
 
 #: tracker/models.py:109
 msgid "Date of the event this ticket is about"
-msgstr "Datum akce které se týká tento tiket"
+msgstr "Datum akce, které se týká tento tiket"
 
 #: tracker/models.py:110 tracker/models.py:206
 #: tracker/templates/feeds/ticket_description.html:3
@@ -224,7 +224,7 @@ msgstr "téma"
 
 #: tracker/models.py:113
 msgid "Project topic this ticket belongs to"
-msgstr "Projektové téma do kterého tento tiket patří"
+msgstr "Projektové téma, do kterého tento tiket patří"
 
 #: tracker/models.py:114
 msgid "custom state"
@@ -271,7 +271,7 @@ msgid ""
 "Space for further notes. If you're entering a trip tell us where did you go "
 "and what you did there."
 msgstr ""
-"Místo pro další poznámky. Pokud zadáváte informace o cestě napište kam jste "
+"Místo pro další poznámky. Pokud zadáváte informace o cestě, napište kam jste "
 "jeli a co jste tam dělali."
 
 #: tracker/models.py:119
