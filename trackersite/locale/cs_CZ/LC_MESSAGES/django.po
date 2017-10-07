@@ -1247,7 +1247,7 @@ msgstr "upravit tiket"
 
 #: tracker/templates/tracker/ticket_detail.html:17
 msgid "copy preexpeditures to expeditures"
-msgstr "zkopíruj plánované výdaje do výdajů"
+msgstr "zkopírovat plánované výdaje do reálných"
 
 #: tracker/templates/tracker/ticket_detail.html:18
 msgid "edit in admin"
