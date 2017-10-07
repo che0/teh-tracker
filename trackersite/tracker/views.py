@@ -26,13 +26,13 @@ from users.models import UserWrapper
 class TicketListView(ListView):
     model = Ticket
     paginate_by = 50
-    
+
     def get(self, request, *args, **kwargs):
         if kwargs.get('page', None) == '1':
             return HttpResponseRedirect(reverse('ticket_list'))
         else:
             return super(TicketListView, self).get(request, *args, **kwargs)
-    
+
     def get_queryset(self):
         orderget = self.request.GET.get('order', 'sort_date')
         descasc = self.request.GET.get('descasc', 'desc')
@@ -44,7 +44,7 @@ class TicketListView(ListView):
 ticket_list = TicketListView.as_view()
 
 class CommentPostedCatcher(object):
-    """ 
+    """
     View mixin that catches 'c' GET argument from comment framework
     and turns in into a success message.
     """
@@ -56,7 +56,7 @@ class CommentPostedCatcher(object):
 
 class TicketDetailView(CommentPostedCatcher, DetailView):
     model = Ticket
-    
+
     def get_context_data(self, **kwargs):
         user = self.request.user
         ticket = self.object
@@ -75,18 +75,18 @@ class TicketAckAddForm(forms.Form):
 class TicketAckAddView(FormView):
     template_name = 'tracker/ticketack_add.html'
     form_class = TicketAckAddForm
-    
+
     def get_form(self, form_class):
         ticket = get_object_or_404(Ticket, id=self.kwargs['pk'])
         if not (ticket.can_edit(self.request.user) and self.kwargs['ack_type'] in ticket.possible_user_ack_types()):
             raise Http404
         return form_class(**self.get_form_kwargs())
-    
+
     def form_valid(self, form):
         ticket = get_object_or_404(Ticket, id=self.kwargs['pk'])
         ack = TicketAck.objects.create(
             ticket=ticket,
-            ack_type=self.kwargs['ack_type'], 
+            ack_type=self.kwargs['ack_type'],
             added_by=self.request.user,
             comment=form.cleaned_data['comment'],
         )
@@ -95,7 +95,7 @@ class TicketAckAddView(FormView):
         }
         messages.success(self.request, msg)
         return HttpResponseRedirect(ticket.get_absolute_url())
-    
+
     def get_context_data(self, **kwargs):
         kwargs.update({
             'ticket': get_object_or_404(Ticket, id=self.kwargs['pk']),
@@ -106,7 +106,7 @@ ticket_ack_add = TicketAckAddView.as_view()
 
 class TicketAckDeleteView(DeleteView):
     model = TicketAck
-    
+
     def get_object(self):
         try:
             self.ticket = Ticket.objects.get(id=self.kwargs['pk'])
@@ -114,15 +114,15 @@ class TicketAckDeleteView(DeleteView):
         except (Ticket.DoesNotExist, TicketAck.DoesNotExist):
             raise Http404
         return ack
-    
+
     def delete(self, request, *args, **kwargs):
         ack = self.get_object()
         if not (self.ticket.can_edit(request.user) and ack.user_removable):
             return HttpResponseForbidden(_('You cannot edit this'))
-        
+
         ack_display = ack.get_ack_type_display()
         ack.delete()
-        
+
         msg = _('Ticket %(ticket_id)s confirmation "%(confirmation)s" has been deleted.') % {
             'ticket_id':self.ticket.id, 'confirmation':ack_display,
         }
@@ -146,7 +146,7 @@ def topics_js(request):
         data[t.id] = {}
         for attr in ('form_description', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses'):
             data[t.id][attr] = getattr(t, attr)
-    
+
     content = 'topics_table = %s;' % json.dumps(data)
     return HttpResponse(content, content_type='text/javascript')
 
@@ -154,7 +154,7 @@ class TicketForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TicketForm, self).__init__(*args, **kwargs)
         self.fields['topic'].queryset = self.get_topic_queryset()
-    
+
     def get_topic_queryset(self):
         return Topic.objects.filter(open_for_tickets=True)
 
@@ -256,7 +256,7 @@ def create_ticket(request):
     MediaInfoFormSet = mediainfoformset_factory(extra=2, can_delete=False)
     ExpeditureFormSet = expeditureformset_factory(extra=2, can_delete=False)
     PreexpeditureFormSet = preexpeditureformset_factory(extra=2, can_delete=False)
-    
+
     if request.method == 'POST':
         ticketform = TicketForm(request.POST)
         try:
@@ -268,7 +268,7 @@ def create_ticket(request):
             preexpeditures.media # test
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
-        
+
         check_ticket_form_deposit(ticketform, preexpeditures)
         if ticketform.is_valid() and mediainfo.is_valid() and expeditures.is_valid() and preexpeditures.is_valid():
             ticket = ticketform.save(commit=False)
@@ -284,7 +284,7 @@ def create_ticket(request):
             if ticket.topic.ticket_preexpenses:
                 preexpeditures.instance = ticket
                 preexpeditures.save()
-            
+
             messages.success(request, _('Ticket %s created.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
@@ -310,7 +310,7 @@ def create_ticket(request):
                 initialPreexpeditures.append(initialPe)
         PreexpeditureFormSet = preexpeditureformset_factory(extra=2+len(initialPreexpeditures), can_delete=False)
         preexpeditures = PreexpeditureFormSet(prefix='preexpediture', initial=initialPreexpeditures)
-    
+
     return render(request, 'tracker/create_ticket.html', {
         'ticketform': ticketform,
         'mediainfo': mediainfo,
@@ -329,7 +329,7 @@ def edit_ticket(request, pk):
     MediaInfoFormSet = mediainfoformset_factory(extra=1, can_delete=True)
     ExpeditureFormSet = expeditureformset_factory(extra=1, can_delete=True)
     PreexpeditureFormSet = preexpeditureformset_factory(extra=1, can_delete=True)
-    
+
     if request.method == 'POST':
         ticketform = TicketEditForm(request.POST, instance=ticket)
         try:
@@ -344,7 +344,7 @@ def edit_ticket(request, pk):
                 preexpeditures = None
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
-        
+
         if 'precontent' not in ticket.ack_set():
             check_ticket_form_deposit(ticketform, preexpeditures)
 
@@ -357,7 +357,7 @@ def edit_ticket(request, pk):
                 expeditures.save()
             if 'precontent' not in ticket.ack_set():
                 preexpeditures.save()
-                
+
             messages.success(request, _('Ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
@@ -371,7 +371,7 @@ def edit_ticket(request, pk):
             preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
         else:
             preexpeditures = None # Hide preexpeditures in the edit form
-    
+
     form_media = adminCore + ticketform.media + mediainfo.media
     if 'content' not in ticket.ack_set():
         form_media += expeditures.media
@@ -408,34 +408,34 @@ def document_view_required(access, ticket_id_field='pk'):
             from django.contrib.auth.views import redirect_to_login
             if not request.user.is_authenticated():
                 return redirect_to_login(request.path)
-            
+
             ticket = get_object_or_404(Ticket, id=kwargs[ticket_id_field])
             if (access == 'read' and ticket.can_see_documents(request.user)) or (access == 'write' and ticket.can_edit_documents(request.user)):
                 return view(request, *args, **kwargs)
             else:
                 return HttpResponseForbidden(_("You cannot see this ticket's documents."))
         return wrapped_view
-    
+
     return actual_decorator
-        
+
 @document_view_required(access='write')
 def edit_ticket_docs(request, pk):
     DocumentFormSet = documentformset_factory(extra=0, can_delete=True)
-    
+
     ticket = get_object_or_404(Ticket, id=pk)
     if request.method == 'POST':
         try:
             documents = DocumentFormSet(request.POST, prefix='docs', instance=ticket)
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
-        
+
         if documents.is_valid():
             documents.save()
             messages.success(request, _('Document changes for ticket %s saved.') % ticket)
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         documents = DocumentFormSet(prefix='docs', instance=ticket)
-    
+
     return render(request, 'tracker/edit_ticket_docs.html', {
         'ticket': ticket,
         'documents': documents,
@@ -444,7 +444,7 @@ def edit_ticket_docs(request, pk):
 @document_view_required(access='write')
 def upload_ticket_doc(request, pk):
     ticket = get_object_or_404(Ticket, id=pk)
-    
+
     if request.method == 'POST':
         upload = UploadDocumentForm(request.POST, request.FILES)
         if upload.is_valid():
@@ -458,7 +458,7 @@ def upload_ticket_doc(request, pk):
             doc.payload.save(filename, payload)
             doc.save()
             messages.success(request, _('File %(filename)s has been saved.') % {'filename':filename})
-            
+
             if 'add-another' in request.POST:
                 next_view = 'upload_ticket_doc'
             else:
@@ -466,7 +466,7 @@ def upload_ticket_doc(request, pk):
             return HttpResponseRedirect(reverse(next_view, kwargs={'pk':ticket.id}))
     else:
         upload = UploadDocumentForm()
-    
+
     return render(request, 'tracker/upload_ticket_doc.html', {
         'ticket': ticket,
         'upload': upload,
@@ -489,12 +489,12 @@ def topic_finance(request):
             grant_finance.add_finance(topic_finance)
             topics.append({'topic':topic, 'finance':topic_finance})
         grants_out.append({'grant':grant, 'topics':topics, 'finance':grant_finance, 'rows':len(topics)+1})
-    
+
     csums = Cluster.cluster_sums()
     return render(request, 'tracker/topic_finance.html', {
         'grants': grants_out,
         'cluster_sums': csums,
-        'total_transactions': csums['paid'] + csums['overpaid'], 
+        'total_transactions': csums['paid'] + csums['overpaid'],
         'have_fuzzy': any([row['finance'].fuzzy for row in grants_out]),
     })
 
@@ -558,7 +558,7 @@ def transactions_csv(request):
     response = HttpResponseCsv(
         ['DATE', 'OTHER PARTY', 'AMOUNT ' + unicode(settings.TRACKER_CURRENCY), 'DESCRIPTION', 'TICKETS', 'GRANTS', 'ACCOUNTING INFO']
     )
-    
+
     for tx in Transaction.objects.all():
         response.writerow([
             tx.date.strftime('%Y-%m-%d'),
@@ -578,7 +578,7 @@ def user_list(request):
         'accepted_expeditures': sum([t.accepted_expeditures() for t in Ticket.objects.filter(rating_percentage__gt=0)]),
         'transactions': Expediture.objects.filter(paid=True).aggregate(amount=models.Sum('amount'))['amount'],
     }
-    
+
     userless = Ticket.objects.filter(requested_user=None)
     if userless.count() > 0:
         unassigned = {
@@ -588,7 +588,7 @@ def user_list(request):
         }
     else:
         unassigned = None
-    
+
     return render(request, 'tracker/user_list.html', {
         'user_list': User.objects.all(),
         'unassigned': unassigned,
@@ -597,7 +597,7 @@ def user_list(request):
 
 def user_detail(request, username):
     user = get_object_or_404(User, username=username)
-    
+
     return render(request, 'tracker/user_detail.html', {
         'user_obj': user,
         # ^ NOTE 'user' means session user in the template, so we're using user_obj
@@ -608,15 +608,15 @@ class UserDetailsChange(FormView):
     template_name = 'tracker/user_details_change.html'
     user_fields = ('first_name', 'last_name', 'email')
     profile_fields = [f.name for f in TrackerProfile._meta.fields if f.name not in ('id', 'user')]
-    
+
     def make_user_details_form(self):
         fields = fields_for_model(User, fields=self.user_fields)
         fields.update(fields_for_model(TrackerProfile, exclude=('user', )))
         return type('UserDetailsForm', (forms.BaseForm,), { 'base_fields': fields })
-    
+
     def get_form_class(self):
         return self.make_user_details_form()
-    
+
     def get_initial(self):
         user = self.request.user
         out = {}
@@ -625,21 +625,21 @@ class UserDetailsChange(FormView):
         for f in self.profile_fields:
             out[f] = getattr(user.trackerprofile, f)
         return out
-    
+
     def form_valid(self, form):
         user = self.request.user
         for f in self.user_fields:
             setattr(user, f, form.cleaned_data[f])
         user.save()
-        
+
         profile = user.trackerprofile
         for f in self.profile_fields:
             setattr(profile, f, form.cleaned_data[f])
         profile.save()
-        
+
         messages.success(self.request, _('Your details have been saved.'))
         return HttpResponseRedirect(reverse('index'))
-        
+
 user_details_change = login_required(UserDetailsChange.as_view())
 
 def cluster_detail(request, pk):
@@ -654,17 +654,17 @@ def cluster_detail(request, pk):
             return HttpResponseRedirect(reverse('cluster_detail', kwargs={'pk':ticket.cluster.id}))
         except Ticket.DoesNotExist:
             raise Http404
-    
+
     return render(request, 'tracker/cluster_detail.html', {
         'cluster': cluster,
         'ticket_summary': {'accepted_expeditures': cluster.total_tickets},
     })
-    
+
 
 class AdminUserListView(ListView):
     model = User
     template_name = 'tracker/admin_user_list.html'
-    
+
     def get_context_data(self, **kwargs):
             context = super(AdminUserListView, self).get_context_data(**kwargs)
             context['is_tracker_supervisor'] = self.request.user.has_perm('tracker.supervisor')
@@ -1019,7 +1019,7 @@ def export(request):
                                 tmp.append(user)
                         users = tmp
                         del(tmp)
-        
+
                     larger = request.POST['users-paid-larger']
                     smaller = request.POST['users-paid-larger']
                     if larger != '' and smaller != '':
@@ -1050,7 +1050,7 @@ def export(request):
                                 tmp.append(user)
                             users = tmp
                             del(tmp)
-        
+
                     if 'user-permision' in request.POST:
                         priv = request.POST['user-permision']
                         tmp = []
@@ -1070,7 +1070,7 @@ def export(request):
                             return HttpResponseBadRequest('You must fill the form validly')
                         users = tmp
                         del(tmp)
-            
+
                     response = HttpResponseCsv(['id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'created_tickets', 'accepted_expeditures', 'paid_expeditures', 'bank_account', 'other_contact', 'other_identification'])
                     response['Content-Disposition'] = 'attachment; filename="exported-users.csv"'
                     for user in users:
@@ -1267,3 +1267,15 @@ def importcsv(request):
                 return HttpResponseBadRequest("You can't want example file of invalid object")
         else:
             return render(request, 'tracker/import.html', {})
+
+@login_required
+def copypreexpeditures(request, pk):
+	ticket = get_object_or_404(Ticket, id=pk)
+	if not ticket.can_edit(request.user) or 'content' in ticket.ack_set():
+		return HttpResponseForbidden(_('You cannot edit this'))
+	for e in ticket.expediture_set.all():
+		e.delete()
+	for pe in ticket.preexpediture_set.all():
+		e = Expediture.objects.create(ticket=ticket, description=pe.description, amount=pe.amount, wage=pe.wage)
+	messages.success(request, _('Preexpeditures were copied to expeditures successfuly.'))
+	return HttpResponseRedirect(ticket.get_absolute_url())
