@@ -12,14 +12,14 @@
         <div class="radio">
           <label>
             <input type="radio" name="type" id="type1" value="ticket" checked="">
-            {% trans "Tickets" %}
+            {% trans "Tickets" %} (<a href="?examplefile=ticket">{% trans "example file" %}</a>)
           </label>
         </div>
 	{% if request.user.is_staff %}
         <div class="radio">
           <label>
             <input type="radio" name="type" id="type2" value="topic">
-	    {% trans "Topics" %}
+	    {% trans "Topics" %} (<a href="?examplefile=topic">{% trans "example file" %}</a>)
 	  </label>
         </div>
 	{% endif %}
@@ -27,27 +27,27 @@
         <div class="radio">
           <label>
             <input type="radio" name="type" id="type3" value="grant">
-	    {% trans "Grants" %}
+	    {% trans "Grants" %} (<a href="?examplefile=grant">{% trans "example file" %}</a>)
 	  </label>
         </div>
 	{% endif %}
         <div class="radio">
 	  <label>
 	    <input type="radio" name="type" id="type4" value="preexpense">
-	    {% trans "Preexpenses" %}
+	    {% trans "Preexpenses" %} (<a href="?examplefile=preexpense">{% trans "example file" %}</a>)
 	  </label>
 	</div>
 	<div class="radio">
 	  <label>
 	    <input type="radio" name="type" id="type5" value="expense">
-	    {% trans "Expenses" %}
+	    {% trans "Expenses" %} (<a href="?examplefile=expense">{% trans "example file" %}</a>)
 	  </label>
 	</div>
 	{% if request.user.is_superuser %}
 	<div class="radio">
 	  <label>
 	    <input type="radio" name="type" id="type6" value="user">
-	    {% trans "Users" %}
+	    {% trans "Users" %} (<a href="?examplefile=user">{% trans "example file" %}</a>)
 	  </label>
 	</div>
 	{% endif %}
