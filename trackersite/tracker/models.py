@@ -260,6 +260,9 @@ class Ticket(CachedModel):
         """ Can given user edit documents belonging to this ticket? """
         return (user == self.requested_user) or user.has_perm('tracker.edit_all_docs')
 
+	def can_copy_preexpeditures(self, user):
+		return self.can_edit(user) and 'content' not in self.ack_set()
+
     @cached_getter
     def associated_transactions_total(self):
         return self.transaction_set.all().aggregate(amount=models.Sum('amount'))['amount']
