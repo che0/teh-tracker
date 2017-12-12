@@ -62,3 +62,7 @@ fieldset.noframe { border: none; padding: 0; }
 .paginator .page.selected { background-color: #ccc; }
 .paginator.top { float: right; }
 .paginator.bottom { text-align: center; }
+
+input[type="submit"] {
+	margin-top: 20px;
+}
