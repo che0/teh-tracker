@@ -348,19 +348,19 @@ def edit_ticket(request, pk):
                 expeditures = ExpeditureFormSet(request.POST, prefix='expediture', instance=ticket)
             else:
                 expeditures = None
-            if 'precontent' not in ticket.ack_set():
+            if 'precontent' not in ticket.ack_set() and 'content' not in ticket.ack_set():
                 preexpeditures = PreexpeditureFormSet(request.POST, prefix='preexpediture', instance=ticket)
             else:
                 preexpeditures = None
         except forms.ValidationError, e:
             return HttpResponseBadRequest(unicode(e))
 
-        if 'precontent' not in ticket.ack_set():
+        if 'precontent' not in ticket.ack_set() and 'content' not in ticket.ack_set():
             check_ticket_form_deposit(ticketform, preexpeditures)
 
         if ticketform.is_valid() and mediainfo.is_valid() \
                 and (expeditures.is_valid() if 'content' not in ticket.ack_set() else True) \
-                and (preexpeditures.is_valid() if 'precontent' not in ticket.ack_set() else True):
+                and (preexpeditures.is_valid() if 'precontent' not in ticket.ack_set() and 'content' not in ticket.ack_set() else True):
             ticket = ticketform.save()
             mediainfo.save()
             if 'content' not in ticket.ack_set():
@@ -377,7 +377,7 @@ def edit_ticket(request, pk):
             expeditures = ExpeditureFormSet(prefix='expediture', instance=ticket)
         else:
             expeditures = None # Hide expeditures in the edit form
-        if 'precontent' not in ticket.ack_set():
+        if 'precontent' not in ticket.ack_set() and 'content' not in ticket.ack_set():
             preexpeditures = PreexpeditureFormSet(prefix='preexpediture', instance=ticket)
         else:
             preexpeditures = None # Hide preexpeditures in the edit form
@@ -385,7 +385,7 @@ def edit_ticket(request, pk):
     form_media = adminCore + ticketform.media + mediainfo.media
     if 'content' not in ticket.ack_set():
         form_media += expeditures.media
-    if 'precontent' not in ticket.ack_set():
+    if 'precontent' not in ticket.ack_set() and 'content' not in ticket.ack_set():
         form_media += preexpeditures.media
 
     return render(request, 'tracker/edit_ticket.html', {
