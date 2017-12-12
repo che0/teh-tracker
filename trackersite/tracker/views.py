@@ -300,7 +300,16 @@ def create_ticket(request):
             initial['deposit'] = ticket.deposit
         ticketform = TicketForm(initial=initial)
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
-        expeditures = ExpeditureFormSet(prefix='expediture')
+        initialExpeditures = []
+        if 'ticket' in request.GET:
+                for e in Expediture.objects.filter(ticket=ticket):
+                        initialE = {}
+                        initialE['description'] = e.description
+                        initialE['amount'] = e.amount
+                        initialE['wage'] = e.wage
+                        initialExpeditures.append(initialE)
+        ExpeditureFormSet = preexpeditureformset_factory(extra=2+len(initialExpeditures), can_delete=False)
+        expeditures = ExpeditureFormSet(prefix='expediture', initial=initialExpeditures)
         initialPreexpeditures = []
         if 'ticket' in request.GET:
             for pe in Preexpediture.objects.filter(ticket=ticket):
