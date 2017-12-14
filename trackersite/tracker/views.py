@@ -1105,7 +1105,7 @@ def importcsv(request):
     if request.method == 'POST' and not request.FILES['csvfile']:
         return render(request, 'tracker/import.html', {})
     elif request.method == 'POST' and request.FILES['csvfile']:
-		imported = 0
+        imported = 0
         csvfile = request.FILES['csvfile']
         header = None
         if request.POST['type'] == 'ticket':
@@ -1113,9 +1113,9 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    imported+=1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
                     line = lineraw.split(';')
                     if not header:
                         header = line
@@ -1136,9 +1136,9 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    imported+=1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
                     line = lineraw.split(',')
                     if not header:
                         header = line
@@ -1162,9 +1162,9 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    imported+=1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
                     line = lineraw.split(';')
                     if not header:
                         header = line
@@ -1179,9 +1179,9 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    imported+=1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
                     line = lineraw.split(';')
                     if not header:
                         header = line
@@ -1205,9 +1205,9 @@ def importcsv(request):
                 lines = chunk.split('\n')
                 lines.pop()
                 for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    imported+=1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
                     line = lineraw.split(';')
                     if not header:
                         header = line
@@ -1226,10 +1226,10 @@ def importcsv(request):
             for chunk in csvfile.chunks():
                 lines = chunk.split('\n')
                 lines.pop()
-	            for lineraw in lines:
-					imported+=1
-					if imported>100 and not request.user.is_superuser:
-						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                for lineraw in lines:
+                        imported+=1
+                        if imported>100 and not request.user.is_superuser:
+                            return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
 	                line = lineraw.split(';')
 	                if not header:
 	                    header = line
