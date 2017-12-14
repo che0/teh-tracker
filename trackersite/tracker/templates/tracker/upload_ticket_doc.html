@@ -27,7 +27,7 @@ $(document).ready(function() {
 
 <form action="{% url "upload_ticket_doc" ticket.id %}" method="POST" enctype="multipart/form-data">
 {% for field in upload %}
-<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field|add_class:"form-control" }}<span class="helptext">{{ field.help_text }}</span></p>
+<p class="uploadformlabel field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field|add_class:"form-control" }}<span class="helptext">{{ field.help_text }}</span></p>
 {% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 
