@@ -66,3 +66,7 @@ fieldset.noframe { border: none; padding: 0; }
 input[type="submit"] {
 	margin-top: 20px;
 }
+
+.uploadformlabel {
+	text-transform: capitalize;
+}
