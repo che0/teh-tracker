@@ -396,6 +396,7 @@ def edit_ticket(request, pk):
         'preexpeditures': preexpeditures,
         'form_media': form_media,
         'user_can_edit_documents': ticket.can_edit_documents(request.user),
+		'user_can_copy_preexpeditures': ticket.can_copy_preexpeditures(request.user),
     })
 
 class UploadDocumentForm(forms.Form):
