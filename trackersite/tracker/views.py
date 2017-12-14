@@ -399,9 +399,9 @@ def edit_ticket(request, pk):
     })
 
 class UploadDocumentForm(forms.Form):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'size':'60'}))
-    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':ugettext_lazy('We need a sane file name, such as my-invoice123.jpg')}, widget=forms.TextInput(attrs={'size':'30'}))
-    description = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'60'}))
+    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'size':'60'}), label=_('file'))
+    name = forms.RegexField(r'^[-_\.A-Za-z0-9]+\.[A-Za-z0-9]+$', error_messages={'invalid':ugettext_lazy('We need a sane file name, such as my-invoice123.jpg')}, widget=forms.TextInput(attrs={'size':'30'}), label=_('name'))
+    description = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'60'}), label=_('description'))
 
 DOCUMENT_FIELDS = ('filename', 'description')
 def document_formfield(f, **kwargs):

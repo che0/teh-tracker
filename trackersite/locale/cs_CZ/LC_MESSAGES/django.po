@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-14 09:10+0100\n"
+"POT-Creation-Date: 2017-12-14 09:11+0100\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -262,7 +262,7 @@ msgstr "Odkažte na veřejnou stránku popisující akci, pokud existuje"
 
 #: tracker/models.py:118 tracker/models.py:373 tracker/models.py:442
 #: tracker/models.py:465 tracker/models.py:479 tracker/models.py:501
-#: tracker/models.py:597
+#: tracker/models.py:597 tracker/views.py:404
 msgid "description"
 msgstr "popis"
 
@@ -374,7 +374,7 @@ msgstr "Tiket"
 msgid "Tickets"
 msgstr "Tikety"
 
-#: tracker/models.py:367
+#: tracker/models.py:367 tracker/views.py:403
 msgid "name"
 msgstr "název"
 
@@ -1290,7 +1290,7 @@ msgstr "Přidat komentář"
 msgid "Related files"
 msgstr "Odkazy na soubory"
 
-#: tracker/templates/tracker/ticket_form.html:10
+#: tracker/templates/tracker/ticket_form.html:10 tracker/views.py:402
 msgid "file"
 msgstr "soubor"
 
