@@ -1226,29 +1226,29 @@ def importcsv(request):
             for chunk in csvfile.chunks():
                 lines = chunk.split('\n')
                 lines.pop()
-            for lineraw in lines:
-				imported+=1
-				if imported>100 and not request.user.is_superuser:
-					return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
-                line = lineraw.split(';')
-                if not header:
-                    header = line
-                    continue
-                username = line[header.index('username')]
-                password = line[header.index('password')]
-                first_name = line[header.index('first_name')]
-                last_name = line[header.index('last_name')]
-                is_superuser = int(line[header.index('is_superuser')])
-                is_staff = int(line[header.index('is_staff')])
-                is_active = int(line[header.index('is_active')])
-                email = line[header.index('email')]
-                user = User.objects.create_user(username=username, password=password, email=email)
-                user.first_name = first_name
-                user.last_name = last_name
-                user.is_superuser = is_superuser
-                user.is_staff = is_staff
-                user.is_active = is_active
-                user.save()
+	            for lineraw in lines:
+					imported+=1
+					if imported>100 and not request.user.is_superuser:
+						return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+	                line = lineraw.split(';')
+	                if not header:
+	                    header = line
+	                    continue
+	                username = line[header.index('username')]
+	                password = line[header.index('password')]
+	                first_name = line[header.index('first_name')]
+	                last_name = line[header.index('last_name')]
+	                is_superuser = int(line[header.index('is_superuser')])
+	                is_staff = int(line[header.index('is_staff')])
+	                is_active = int(line[header.index('is_active')])
+	                email = line[header.index('email')]
+	                user = User.objects.create_user(username=username, password=password, email=email)
+	                user.first_name = first_name
+	                user.last_name = last_name
+	                user.is_superuser = is_superuser
+	                user.is_staff = is_staff
+	                user.is_active = is_active
+	                user.save()
         else:
             return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
