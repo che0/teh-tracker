@@ -1257,6 +1257,11 @@ def importcsv(request):
                 response['Content-Disposition'] = 'attachment; filename="example-user.csv"'
                 response.writerow([u'Uživatelské jméno', u'Heslo', u'KřestníJméno', u'Příjmení', u'True/False', u'True/False', u'True/False', u'emailova@adresa.cz'])
                 return response
+            elif giveexample == 'media':
+                response = HttpResponseCsv(['ticket_id', 'url', 'description', 'number'])
+                response['Content-Disposition'] = 'attachment; filename="example-media.csv"'
+                response.writerow([u'1', u'http://odkaz.cz', u'popisek', u'100'])
+                return response
             else:
                 return HttpResponseBadRequest("You can't want example file of invalid object")
         else:
