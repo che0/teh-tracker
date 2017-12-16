@@ -1117,7 +1117,8 @@ def importcsv(request):
                 for line in reader:
                     imported += 1
                     if imported>100 and not request.user.is_superuser:
-                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
                     event_date = line[header.index('event_date')]
                     summary = line[header.index('summary')]
                     topic = Topic.objects.get(name=line[header.index('topic')])
@@ -1133,7 +1134,8 @@ def importcsv(request):
                 for line in reader:
                     imported += 1
                     if imported>100 and not request.user.is_superuser:
-                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
                     name = line[header.index('name')]
                     grant = Grant.objects.get(full_name=line[header.index('grant')]).id
                     new_tickets = line[header.index('new_tickets')]
@@ -1149,7 +1151,8 @@ def importcsv(request):
                 for line in reader:
                     imported += 1
                     if imported>100 and not request.user.is_superuser:
-                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
                     full_name = line[header.index('full_name')]
                     short_name = line[header.index('short_name')]
                     slug = line[header.index('slug')]
@@ -1159,7 +1162,8 @@ def importcsv(request):
                 for line in reader:
                     imported += 1
                     if imported>100 and not request.user.is_superuser:
-                         return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
                     ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
                     description = line[header.index('description')]
                     amount = line[header.index('amount')]
@@ -1178,8 +1182,9 @@ def importcsv(request):
                 for line in reader:
                     imported += 1
                     if imported>100 and not request.user.is_superuser:
-                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
-                ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
+                    ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
                     description = line[header.index('description')]
                     amount = line[header.index('amount')]
                     wage = int(line[header.index('wage')])
