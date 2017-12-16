@@ -1214,6 +1214,7 @@ def importcsv(request):
             else:
                 messages.error(request, _('The form have returned strange values. Please contact the systemadmin and tell him what you tried to do. '))
                 return render(request, 'tracker/import.html', {})
+        messages.success(request, _('Your CSV file was imported. '))
         return HttpResponseRedirect(reverse('index'))
     else:
         if 'examplefile' in request.GET:
