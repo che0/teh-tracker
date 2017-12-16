@@ -47,6 +47,12 @@
 	    {% trans "Expenses" %} (<a href="?examplefile=expense">{% trans "example file" %}</a>)
 	  </label>
 	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="type" id="type7" value="media">
+			{% trans "Media" %} (<a href="?examplefile=media">{% trans "example file" %}</a>)
+		</label>
+	</div>
 	{% if request.user.is_superuser %}
 	<div class="radio">
 	  <label>
