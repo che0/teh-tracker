@@ -1230,23 +1230,23 @@ def importcsv(request):
                 response.writerow([u'Jméno tématu', u'Název grantu', u'True/False', u'True/False', u'True/False', u'True/False', u'Popis tématu', u'Popis formuláře tématu'])
                 return response
             elif giveexample == 'grant':
-	    	response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
+                response = HttpResponseCsv(['full_name', 'short_name', 'slug', 'description'])
                 response['Content-Disposition'] = 'attachment; filename="example-grant.csv"'
-		response.writerow([u'Plné jméno', u'Krátké jméno', u'Slug', u'Popis'])
-		return response
-	    elif giveexample == 'expense':
-                fields = ['ticket_id', 'description', 'amount', 'wage']
-                if request.user.is_staff:
-                    fields.append('accounting_info')
-                    fields.append('paid')
-                response = HttpResponseCsv(fields)
-                response['Content-Disposition'] = 'attachment; filename="example-expense.csv"'
-                row = [u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False']
-                if request.user.is_staff:
-                    row.append(u'Účetní údaje')
-                    row.append(u'True/False')
-                response.writerow(row)
+                response.writerow([u'Plné jméno', u'Krátké jméno', u'Slug', u'Popis'])
                 return response
+            elif giveexample == 'expense':
+                    fields = ['ticket_id', 'description', 'amount', 'wage']
+                    if request.user.is_staff:
+                        fields.append('accounting_info')
+                        fields.append('paid')
+                    response = HttpResponseCsv(fields)
+                    response['Content-Disposition'] = 'attachment; filename="example-expense.csv"'
+                    row = [u'ID tiketu', u'Popis výdaje', u'Vydané peníze v CZK', u'True/False']
+                    if request.user.is_staff:
+                        row.append(u'Účetní údaje')
+                        row.append(u'True/False')
+                    response.writerow(row)
+                    return response
             elif giveexample == 'preexpense':
                 response = HttpResponseCsv(['ticket_id', 'description', 'amount', 'wage'])
                 response['Content-Disposition'] = 'attachment; filename="example-preexpense.csv"'
