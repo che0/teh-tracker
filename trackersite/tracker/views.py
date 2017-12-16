@@ -1172,6 +1172,21 @@ def importcsv(request):
                         paid = False
                     if ticket.can_edit(request.user) or request.user.is_staff:
                         expediture = Expediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage, accounting_info=accounting_info, paid=paid)
+                    else:
+                        return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
+            elif request.POST['type'] == 'preexpense':
+                for line in reader:
+                    imported += 1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                    description = line[header.index('description')]
+                    amount = line[header.index('amount')]
+                    wage = int(line[header.index('wage')])
+                    if ticket.can_edit(request.user) or request.user.is_staff:
+                        expediture = Preexpediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage)
+                    else:
+                        return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
             else:
                 return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
