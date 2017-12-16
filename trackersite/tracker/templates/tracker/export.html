@@ -6,6 +6,10 @@
 {% block content %}
 <h1>{% trans "Export" %}</h1>
 
+<div class="alert alert-info">
+	<p>Commodo occaecat quis pariatur occaecat velit. Sunt voluptate cillum tempor laboris fugiat do tempor amet consequat nostrud anim Lorem mollit magna. Reprehenderit ullamco ea id occaecat aliquip ullamco. Do ea velit qui elit dolore id non exercitation eu est irure. Enim exercitation cupidatat et enim. Cupidatat eu sint sit nostrud minim. Aliquip minim ut duis enim Lorem aute pariatur elit incididunt anim exercitation laboris irure in.</p>
+</div>
+
 <form class="form-horizontal" method="POST">
     <div class="row">
 	<div class="col">
@@ -159,6 +163,7 @@
 	    </div>
 	    <br>
 	    <input id="wage" type="checkbox" name="preexpediture-wage" value="wage">
+	    <label for="wage">{% trans "Wage" %}</label>
 	    <br>
 	</div>
 	<div class="col">
@@ -188,6 +193,7 @@
 	    </div>
 	    <br>
 	    <input id="wage" type="checkbox" name="expediture-wage" value="wage">
+	    <label for="wage">{% trans "Wage" %}</label>
 	    <br>
 	    <input id="paid" type="checkbox" name="expediture-paid" value="paid">
 	    <label for="paid">{% trans "Paid" %}</label>
