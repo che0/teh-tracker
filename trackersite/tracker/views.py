@@ -1155,6 +1155,23 @@ def importcsv(request):
                     slug = line[header.index('slug')]
                     description = line[header.index('description')]
                     grant = Grant.objects.create(full_name=full_name, short_name=short_name, slug=slug, description=description)
+            elif request.POST['type'] == 'expense':
+                for line in reader:
+                    imported += 1
+                    if imported>100 and not request.user.is_superuser:
+                         return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                    description = line[header.index('description')]
+                    amount = line[header.index('amount')]
+                    wage = line[header.index('wage')]
+                    if request.user.is_staff:
+                        accounting_info = line[header.index('accounting_info')]
+                        paid = line[header.index('paid')]
+                    else:
+                        accounting_info = ''
+                        paid = False
+                    if ticket.can_edit(request.user) or request.user.is_staff:
+                        expediture = Expediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage, accounting_info=accounting_info, paid=paid)
             else:
                 return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
