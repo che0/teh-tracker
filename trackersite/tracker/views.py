@@ -1258,7 +1258,7 @@ def importcsv(request):
             if giveexample == 'ticket':
                 response = HttpResponseCsv(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
                 response['Content-Disposition'] = 'attachment; filename="example-ticket.csv"'
-                response.writerow([u'23. 4. 2010', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
+                response.writerow([u'2010-04-23', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
                 return response
             elif giveexample == 'topic':
                 response = HttpResponseCsv(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
