@@ -1194,7 +1194,7 @@ msgstr "odebrat"
 
 #: tracker/templates/tracker/ticket_common_detail.html:18
 msgid "Confirm"
-msgstr "Schválit"
+msgstr "Potvrdit"
 
 #: tracker/templates/tracker/ticket_common_detail.html:24
 msgid "Supervisor notes"
