@@ -1192,6 +1192,20 @@ def importcsv(request):
                         expediture = Preexpediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage)
                     else:
                         return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
+            elif request.POST['type'] == 'media':
+                for line in reader:
+                    imported += 1
+                    if imported>100 and not request.user.is_superuser:
+                        messages.warning(request, _('You must be superuser in order to be able to import more than 100 rows. First 100 rows has already been imported.'))
+                        break
+                    ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
+                    url = line[header.index('url')]
+                    description = line[header.index('description')]
+                    number = line[header.index('number')]
+                    if ticket.can_edit(request.user) or request.user.is_staff:
+                        media = MediaInfo.objects.create(ticket=ticket, url=url, description=description, count=number)
+                    else:
+                        return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
             elif request.POST['type'] == 'user':
                 if not request.user.is_superuser:
                     return HttpResponseForbidden(_('You must be superuser in order to be able import users.'))
