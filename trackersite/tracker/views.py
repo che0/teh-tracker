@@ -1143,6 +1143,18 @@ def importcsv(request):
                     description = line[header.index('description')]
                     form_description = line[header.index('form_description')]
                     topic = Topic.objects.create(name=name, grant_id=grant, open_for_tickets=new_tickets, ticket_media=media, ticket_preexpenses=preexpenses, ticket_expenses=expenses, description=description, form_description=form_description)
+            elif request.POST['type'] == 'grant':
+                if not request.user.is_staff:
+                     return HttpResponseForbidden(_('You must be staffer in order to be able import grants.'))
+                for line in reader:
+                    imported += 1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    full_name = line[header.index('full_name')]
+                    short_name = line[header.index('short_name')]
+                    slug = line[header.index('slug')]
+                    description = line[header.index('description')]
+                    grant = Grant.objects.create(full_name=full_name, short_name=short_name, slug=slug, description=description)
             else:
                 return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
