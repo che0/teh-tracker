@@ -1127,6 +1127,22 @@ def importcsv(request):
                     ticket = Ticket.objects.create(event_date=event_date, summary=summary, topic=topic, event_url=event_url, description=description, deposit=deposit)
                     ticket.requested_user = request.user
                     ticket.save()
+            elif request.POST['type'] == 'topic':
+                if not request.user.is_staff:
+                    return HttpResponseForbidden(_('You must be staffer in order to be able import topics.'))
+                for line in reader:
+                    imported += 1
+                    if imported>100 and not request.user.is_superuser:
+                        return HttpResponseForbidden(_('You must be superuser in order to be able to import more than 100 rows'))
+                    name = line[header.index('name')]
+                    grant = Grant.objects.get(full_name=line[header.index('grant')]).id
+                    new_tickets = line[header.index('new_tickets')]
+                    media = line[header.index('media')]
+                    preexpenses = line[header.index('preexpenses')]
+                    expenses = line[header.index('expenses')]
+                    description = line[header.index('description')]
+                    form_description = line[header.index('form_description')]
+                    topic = Topic.objects.create(name=name, grant_id=grant, open_for_tickets=new_tickets, ticket_media=media, ticket_preexpenses=preexpenses, ticket_expenses=expenses, description=description, form_description=form_description)
             else:
                 return render(request, 'tracker/import.html', {})
         return HttpResponseRedirect(reverse('index'))
