@@ -8,14 +8,15 @@
 <h1>{% trans "Add" %}: {{ticketack.display}}</h1>
 
 <form method="POST" action="">
-<div class="row">
-<div class="col-xs-9">
 {% for field in form %}
 {{ field.error }}
-{{ field.label_tag }} {{ field|add_class:"form-control" }}
+{{ field.label_tag }} 
+<div class="row"></div>
+<div class="col-xs-9"></div>
+{{ field|add_class:"form-control" }}
 {% endfor %}
 </div>
-<div class="col-xs-3" style="margin-top:27px">
+<div class="col-xs-3">
 {% csrf_token %}
 <input class="form-control" type="submit" value="{% trans "Submit" %}">
 </div>
