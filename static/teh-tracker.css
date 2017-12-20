@@ -19,8 +19,8 @@ tr.grand_total td { border-bottom: double 3px black; }
 .hide-switch > .unhide { display: none; }
 .hiddencomment { display: none; }
 .tools { float: right; padding:0.3em; background-color:#eee; }
-body > div > p.tools.screenonly > a {
-	background-color: none !important;
+body > div > p.tools.screenonly {
+	background-color: unset !important;
 }
 
 span.helptext { display: block; }
