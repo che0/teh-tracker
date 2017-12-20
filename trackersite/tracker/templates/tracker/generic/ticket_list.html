@@ -23,11 +23,15 @@
 {% endif %}
 {% block below_list %}{% endblock %}
 
+<div class="container">
 {% include "tracker/paginator.html" with url_name="ticket_list" extra_class="bottom" %}
+</div>
 
+<div class="container">
 {% if user.is_authenticated %}
 <a href="{% url "create_ticket" %}"><button class="btn btn-primary">{% trans "Create new ticket" %}</button></a>
 <a href="{% url "importcsv" %}"><button class="btn btn-primary">{% trans "Import" %}</button></a>
 {% endif %}
 <a href="{% url "export" %}"><button class="btn btn-primary">{% trans "Export" %}</button></a>
 {% endblock content %}
+</div>
