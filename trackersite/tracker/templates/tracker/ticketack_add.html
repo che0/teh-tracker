@@ -11,8 +11,8 @@
 {% for field in form %}
 {{ field.error }}
 {{ field.label_tag }} 
-<div class="row"></div>
-<div class="col-xs-9"></div>
+<div class="row">
+<div class="col-xs-9">
 {{ field|add_class:"form-control" }}
 {% endfor %}
 </div>
