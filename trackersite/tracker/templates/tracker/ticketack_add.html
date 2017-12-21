@@ -12,14 +12,10 @@
 {{ field.error }}
 {{ field.label_tag }} 
 <div class="row">
-<div class="col-xs-9">
 {{ field|add_class:"form-control" }}
 {% endfor %}
-</div>
-<div class="col-xs-3">
 {% csrf_token %}
-<input class="form-control" type="submit" style="margin-top: 0" value="{% trans "Submit" %}">
-</div>
+<input class="form-control" type="submit" value="{% trans "Submit" %}">
 </div>
 </form>
 <br />
