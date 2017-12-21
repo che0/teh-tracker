@@ -724,7 +724,7 @@ class TicketAck(models.Model):
     ack_type = models.CharField(max_length=20, choices=ACK_TYPES)
     added = models.DateTimeField(_('created'), auto_now_add=True)
     added_by = models.ForeignKey('auth.User', blank=True, null=True)
-    comment = models.CharField(blank=True, max_length=255)
+    comment = models.CharField(_('comment'), blank=True, max_length=255)
 
     def __unicode__(self):
         return u'%d %s by %s on %s' % (self.ticket_id, self.get_ack_type_display(), self.added_by, self.added)
