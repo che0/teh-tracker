@@ -78,3 +78,8 @@ input[type="submit"] {
 .uploadformlabel {
 	text-transform: capitalize;
 }
+
+.ticket-summary {
+	        font-weight: bold;
+}
+
