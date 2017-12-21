@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 16:04+0100\n"
+"POT-Creation-Date: 2017-12-21 16:07+0100\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -1621,12 +1621,12 @@ msgstr "Musíte formulář vyplnit validně"
 
 #: tracker/views.py:1120 tracker/views.py:1137 tracker/views.py:1154
 #: tracker/views.py:1165 tracker/views.py:1185 tracker/views.py:1199
-#, fuzzy
-#| msgid "You must be superuser in order to be able import users."
 msgid ""
 "You must be superuser in order to be able to import more than 100 rows. "
 "First 100 rows has already been imported."
-msgstr "Pro import uživatelů musíte být superuživatel."
+msgstr ""
+"Pro import více než 100 řádků musíte být superuživatelem. Prvních 100 jich "
+"bylo již naimportováno. "
 
 #: tracker/views.py:1133
 msgid "You must be staffer in order to be able import topics."
