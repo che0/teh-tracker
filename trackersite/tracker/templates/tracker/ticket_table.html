@@ -93,7 +93,7 @@ function order(by) {
 {% for ticket in ticket_list %}
 <td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.id}}</a></a></td>
 <td>{{ticket.sort_date}}</td>
-<td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a></td>
+<td class="ticket-summary"><a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a></td>
 {% if show_grants %}<td><a href="{{ticket.topic.grant.get_absolute_url}}" title="{{ticket.topic.grant.full_name}}">{{ticket.topic.grant.short_name}}</a></td>{% endif %}
 {% if show_topics %}<td><a href="{{ticket.topic.get_absolute_url}}">{{ticket.topic}}</a></td>{% endif %}
 {% if show_requester %}<td>{{ticket.requested_by_html}}</td>{% endif %}
