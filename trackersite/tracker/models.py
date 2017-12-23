@@ -122,7 +122,6 @@ class Ticket(CachedModel):
                                 help_text=_("If you are requesting a financial deposit, please fill here its amount. Maximum amount is sum of preexpeditures. If you aren't requesting a deposit, fill here 0."))
     cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)
     payment_status = models.CharField(_('payment status'), max_length=20, default='n/a', choices=PAYMENT_STATUS_CHOICES)
-    state_field = models.CharField(_('state'), max_length=30, default='draft')
 
     @staticmethod
     def currency():
@@ -140,8 +139,6 @@ class Ticket(CachedModel):
         else:
             self.sort_date = datetime.date.today()
 
-        super(Ticket, self).save(*args, **kwargs)
-        self.state_field = self.state_str()
         super(Ticket, self).save(*args, **kwargs)
 
         if not cluster_update_only:
