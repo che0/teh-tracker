@@ -303,12 +303,12 @@ def create_ticket(request):
         mediainfo = MediaInfoFormSet(prefix='mediainfo')
         initialExpeditures = []
         if 'ticket' in request.GET:
-                for e in Expediture.objects.filter(ticket=ticket):
-                        initialE = {}
-                        initialE['description'] = e.description
-                        initialE['amount'] = e.amount
-                        initialE['wage'] = e.wage
-                        initialExpeditures.append(initialE)
+            for e in Expediture.objects.filter(ticket=ticket):
+                initialE = {}
+                initialE['description'] = e.description
+                initialE['amount'] = e.amount
+                initialE['wage'] = e.wage
+                initialExpeditures.append(initialE)
         ExpeditureFormSet = preexpeditureformset_factory(extra=2+len(initialExpeditures), can_delete=False)
         expeditures = ExpeditureFormSet(prefix='expediture', initial=initialExpeditures)
         initialPreexpeditures = []
@@ -1283,12 +1283,12 @@ def importcsv(request):
 
 @login_required
 def copypreexpeditures(request, pk):
-	ticket = get_object_or_404(Ticket, id=pk)
-	if not ticket.can_edit(request.user) or 'content' in ticket.ack_set():
-		return HttpResponseForbidden(_('You cannot edit this'))
-	for e in ticket.expediture_set.all():
-		e.delete()
-	for pe in ticket.preexpediture_set.all():
-		e = Expediture.objects.create(ticket=ticket, description=pe.description, amount=pe.amount, wage=pe.wage)
-	messages.success(request, _('Preexpeditures were copied to expeditures successfuly.'))
-	return HttpResponseRedirect(ticket.get_absolute_url())
+    ticket = get_object_or_404(Ticket, id=pk)
+    if not ticket.can_edit(request.user) or 'content' in ticket.ack_set():
+        return HttpResponseForbidden(_('You cannot edit this'))
+    for e in ticket.expediture_set.all():
+        e.delete()
+    for pe in ticket.preexpediture_set.all():
+        e = Expediture.objects.create(ticket=ticket, description=pe.description, amount=pe.amount, wage=pe.wage)
+    messages.success(request, _('Preexpeditures were copied to expeditures successfuly.'))
+    return HttpResponseRedirect(ticket.get_absolute_url())
