@@ -9,7 +9,6 @@
 
 $( document ).ready(function() {
 	$( "i" ).each(function() {
-		//console.log($( this ).parent().attr("onclick").split("'")[1]);
 		if( $( this ).parent().attr("onclick").split("'")[1] == getUrlParameter("order") && getUrlParameter("state") == "1") {
 			$( this ).addClass("fa-caret-up");
 			console.log("state 1")
