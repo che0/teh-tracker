@@ -11,7 +11,7 @@
 
 {% if preexpeditures %}
 {# preexpediture formset #}
-{% include "tracker/tabular_formset.html" with formset=preexpeditures formset_title=_("Preexpeditures") formset_item_name=_("preexpediture") section="preexpediture" show_copy=True %}
+{% include "tracker/tabular_formset.html" with formset=preexpeditures formset_title=_("Preexpeditures") formset_item_name=_("preexpediture") section="preexpediture" %}
 {% endif %}
 
 {% if expeditures %}
