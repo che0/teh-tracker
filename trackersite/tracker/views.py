@@ -1204,6 +1204,7 @@ def importcsv(request):
                     number = line[header.index('number')]
                     if ticket.can_edit(request.user) or request.user.is_staff:
                         media = MediaInfo.objects.create(ticket=ticket, url=url, description=description, count=number)
+                        ticket.save()
                     else:
                         return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
             elif request.POST['type'] == 'user':
