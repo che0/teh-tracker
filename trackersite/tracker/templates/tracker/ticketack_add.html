@@ -16,9 +16,12 @@
 </div>
 {% endfor %}
 {% csrf_token %}
-<input class="form-control" type="submit" value="{% trans "Submit" %}">
+<div class="row">
+    <div class="col-md-3">
+        <input class="form-control" type="submit" value="{% trans "Submit" %}">
+    </div>
+</div>
 </form>
 <br />
 <a href="{{ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
-</form></p>
 {% endblock %}
