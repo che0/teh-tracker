@@ -14,7 +14,7 @@
     <div class="row">
 	<div class="col">
             <div class="radio">
-                <label><input type="radio" name="type" value="ticket" data-toggle="collapse" data-target="#tickets" checked>{% trans "Tickets" %}</label>
+                <label><input type="radio" name="type" value="ticket" data-toggle="collapse" data-target="#tickets">{% trans "Tickets" %}</label>
             </div>
           </div>
         <div class="col collapse container" id="tickets">
@@ -353,9 +353,6 @@
 
 <script>
 $(document).ready(function() {
-    $('#tickets').collapse('show')
-
-
     $('#tickets').on('show.bs.collapse', function () {
   	    $('#grants').collapse('hide')
 	    $('#preexpeditures').collapse('hide')
