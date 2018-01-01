@@ -13,10 +13,10 @@
 {{ field.label_tag }} 
 <div class="row">
 {{ field|add_class:"form-control" }}
+</div>
 {% endfor %}
 {% csrf_token %}
 <input class="form-control" type="submit" value="{% trans "Submit" %}">
-</div>
 </form>
 <br />
 <a href="{{ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
