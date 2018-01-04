@@ -98,6 +98,11 @@ class SimpleTicketTest(TestCase):
         self._test_one_feed('ticket_submitted_feed', None, 1)
         self._test_one_feed('topic_ticket_feed', self.topic.id, 2)
         self._test_one_feed('topic_submitted_ticket_feed', self.topic.id, 1)
+    
+    def test_historical(self):
+        self.ticket1.imported = True
+        self.ticket1.save()
+        assertEqual(self.ticket1.state_str(), _('historical'))
 
 class OldRedirectTests(TestCase):
     def setUp(self):

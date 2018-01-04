@@ -122,6 +122,7 @@ class Ticket(CachedModel):
                                 help_text=_("If you are requesting a financial deposit, please fill here its amount. Maximum amount is sum of preexpeditures. If you aren't requesting a deposit, fill here 0."))
     cluster = models.ForeignKey('Cluster', blank=True, null=True, on_delete=models.SET_NULL)
     payment_status = models.CharField(_('payment status'), max_length=20, default='n/a', choices=PAYMENT_STATUS_CHOICES)
+    imported = models.BooleanField(_('imported'), default=False, help_text=_('Was this ticket imported from older Tracker version?'))
 
     @staticmethod
     def currency():
@@ -165,6 +166,8 @@ class Ticket(CachedModel):
     def state_str(self):
         if self.custom_state:
             return self.custom_state
+        if self.imported:
+            return _('historical')
 
         acks = self.ack_set()
         if 'closed' in acks:
