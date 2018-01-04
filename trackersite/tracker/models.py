@@ -142,7 +142,7 @@ class Ticket(CachedModel):
 
         if all_len == 0:
             self.payment_status = 'n/a'
-        elif paid_len == 0:
+        elif paid_len == 0 and all_len > 0:
             self.payment_status = 'unpaid'
         elif paid_len < all_len:
             self.payment_status = 'partially_paid'
