@@ -151,7 +151,6 @@ class Ticket(CachedModel):
         elif paid_len == all_len:
             self.payment_status = 'paid'
 
-        super(Ticket, self).save(*args, **kwargs)
         self.flush_cache()
 
     def _note_comment(self, **kwargs):
