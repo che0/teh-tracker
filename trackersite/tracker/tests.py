@@ -102,7 +102,7 @@ class SimpleTicketTest(TestCase):
     def test_historical(self):
         self.ticket1.imported = True
         self.ticket1.save()
-        assertEqual(self.ticket1.state_str(), _('historical'))
+        self.assertEqual(self.ticket1.state_str(), _('historical'))
 
 class OldRedirectTests(TestCase):
     def setUp(self):
