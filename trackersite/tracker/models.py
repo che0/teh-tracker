@@ -137,6 +137,8 @@ class Ticket(CachedModel):
         else:
             self.sort_date = datetime.date.today()
         
+        super(Ticket, self).save(*args, **kwargs)
+
         paid_len = len(self.expediture_set.filter(paid=True))
         all_len = len(self.expediture_set.all())
 
@@ -150,7 +152,6 @@ class Ticket(CachedModel):
             self.payment_status = 'paid'
 
         super(Ticket, self).save(*args, **kwargs)
-
         self.flush_cache()
 
     def _note_comment(self, **kwargs):
