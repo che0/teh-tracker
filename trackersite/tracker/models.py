@@ -19,7 +19,6 @@ from django.core.cache import cache
 from django import template
 
 from users.models import UserWrapper
-from tracker.clusters import ClusterUpdate
 
 PAYMENT_STATUS_CHOICES = (
     ('n_a', _('n/a')),
@@ -129,9 +128,7 @@ class Ticket(CachedModel):
         return settings.TRACKER_CURRENCY
 
     def save(self, *args, **kwargs):
-        cluster_update_only = kwargs.pop('cluster_update_only', False)
-        if not cluster_update_only:
-            self.updated = datetime.datetime.now()
+        self.updated = datetime.datetime.now()
 
         if self.event_date != None:
             self.sort_date = self.event_date
@@ -139,11 +136,20 @@ class Ticket(CachedModel):
             self.sort_date = self.created.date()
         else:
             self.sort_date = datetime.date.today()
+        
+        paid_len = len(self.expediture_set.filter(paid=True))
+        all_len = len(self.expediture_set.all())
+
+        if all_len == 0:
+            self.payment_status = 'n/a'
+        elif paid_len == 0:
+            self.payment_status = 'unpaid'
+        elif paid_len < all_len:
+            self.payment_status = 'partially_paid'
+        elif paid_len == all_len:
+            self.payment_status = 'paid'
 
         super(Ticket, self).save(*args, **kwargs)
-
-        if not cluster_update_only:
-            ClusterUpdate.perform(ticket_ids=set([self.id]))
 
         self.flush_cache()
 
@@ -499,10 +505,7 @@ class Expediture(models.Model):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
 
     def save(self, *args, **kwargs):
-        cluster_update_only = kwargs.pop('cluster_update_only', False)
         super(Expediture, self).save(*args, **kwargs)
-        if not cluster_update_only and self.ticket.id != None:
-            ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
 
     class Meta:
         verbose_name = _('Ticket expediture')
@@ -519,10 +522,7 @@ class Preexpediture(models.Model):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
 
     def save(self, *args, **kwargs):
-        cluster_update_only = kwargs.pop('cluster_update_only', False)
         super(Preexpediture, self).save(*args, **kwargs)
-        if not cluster_update_only and self.ticket.id != None:
-            ClusterUpdate.perform(ticket_ids=set([self.ticket.id]))
 
     class Meta:
         verbose_name = _('Ticket preexpediture')
@@ -640,12 +640,6 @@ class Transaction(models.Model):
     def grant_set(self):
         return Grant.objects.extra(where=['id in (select grant_id from tracker_topic topic where topic.id in (select topic_id from tracker_ticket ticket where ticket.id in (select ticket_id from tracker_transaction_tickets where transaction_id = %s)))'], params=[self.id]).order_by('id')
 
-    def save(self, *args, **kwargs):
-        cluster_update_only = kwargs.pop('cluster_update_only', False)
-        super(Transaction, self).save(*args, **kwargs)
-        if not cluster_update_only:
-            ClusterUpdate.perform(transaction_ids=set([self.id]))
-
     @staticmethod
     def currency():
         return settings.TRACKER_CURRENCY
@@ -708,29 +702,6 @@ class Cluster(models.Model):
                         sums['unpaid'] += exp.amount*ticket.rating_percentage/100
         return sums
 
-@receiver(models.signals.m2m_changed)
-def cluster_note_transaction_link(sender, instance, action, **kwargs):
-    if action not in ('post_add', 'post_remove', 'post_clear'):
-        return
-
-    if type(instance) == Transaction:
-        ClusterUpdate.perform(transaction_ids=set([instance.id]))
-    elif type(instance) == Ticket:
-        ClusterUpdate.perform(ticket_ids=set([instance.id]))
-
-@receiver(models.signals.pre_delete)
-def cluster_member_delete(sender, instance, **kwargs):
-    if sender == Transaction:
-        instance.tickets.clear()
-    elif sender == Ticket:
-        instance.transaction_set.clear()
-
-        # if previous clear produced a new cluster (which can happen for tickets, delete it)
-        cluster_refreshed = Ticket.objects.get(id=instance.id).cluster
-        if cluster_refreshed != None:
-            cluster_refreshed.delete()
-
-
 class TicketAck(models.Model):
     """ Ack flag for given ticket. """
     ticket = models.ForeignKey('Ticket')
@@ -755,17 +726,6 @@ class TicketAck(models.Model):
 
     class Meta:
         ordering = ['added']
-
-@receiver(post_save, sender=TicketAck)
-def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
-    if not raw:
-        instance.ticket.flush_cache()
-        ClusterUpdate.perform(ticket_ids=set([instance.ticket.id]))
-
-@receiver(post_delete, sender=TicketAck)
-def flush_ticket_after_ack_delete(sender, instance, **kwargs):
-    instance.ticket.flush_cache()
-    ClusterUpdate.perform(ticket_ids=set([instance.ticket.id]))
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
