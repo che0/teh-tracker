@@ -563,7 +563,7 @@ class Cluster(models.Model):
     id = models.IntegerField(primary_key=True) # cluster ID is always the id of its lowest-numbered ticket
     more_tickets = models.BooleanField() # does this cluster have more tickets?
     total_tickets = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
-    total_transactions = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
+    total_transactions = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     
     def get_absolute_url(self):
         return reverse('cluster_detail', kwargs={'pk':self.id})
