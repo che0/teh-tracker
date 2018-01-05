@@ -127,16 +127,7 @@ class Ticket(CachedModel):
     def currency():
         return settings.TRACKER_CURRENCY
 
-    def save(self, *args, **kwargs):
-        self.updated = datetime.datetime.now()
-
-        if self.event_date != None:
-            self.sort_date = self.event_date
-        elif self.created != None:
-            self.sort_date = self.created.date()
-        else:
-            self.sort_date = datetime.date.today()
-        
+    def update_payment_status(self, save_afterwards=True):
         paid_len = len(self.expediture_set.filter(paid=True))
         all_len = len(self.expediture_set.all())
 
@@ -148,6 +139,25 @@ class Ticket(CachedModel):
             self.payment_status = 'partially_paid'
         elif paid_len == all_len:
             self.payment_status = 'paid'
+
+        if save_afterwards:
+            self.save(just_payment_status=True)
+    update_payment_status.alters_data = True
+
+    def save(self, *args, **kwargs):
+        just_payment_status = kwargs.pop('just_payment_status', False)
+        if not just_payment_status:
+            self.updated = datetime.datetime.now()
+
+        if self.event_date != None:
+            self.sort_date = self.event_date
+        elif self.created != None:
+            self.sort_date = self.created.date()
+        else:
+            self.sort_date = datetime.date.today()
+        
+        if not just_payment_status:
+            self.update_payment_status(save_afterwards=False)
 
         super(Ticket, self).save(*args, **kwargs)
 
@@ -506,6 +516,8 @@ class Expediture(models.Model):
 
     def save(self, *args, **kwargs):
         super(Expediture, self).save(*args, **kwargs)
+        if self.ticket.id is not None:
+            self.ticket.update_payment_status()
 
     class Meta:
         verbose_name = _('Ticket expediture')
@@ -726,6 +738,15 @@ class TicketAck(models.Model):
 
     class Meta:
         ordering = ['added']
+
+@receiver(post_save, sender=TicketAck)
+def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
+    if not raw:
+        instance.ticket.update_payment_status()
+
+@receiver(post_delete, sender=TicketAck)
+def flush_ticket_after_ack_delete(sender, instance, **kwargs):
+    instance.ticket.update_payment_status()
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
