@@ -533,9 +533,6 @@ class Preexpediture(models.Model):
     def __unicode__(self):
         return _('%(description)s (%(amount)s %(currency)s)') % {'description':self.description, 'amount':self.amount, 'currency':settings.TRACKER_CURRENCY}
 
-    def save(self, *args, **kwargs):
-        super(Preexpediture, self).save(*args, **kwargs)
-
     class Meta:
         verbose_name = _('Ticket preexpediture')
         verbose_name_plural = _('Ticket preexpeditures')
@@ -671,48 +668,9 @@ class Cluster(models.Model):
     def get_absolute_url(self):
         return reverse('cluster_detail', kwargs={'pk':self.id})
 
-    def get_status(self):
-        tickets = self.ticket_set.all()
-        for ticket in tickets:
-            expeditures = Expediture.objects.filter(ticket_id=ticket.id)
-            paid_expeditures = Expediture.objects.filter(ticket_id=ticket.id, paid=True)
-            if 'content' not in ticket.ack_set() or len(expeditures) == 0:
-                return 'n_a'
-            elif len(paid_expeditures) == 0:
-                return 'unpaid'
-            elif len(paid_expeditures) < len(expeditures):
-                return 'partially_paid'
-            elif len(paid_expeditures) == len(expeditures):
-                return 'paid'
-
-    def get_topic_count(self):
-        """ Retuns number of topic this cluster spans """
-        topic_set = set([t.topic_id for t in self.ticket_set.only('topic').select_related('topic')])
-        return len(topic_set)
-
-    def update_status(self):
-        """ Recounts all the summaries and updates payment status in tickets. """
-        self.total_tickets = sum([t.accepted_expeditures() for t in self.ticket_set.all()])
-        status = self.get_status()
-        for t in self.ticket_set.all():
-            t.payment_status = status
-            t.save(cluster_update_only=True)
-        self.save()
-
     def __unicode__(self):
         return unicode(self.id)
 
-    @staticmethod
-    def cluster_sums():
-        sums = {'unpaid':0, 'paid':0, 'overpaid':0}
-        for cluster in Cluster.objects.all():
-            for ticket in cluster.ticket_set.all():
-                for exp in Expediture.objects.filter(ticket_id=ticket.id):
-                    if exp.paid:
-                        sums['paid'] += exp.amount*ticket.rating_percentage/100
-                    else:
-                        sums['unpaid'] += exp.amount*ticket.rating_percentage/100
-        return sums
 
 class TicketAck(models.Model):
     """ Ack flag for given ticket. """

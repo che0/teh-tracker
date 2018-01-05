@@ -38,19 +38,6 @@
 		{% if have_fuzzy %}<td></td>{% endif %}
 	</tr>
 {% endfor %}{# /grant #}
-
-<tr class="total first_total grand_total highlight">
-	<td colspan="3">{% trans "Total" %}</td>
-	<td class="money payment_cell">{{cluster_sums.unpaid|money}}</td>
-	<td class="money payment_cell">{{cluster_sums.paid|money}}</td>
-	<td class="money payment_cell">{{cluster_sums.overpaid|money}}</td>
-	{% if have_fuzzy %}<td></td>{% endif %}
-</tr>
-<tr class="total">
-	<td colspan="4">{% trans "Paid out in total" %}</td>
-	<td colspan="2" style="text-align: center;">{{total_transactions|money}}</td>
-	{% if have_fuzzy %}<td></td>{% endif %}
-</tr>
 </table>
 
 {% if have_fuzzy %}<p>

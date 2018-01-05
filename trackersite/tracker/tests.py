@@ -763,7 +763,7 @@ class SummaryTest(TestCase):
         self.user = User(username='user')
         self.user.save()
 
-        self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+        self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
 
         self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, rating_percentage=50)
@@ -813,6 +813,10 @@ class SummaryTest(TestCase):
         profile = self.user.trackerprofile
         self.assertEqual({'objects':3, 'media':13}, profile.media_count())
         self.assertEqual(150 + 610, profile.accepted_expeditures())
+
+    def test_topic_finance(self):
+        response = Client().get(reverse('topic_finance'))
+        self.assertEqual(response.status_code, 200)
 
 class UserProfileTests(TestCase):
     def test_simple_create(self):

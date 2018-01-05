@@ -502,11 +502,8 @@ def topic_finance(request):
             topics.append({'topic':topic, 'finance':topic_finance})
         grants_out.append({'grant':grant, 'topics':topics, 'finance':grant_finance, 'rows':len(topics)+1})
 
-    csums = Cluster.cluster_sums()
     return render(request, 'tracker/topic_finance.html', {
         'grants': grants_out,
-        'cluster_sums': csums,
-        'total_transactions': csums['paid'] + csums['overpaid'],
         'have_fuzzy': any([row['finance'].fuzzy for row in grants_out]),
     })
 
