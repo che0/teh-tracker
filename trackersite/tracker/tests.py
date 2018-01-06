@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
+import StringIO
 
 from users.models import UserWrapper
 from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, TrackerProfile, Document, Cluster
@@ -98,7 +99,7 @@ class SimpleTicketTest(TestCase):
         self._test_one_feed('ticket_submitted_feed', None, 1)
         self._test_one_feed('topic_ticket_feed', self.topic.id, 2)
         self._test_one_feed('topic_submitted_ticket_feed', self.topic.id, 1)
-    
+
     def test_historical(self):
         self.ticket1.imported = True
         self.ticket1.save()
@@ -825,6 +826,67 @@ class UserProfileTests(TestCase):
             profile = user.trackerprofile
         except TrackerProfile.DoesNotExist:
             self.assertTrue(False)
+
+class ImportTests(TestCase):
+    def setUp(self):
+        self.user = {'user': User.objects.create(username='user'), 'password':'pw1'}
+        self.staffer = {'user': User.objects.create(username='staffer', is_staff=True), 'password':'pw2'}
+        self.superuser = {'user': User.objects.create(username='superuser', is_staff=True, is_superuser=True), 'password':'pw3'}
+        for u in (self.user, self.staffer, self.superuser):
+            u['user'].set_password(u['password'])
+            u['user'].save()
+
+    def get_test_data(self, type):
+        csvfile = StringIO.StringIO()
+        csvwriter = csv.writer(csvfile)
+        if type == 'ticket':
+            csvwriter.writerow(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
+            csvwriter.writerow([u'2010-04-23', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
+        elif type == 'topic':
+            csvwriter.writerow(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
+            csvwriter.writerow([u'Název tématu', u'Název grantu', u'True', u'True', u'True', u'True', u'Popis tématu', u'Popis formuláře tématu'])
+        elif type == 'grant':
+            csvwriter.writerow(['full_name', 'short_name', 'slug', 'description'])
+            csvwriter.writerow([u'Název grantu', u'grant', u'grant', u'Popis'])
+        return csvfile
+
+    def test_access_rights(self):
+        testConfigurations = [
+            {
+                'type': 'grant',
+                'normal': 403,
+                'staffer': 302,
+                'superuser': 302,
+            },
+            {
+                'type': 'topic',
+                'normal': 403,
+                'staffer': 302,
+                'superuser': 302,
+            },
+        ]
+        for testConfiguration in testConfigurations:
+            c = Client()
+            c.login(self.user.user.username, self.user.password) # Login with normal user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['normal'], response.status_code)
+            c = Client()
+            c.login(self.staffer.user.username, self.user.password) # Login with normal user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['staffer'], response.status_code)
+            c = Client()
+            c.login(self.superuser.user.username, self.user.password) # Login with normal user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['superuser'], response.status_code)
 
 class DocumentAccessTests(TestCase):
     def setUp(self):
