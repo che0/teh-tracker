@@ -842,6 +842,7 @@ class ImportTests(TestCase):
         elif type == 'grant':
             csvwriter.writerow(['full_name', 'short_name', 'slug', 'description'])
             csvwriter.writerow([u'Nazev grantu', u'grant', u'grant', u'Popis'])
+        csvfile.seek(0)
         return csvfile
 
     def test_access_rights(self):
