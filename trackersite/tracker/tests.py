@@ -842,6 +842,12 @@ class ImportTests(TestCase):
         elif type == 'grant':
             csvwriter.writerow(['full_name', 'short_name', 'slug', 'description'])
             csvwriter.writerow([u'Nazev grantu', u'grant', u'grant', u'Popis'])
+        elif type == 'user':
+            csvwriter.writerow(['username', 'password', 'first_name', 'last_name', 'is_superuser', 'is_staff', 'is_active', 'email'])
+            csvwriter.writerow([u'username', u'Heslo', u'name', u'surname', u'False', u'False', u'True', u'emailova@adresa.cz'])
+        elif type == 'media':
+            csvwriter.writerow(['ticket_id', 'url', 'description', 'number'])
+            csvwriter.writerow(([u'1', u'http://odkaz.cz', u'popisek', u'100'])
         csvfile.seek(0)
         return csvfile
 
@@ -855,6 +861,12 @@ class ImportTests(TestCase):
         if type == 'grant':
             for t in Grant.objects.all():
                 t.delete()
+        if type == 'user':
+            User.objects.get(username='username').delete() # A few users are required for safe test processing, do not delete them
+        if type == 'media':
+            for t in MediaInfo.objects.all():
+                t.delete()
+
 
     def test_access_rights(self):
         user = {'user': User.objects.create(username='user'), 'password':'pw1'}
@@ -874,6 +886,12 @@ class ImportTests(TestCase):
                 'type': 'topic',
                 'normal': 403,
                 'staffer': 302,
+                'superuser': 302,
+            },
+            {
+                'type': 'user',
+                'normal': 403,
+                'staffer': 403,
                 'superuser': 302,
             },
         ]
