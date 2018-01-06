@@ -828,13 +828,6 @@ class UserProfileTests(TestCase):
             self.assertTrue(False)
 
 class ImportTests(TestCase):
-    def setUp(self):
-        self.user = {'user': User.objects.create(username='user'), 'password':'pw1'}
-        self.staffer = {'user': User.objects.create(username='staffer', is_staff=True), 'password':'pw2'}
-        self.superuser = {'user': User.objects.create(username='superuser', is_staff=True, is_superuser=True), 'password':'pw3'}
-        for u in (self.user, self.staffer, self.superuser):
-            u['user'].set_password(u['password'])
-            u['user'].save()
 
     def get_test_data(self, type):
         csvfile = StringIO.StringIO()
@@ -851,6 +844,12 @@ class ImportTests(TestCase):
         return csvfile
 
     def test_access_rights(self):
+        user = {'user': User.objects.create(username='user'), 'password':'pw1'}
+        staffer = {'user': User.objects.create(username='staffer', is_staff=True), 'password':'pw2'}
+        superuser = {'user': User.objects.create(username='superuser', is_staff=True, is_superuser=True), 'password':'pw3'}
+        for u in (self.user, self.staffer, self.superuser):
+            u['user'].set_password(u['password'])
+            u['user'].save()
         testConfigurations = [
             {
                 'type': 'grant',
@@ -867,21 +866,21 @@ class ImportTests(TestCase):
         ]
         for testConfiguration in testConfigurations:
             c = Client()
-            c.login(self.user.user.username, self.user.password) # Login with normal user account
+            c.login(user.user.username, user.password) # Login with normal user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['normal'], response.status_code)
             c = Client()
-            c.login(self.staffer.user.username, self.user.password) # Login with normal user account
+            c.login(staffer.user.username, staffer.password) # Login with normal user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['staffer'], response.status_code)
             c = Client()
-            c.login(self.superuser.user.username, self.user.password) # Login with normal user account
+            c.login(superuser.user.username, superuser.password) # Login with normal user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
