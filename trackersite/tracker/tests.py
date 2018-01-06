@@ -845,13 +845,16 @@ class ImportTests(TestCase):
         csvfile.seek(0)
         return csvfile
 
-    def delete_all(self):
-        for t in Ticket.objects.all():
-            t.delete()
-        for t in Topic.objects.all():
-            t.delete()
-        for t in Grant.objects.all():
-            t.delete()
+    def reset_attempt(self, type):
+        if type == 'ticket':
+            for t in Ticket.objects.all():
+                t.delete()
+        if type == 'topic':
+            for t in Topic.objects.all():
+                t.delete()
+        if type == 'grant':
+            for t in Grant.objects.all():
+                t.delete()
 
     def test_access_rights(self):
         user = {'user': User.objects.create(username='user'), 'password':'pw1'}
@@ -882,7 +885,7 @@ class ImportTests(TestCase):
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['normal'], response.status_code)
-            self.delete_all()
+            self.reset_attempt(testConfiguration['type'])
             c = Client()
             c.login(username=staffer['user'].username, password=staffer['password']) # Login with staffer user account
             response = c.post(reverse('importcsv'), {
@@ -890,7 +893,7 @@ class ImportTests(TestCase):
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['staffer'], response.status_code)
-            self.delete_all()
+            self.reset_attempt(testConfiguration['type'])
             c = Client()
             c.login(username=superuser['user'].username, password=superuser['password']) # Login with superuser user account
             response = c.post(reverse('importcsv'), {
