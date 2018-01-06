@@ -832,7 +832,7 @@ class ImportTests(TestCase):
 
     def get_test_data(self, type):
         csvfile = StringIO.StringIO()
-        csvwriter = csv.writer(csvfile)
+        csvwriter = csv.writer(csvfile, delimiter=';')
         if type == 'ticket':
             csvwriter.writerow(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
             csvwriter.writerow([u'2010-04-23', u'Nazev ticketu', u'Nazev tematu', u'http://wikimedia.cz', u'Popis ticketu', u'0'])
