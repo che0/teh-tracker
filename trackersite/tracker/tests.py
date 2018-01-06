@@ -835,13 +835,13 @@ class ImportTests(TestCase):
         csvwriter = csv.writer(csvfile)
         if type == 'ticket':
             csvwriter.writerow(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
-            csvwriter.writerow([u'2010-04-23', u'Název ticketu', u'Název tématu', u'http://wikimedia.cz', u'Popis ticketu', u'Požadovaná záloha'])
+            csvwriter.writerow([u'2010-04-23', u'Nazev ticketu', u'Nazev tematu', u'http://wikimedia.cz', u'Popis ticketu', u'0'])
         elif type == 'topic':
             csvwriter.writerow(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
-            csvwriter.writerow([u'Název tématu', u'Název grantu', u'True', u'True', u'True', u'True', u'Popis tématu', u'Popis formuláře tématu'])
+            csvwriter.writerow([u'Nazev tematu', u'Nazev grantu', u'True', u'True', u'True', u'True', u'Popis tematu', u'Popis formulare tematu'])
         elif type == 'grant':
             csvwriter.writerow(['full_name', 'short_name', 'slug', 'description'])
-            csvwriter.writerow([u'Název grantu', u'grant', u'grant', u'Popis'])
+            csvwriter.writerow([u'Nazev grantu', u'grant', u'grant', u'Popis'])
         return csvfile
 
     def test_access_rights(self):
