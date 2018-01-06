@@ -1184,7 +1184,7 @@ def importcsv(request):
                     ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
                     description = line[header.index('description')]
                     amount = line[header.index('amount')]
-                    wage = int(line[header.index('wage')])
+                    wage = line[header.index('wage')]
                     if ticket.can_edit(request.user) or request.user.is_staff:
                         expediture = Preexpediture.objects.create(ticket=ticket, description=description, amount=amount, wage=wage)
                     else:
@@ -1212,9 +1212,9 @@ def importcsv(request):
                     password = line[header.index('password')]
                     first_name = line[header.index('first_name')]
                     last_name = line[header.index('last_name')]
-                    is_superuser = int(line[header.index('is_superuser')])
-                    is_staff = int(line[header.index('is_staff')])
-                    is_active = int(line[header.index('is_active')])
+                    is_superuser = line[header.index('is_superuser')]
+                    is_staff = line[header.index('is_staff')]
+                    is_active = line[header.index('is_active')]
                     email = line[header.index('email')]
                     user = User.objects.create_user(username=username, password=password, email=email)
                     user.first_name = first_name
