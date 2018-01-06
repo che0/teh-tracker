@@ -847,7 +847,7 @@ class ImportTests(TestCase):
             csvwriter.writerow([u'username', u'Heslo', u'name', u'surname', u'False', u'False', u'True', u'emailova@adresa.cz'])
         elif type == 'media':
             csvwriter.writerow(['ticket_id', 'url', 'description', 'number'])
-            csvwriter.writerow(([u'1', u'http://odkaz.cz', u'popisek', u'100'])
+            csvwriter.writerow(['1', 'http://wikimedia.cz', 'popis', '1'])
         csvfile.seek(0)
         return csvfile
 
