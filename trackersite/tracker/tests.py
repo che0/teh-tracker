@@ -866,21 +866,21 @@ class ImportTests(TestCase):
         ]
         for testConfiguration in testConfigurations:
             c = Client()
-            c.login(user.user.username, user.password) # Login with normal user account
+            c.login(user['user'].username, user['password']) # Login with normal user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['normal'], response.status_code)
             c = Client()
-            c.login(staffer.user.username, staffer.password) # Login with normal user account
+            c.login(staffer['user'].username, staffer['password']) # Login with staffer user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
             })
             self.assertEqual(testConfiguration['staffer'], response.status_code)
             c = Client()
-            c.login(superuser.user.username, superuser.password) # Login with normal user account
+            c.login(superuser['user'].username, superuser['password']) # Login with superuser user account
             response = c.post(reverse('importcsv'), {
                 'type': testConfiguration['type'],
                 'csvfile': self.get_test_data(testConfiguration['type'])
