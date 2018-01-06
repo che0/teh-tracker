@@ -847,7 +847,7 @@ class ImportTests(TestCase):
         user = {'user': User.objects.create(username='user'), 'password':'pw1'}
         staffer = {'user': User.objects.create(username='staffer', is_staff=True), 'password':'pw2'}
         superuser = {'user': User.objects.create(username='superuser', is_staff=True, is_superuser=True), 'password':'pw3'}
-        for u in (self.user, self.staffer, self.superuser):
+        for u in (user, staffer, superuser):
             u['user'].set_password(u['password'])
             u['user'].save()
         testConfigurations = [
