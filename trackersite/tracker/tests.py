@@ -862,7 +862,8 @@ class ImportTests(TestCase):
             for t in Grant.objects.all():
                 t.delete()
         if type == 'user':
-            User.objects.get(username='username').delete() # A few users are required for safe test processing, do not delete them
+            for t in User.objects.exclude(username='user').exclude(username='staffer').exclude(username='superuser'):
+                t.delete()
         if type == 'media':
             for t in MediaInfo.objects.all():
                 t.delete()
