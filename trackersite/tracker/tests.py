@@ -913,18 +913,6 @@ class ImportTests(TestCase):
                 'staffer': 302,
                 'superuser': 302
             },
-            {
-                'type': 'expense',
-                'normal': 302,
-                'staffer': 302,
-                'superuser': 302
-            },
-            {
-                'type': 'preexpense',
-                'normal': 302,
-                'staffer': 302,
-                'superuser': 302
-            },
         ]
         for testConfiguration in testConfigurations:
             c = Client()
