@@ -98,3 +98,8 @@ input[type=checkbox] {
 .navbar {
 	border-radius: 0;
 }
+
+.ratingpercentageunder100 {
+	font-weight: bold;
+	background: red;
+}
