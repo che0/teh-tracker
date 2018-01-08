@@ -848,6 +848,12 @@ class ImportTests(TestCase):
         elif type == 'media':
             csvwriter.writerow(['ticket_id', 'url', 'description', 'number'])
             csvwriter.writerow(['1', 'http://wikimedia.cz', 'popis', '1'])
+        elif type == 'expense':
+            csvwriter.write(['ticket_id', 'description', 'amount', 'wage', 'accounting_info', 'paid'])
+            csvwriter.write(['1', 'popisek', '100', True, 'accounting info', False])
+        elif type == 'preexpense':
+            csvwriter.write(['ticket_id', 'description', 'amount', 'wage'])
+            csvwriter.write(['1', 'popisek', '100', True])
         csvfile.seek(0)
         return csvfile
 
@@ -866,6 +872,12 @@ class ImportTests(TestCase):
                 t.delete()
         if type == 'media':
             for t in MediaInfo.objects.all():
+                t.delete()
+        if type == 'expense':
+            for t in Expediture.objects.all():
+                t.delete()
+        if type == 'preexpense':
+            for t in Preexpediture.objects.all():
                 t.delete()
 
 
@@ -894,6 +906,18 @@ class ImportTests(TestCase):
                 'normal': 403,
                 'staffer': 403,
                 'superuser': 302,
+            },
+            {
+                'type': 'expense',
+                'normal': 302,
+                'staffer': 302,
+                'superuser': 302
+            },
+            {
+                'type': 'preexpense',
+                'normal': 302,
+                'staffer': 302,
+                'superuser': 302
             },
         ]
         for testConfiguration in testConfigurations:
