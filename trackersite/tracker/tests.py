@@ -908,6 +908,12 @@ class ImportTests(TestCase):
                 'superuser': 302,
             },
             {
+                'type': 'ticket',
+                'normal': 302,
+                'staffer': 302,
+                'superuser': 302
+            },
+            {
                 'type': 'expense',
                 'normal': 302,
                 'staffer': 302,
