@@ -849,11 +849,11 @@ class ImportTests(TestCase):
             csvwriter.writerow(['ticket_id', 'url', 'description', 'number'])
             csvwriter.writerow(['1', 'http://wikimedia.cz', 'popis', '1'])
         elif type == 'expense':
-            csvwriter.write(['ticket_id', 'description', 'amount', 'wage', 'accounting_info', 'paid'])
-            csvwriter.write(['1', 'popisek', '100', True, 'accounting info', False])
+            csvwriter.writerow(['ticket_id', 'description', 'amount', 'wage', 'accounting_info', 'paid'])
+            csvwriter.writerow(['1', 'popisek', '100', True, 'accounting info', False])
         elif type == 'preexpense':
-            csvwriter.write(['ticket_id', 'description', 'amount', 'wage'])
-            csvwriter.write(['1', 'popisek', '100', True])
+            csvwriter.writerow(['ticket_id', 'description', 'amount', 'wage'])
+            csvwriter.writerow(['1', 'popisek', '100', True])
         csvfile.seek(0)
         return csvfile
 
