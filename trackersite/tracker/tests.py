@@ -790,6 +790,14 @@ class SummaryTest(TestCase):
 			e.save()
         self.assertEqual({'unpaid':1, 'paid':1}, self.topic.tickets_per_payment_status())
 
+    def test_topic_ticket_counts2(self):
+        """ change event_date (and thus sort_date) of one ticket, make sure it
+            does not break grouping
+        """
+        self.ticket.event_date = datetime.date(2016, 1, 1)
+        self.ticket.save()
+        self.assertEqual({'unpaid':2}, self.topic.tickets_per_payment_status())
+
     def test_ticket_summary(self):
         self.ticket.ticketack_set.filter(ack_type='archive').delete()
         self.ticket.rating_percentage = None
