@@ -1362,7 +1362,7 @@ msgstr "Shrnutí"
 #: tracker/templates/tracker/ticket_table.html:16
 #: tracker/templates/tracker/ticket_table.html:28
 msgid "Requested expeditures"
-msgstr "Požadované reálné výdaje"
+msgstr "Požadované výdaje"
 
 #: tracker/templates/tracker/ticket_table.html:18
 #: tracker/templates/tracker/ticket_table.html:30
