@@ -4,10 +4,10 @@
 {% block title %}{% trans "Edit" %}: {{ticket.summary}}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a> &gt;</p>
+<p class="nav"><a href="{% url "ticket_list" %}" class="btn btn-primary">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a> &gt;</p>
 <h1>{% trans "Edit" %}: {{ticket.summary}}</h1>
 
-{% if user_can_edit_documents %}<p><a href="{% url "edit_ticket_docs" ticket.id %}">{% trans "edit ticket documents" %}</a></p>{% endif %}
+<p>{% if user_can_edit_documents %}<a href="{% url "edit_ticket_docs" ticket.id %}">{% trans "edit ticket documents" %}</a>{% endif %} {% if user_can_copy_preexpeditures %}<a href="{% url "copypreexpeditures" ticket.id %}">{% trans "copy preexpeditures to expeditures" %}</a>{% endif %}</p>
 
 {% block above_form %}{% endblock %}
 {% url "edit_ticket" ticket.id as action %}

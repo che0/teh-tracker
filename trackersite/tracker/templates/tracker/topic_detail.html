@@ -4,7 +4,6 @@
 {% block head %}{{ block.super }}
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest tickets' %}" href="{% url "topic_ticket_feed" topic.id %}" />
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest submitted tickets' %}" href="{% url "topic_submitted_ticket_feed" topic.id %}" />
-<script src="{{STATIC_URL}}admin/js/jquery.min.js" type="text/javascript"></script>
 <script src="{{STATIC_URL}}hiding.js" type="text/javascript"></script>
 {% recaptcha_init %}
 {% endblock %}

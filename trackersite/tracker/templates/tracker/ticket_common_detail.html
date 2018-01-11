@@ -6,8 +6,11 @@
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {% if active_links %}{{ticket.requested_by_html}}{% else %}{{ticket.requested_by}}{% endif %}<br />
 {% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
-{% trans "State" %}: {{ ticket.state_str }}
-{% if "content" in ticket.ack_set %}<br />{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;%{% endif %}
+{% trans "State" %}: {{ ticket.state_str }}<br />
+{% if "content" in ticket.ack_set %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />{% endif %}
+{% trans "Deposit" %}: {{ ticket.deposit }} {% trans "CZK" %}<br />
+{% if ticket.event_url %}{% trans "Event URL" %}: <a href="{{ ticket.event_url }}">{{ ticket.event_url }}</a><br />{% endif %}
+{% if "content" in ticket.ack_set %}<span {% if ticket.rating_percentage < 100 %}class="ratingpercentageunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;% </span><br /><br />{% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
@@ -15,7 +18,6 @@
 <div class="screenonly">{% trans "Confirm" %}:<ul>{% for possible_ack in acks_to_add %}
 	<li><a href="{% url "ticket_ack_add" ticket.id possible_ack.ack_type %}">{{possible_ack.display}}</a></li>
 {% endfor %}</ul></div>{% endif %}{% endwith %}{% endif %}
-{% trans "Payment status" %}: {{ ticket.get_payment_status_display }}</p>
 
 {% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 
@@ -32,14 +34,25 @@
 </ul>
 {% endif %}
 
+{% if ticket.preexpeditures.count > 0 %}
+<h2>{% trans "Preexpeditures" %}</h2>
+<table class="table table-striped table-hover">
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Wage?" %}</th></tr>
+{% for item in ticket.preexpediture_set.all %}
+<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{% if item.wage %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td></tr>
+{% endfor %}
+<tr class="total first_total"><td>{% trans "Total preexpeditures" %}</td><td class="money">{{ticket.preexpeditures.amount|money}}</td><td></td></tr>
+</table>
+{% endif %}
+
 {% if ticket.expeditures.count > 0 %}
 <h2>{% trans "Expeditures" %}</h2>
-<table>
-<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</tr>
+<table class="table table-striped table-hover">
+<tr><th>{% trans "Item" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Accounting info" %}</th><th>{% trans "Paid?" %}</th><th>{% trans "Wage?" %}</th></tr>
 {% for item in ticket.expediture_set.all %}
-<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td></tr>
+<tr><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td><td>{{item.accounting_info}}</td><td>{{ item.paid|yesno:_("Yes,No") }}</td><td>{{ item.wage|yesno:_("Yes,No") }}</td></tr>
 {% endfor %}
-<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td></tr>
-<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td></tr>
+<tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td><td></td><td></td></tr>
+<tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td><td></td><td></td></tr>
 </table>
 {% endif %}

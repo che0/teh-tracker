@@ -3,6 +3,8 @@ Django>=1.8,<1.9
 django-sendfile
 django-recaptcha2
 django-contrib-comments
+django-widget-tweaks
+python-memcached
 
 # we'll presume MySQL as the database
 mysql-python

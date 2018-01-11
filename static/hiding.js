@@ -1,15 +1,15 @@
-function show_hidden() {
+function show_hiddencomment() {
 	$(this).hide();
-	$(this).parent().find('.hidden').show();
+	$(this).parent().find('.hiddencomment').show();
 	return false;
 }
 
-function process_hidden(index) {
+function process_hiddencomment(index) {
 	switch_div = $(this);
-	switch_div.find('.hidden').hide();
-	switch_div.find('a.unhide').click(show_hidden).show();
+	switch_div.find('.hiddencomment').hide();
+	switch_div.find('a.unhide').click(show_hiddencomment).show();
 }
 
 $(document).ready(function() {
-	$('.hide-switch').each(process_hidden);
+	$('.hide-switch').each(process_hiddencomment);
 });

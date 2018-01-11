@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Export" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Export" %}</h1>
+
+<div class="alert alert-info">
+	{% trans "Only filters with at least one checked checkbox are applied. You can either check all checkboxes or none of them, it's the same. " %}
+</div>
+
+<form class="form-horizontal" method="POST">
+    <div class="row">
+	<div class="col">
+            <div class="radio">
+                <label><input type="radio" name="type" value="ticket" data-toggle="collapse" data-target="#tickets">{% trans "Tickets" %}</label>
+            </div>
+          </div>
+        <div class="col collapse container" id="tickets">
+	    <br>
+	    <p style="font-weight: bold;">{% trans "state" %}:</p>
+            <input id="draft" type="checkbox" name="draft" value="{%trans "draft" %}">
+	    <label for="draft">{% trans "draft" %}</label>
+	    <br>
+	    <input id="wfpreapproval" type="checkbox" name="wfpreapproval" value="{% trans "waiting for preapproval" %}">
+	    <label for="wfpreapproval">{% trans "waiting for preapproval" %}</label>
+	    <br>
+	    <input id="wfsubmiting" type="checkbox" name="wfsubmiting" value="{% trans "waiting for submitting" %}">
+	    <label for="wfsubmiting">{% trans "waiting for submitting "%}</label>
+	    <br>
+	    <input id="wfaprroval" type="checkbox" name="wfapproval" value="{% trans "waiting for approval" %}">
+	    <label for="wfapproval">{% trans "waiting for approval "%}</label>
+	    <br>
+	    <input id="wfdocssub" type="checkbox" name="wfdocssub" value="{% trans "waiting for document submission" %}">
+	    <label for"wfdocssub">{% trans "waiting for document submission" %}</label>
+	    <br>
+	    <input id="wffill" type="checkbox" name="wffill" value="{% trans "waiting for filing of documents" %}">
+	    <label for="wffill">{% trans "waiting for filing of documents "%}</label>
+	    <br>
+	    <input id="complete" type="checkbox" name="complete" value="{% trans "complete" %}">
+	    <label for="complete">{% trans "complete" %}</label>
+	    <br>
+	    <input id="archived" type="checkbox" name="archived" value="{% trans "archived" %}">
+	    <label for="archived">{% trans "archived" %}</label>
+	    <br>
+	    <input id="closed" type="checkbox" name="closed" value="{% trans "closed" %}">
+	    <label for="closed">{% trans "closed" %}</label>
+	    <br>
+	    <input id="custom" type="checkbox" name="custom" value="custom">
+	    <label for="custom">{% trans "custom" %}</label>
+	    <br>
+	    <p style="font-weight: bold">{% trans "Topics" %}</p>
+	    {% for topic in topics %}
+	    <input id="topic-{{ topic.id }}" type="checkbox" name="topic-{{ topic.id }}" value="{{ topic.id }}">
+	    <label for="topic-{{ topic.id }}">{{ topic.name }}</label>
+	    <br>
+	    {% endfor %}
+	    <p style="font-weight: bold">{% trans "Users" %}</p>
+	    {% for user in users %}
+	    <input id="tickets-user-{{ user.id }}" type="checkbox" name="ticket-user-{{ user.id }}" value="{{ user.id }}">
+	    <label for="tickets-user-{{ user.id }}">{{ user.username }}</label>
+	    <br>
+	    {% endfor %}
+	    <p style="font-weight: bold;">{% trans "Is report mandatory?" %}</p>
+            <input id="ticket-report-mandatory" type="checkbox" name="ticket-report-mandatory" value="yes">
+	    <label for="ticket-report-mandatory">{% trans "Is report mandatory?" %}</label>
+	    <br>
+	    <br>
+	    <label class="control-label">{% trans "Preexpeditures" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" class="form-control" name="preexpeditures-larger">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" class="form-control" name="preexpeditures-smaller">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+	    <label class="control-label">{% trans "Expeditures" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" class="form-control" name="expeditures-larger">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" class="form-control" name="expeditures-smaller">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+	    <label class="control-label">{% trans "Accepted expeditures" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" class="form-control" name="acceptedexpeditures-larger">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" class="form-control" name="acceptedexpeditures-smaller">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+        </div>
+	<div class="col">
+            <div class="radio">
+                <label><input type="radio" name="type" value="grant" data-toggle="collapse" data-target="#grants">{% trans "Grants" %}</label>
+            </div>
+          </div>
+        <div class="col collapse container" id="grants">
+	<p>{% trans "You can't filter grants by any fields" %}.</p>
+	</div>
+	<div class="col">
+            <div class="radio">
+                <label><input type="radio" name="type" value="preexpediture" data-toggle="collapse" data-target="#preexpeditures">{% trans "Preexpeditures" %}</label>
+            </div>
+          </div>
+        <div class="col collapse container" id="preexpeditures">
+	    <label class="control-label">{% trans "Amount" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="preexpediture-amount-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="preexpediture-amount-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+	    <input id="wage" type="checkbox" name="preexpediture-wage" value="wage">
+	    <label for="wage">{% trans "Wage" %}</label>
+	    <br>
+	</div>
+	<div class="col">
+            <div class="radio">
+                <label><input type="radio" name="type" value="expediture" data-toggle="collapse" data-target="#expeditures">{% trans "Expeditures" %}</label>
+            </div>
+          </div>
+        <div class="col collapse container" id="expeditures">
+	    <label class="control-label">{% trans "Amount" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="expediture-amount-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="expediture-amount-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+	    <input id="wage" type="checkbox" name="expediture-wage" value="wage">
+	    <label for="wage">{% trans "Wage" %}</label>
+	    <br>
+	    <input id="paid" type="checkbox" name="expediture-paid" value="paid">
+	    <label for="paid">{% trans "Paid" %}</label>
+	    <br>
+	</div>
+	<div class="col">
+	    <div class="radio">
+	    	<label><input type="radio" name="type" value="topic" data-toggle="collapse" data-target="#topics">{% trans "Topics" %}</label>
+	     </div>
+	</div>
+	<div class="col collapse container" id="topics">
+	    <p style="font-weight: bold">{% trans "Supervisors" %}</p>
+	    {% for user in users %}
+	    <input id="topics-user-{{ user.id }}" type="checkbox" name="topics-user-{{ user.id }}" value="{{ user.id }}">
+	    <label for="topics-user-{{ user.id }}">{{ user.username }}</label>
+	    <br>
+	    {% endfor %}
+	    <label class="control-label">{% trans "Number of tickets" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="topics-tickets-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="topics-tickets-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <br>
+	    <p style="font-weight: bold">{% trans "Number of tickets in certain payment state" %}</p>
+	    <select class="form-control" name="topics-paymentstate" id="select">
+	    <option value="default">-------</option>
+	    <option value="n_a">N/A</option>
+	    <option value="unpaid">{% trans "unpaid" %}</option>
+	    <option value="partially_paid">{% trans "partially paid" %}</option>
+	    <option value="paid">{% trans "paid" %}</option>
+	    <option value="overpaid">{% trans "overpaid" %}</option>
+	    </select>
+	    <br>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="topics-paymentstate-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="topics-paymentstate-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	</div>
+	{% if request.user.is_staff %}
+	<div class="col">
+	   <div class="radio">
+	           <label><input type="radio" name="type" value="user" data-toggle="collapse" data-target="#users">{% trans "Users" %}</label>
+	    </div>
+	</div>
+	<div class="col collapse container" id="users">
+	    <label class="control-label">{% trans "Number of tickets created" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="users-created-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="users-created-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <label class="control-label">{% trans "Amount of accepted expeditures" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="users-accepted-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="users-accepted-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <label class="control-label">{% trans "Amount of paid expeditures" %}</label>
+	    <div class="row">
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Larger or equal" %}</span>
+	    <input type="number" name="users-paid-larger" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    <div class="col-xs-6">
+ 	    <div class="input-group">
+	    <span class="input-group-addon">{% trans "Smaller or equal" %}</span>
+	    <input type="number" name="users-paid-smaller" min="0" class="form-control">
+	    <span class="input-group-btn">
+	    </span>
+	    </div>
+	    </div>
+	    </div>
+	    <div class="row container">
+		<div class="col">
+	    	    <div class="radio">
+	    		<label><input type="radio" name="user-permision" value="normal">{% trans "normal" %}</label>
+	     	    </div>
+		</div>
+		<div class="col">
+	    	    <div class="radio">
+	    		<label><input type="radio" name="user-permision" value="staff">{% trans "staff" %}</label>
+	     	    </div>
+		</div>
+		<div class="col">
+	    	    <div class="radio">
+	    		<label><input type="radio" name="user-permision" value="superuser">{% trans "superuser" %}</label>
+	     	    </div>
+		</div>
+	    </div>
+	</div>
+	{% endif %}
+	<div class="col">
+	    <br>
+	    <input class="form-control" type="submit">
+	</div>
+    </div>
+    {% csrf_token %}
+</form>
+
+<script>
+$(document).ready(function() {
+    $('#tickets').on('show.bs.collapse', function () {
+  	    $('#grants').collapse('hide')
+	    $('#preexpeditures').collapse('hide')
+	    $('#expeditures').collapse('hide')
+	    $('#topics').collapse('hide')
+	    $('#users').collapse('hide')
+    });
+
+    $('#grants').on('show.bs.collapse', function () {
+	    $('#tickets').collapse('hide')
+	    $('#preexpeditures').collapse('hide')
+	    $('#expeditures').collapse('hide')
+	    $('#topics').collapse('hide')
+	    $('#users').collapse('hide')
+    });
+    
+    $('#preexpeditures').on('show.bs.collapse', function () {
+	    $('#tickets').collapse('hide')
+	    $('#grants').collapse('hide')
+	    $('#expeditures').collapse('hide')
+	    $('#topics').collapse('hide')
+	    $('#users').collapse('hide')
+    });
+
+    $('#expeditures').on('show.bs.collapse', function () {
+	    $('#tickets').collapse('hide')
+	    $('#grants').collapse('hide')
+	    $('#preexpeditures').collapse('hide')
+	    $('#topics').collapse('hide')
+	    $('#users').collapse('hide')
+    });
+
+    $('#topics').on('show.bs.collapse', function () { 
+	    $('#tickets').collapse('hide')
+	    $('#grants').collapse('hide')
+	    $('#preexpeditures').collapse('hide')
+	    $('#expeditures').collapse('hide')
+	    $('#users').collapse('hide')
+    });
+
+    $('#users').on('show.bs.collapse', function () {
+	    $('#tickets').collapse('hide')
+  	    $('#grants').collapse('hide')
+	    $('#preexpeditures').collapse('hide')
+	    $('#expeditures').collapse('hide')
+	    $('#topics').collapse('hide')
+    });
+});
+</script>
+{% endblock content %}

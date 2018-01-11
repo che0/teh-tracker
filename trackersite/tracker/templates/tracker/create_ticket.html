@@ -1,1 +1,9 @@
 {% extends "tracker/generic/create_ticket.html" %}
+{% block head %}
+{{block.super}}
+<script type="text/javascript">
+	$( document ).ready(function () {
+		$('#copytopreexpeditures').hide();
+	});
+</script>
+{% endblock %}

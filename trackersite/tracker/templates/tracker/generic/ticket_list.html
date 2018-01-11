@@ -10,7 +10,7 @@
 
 {% block content %}
 <p class="nav">{% trans "index" %} | <a href="{% url "topic_list" %}">{% trans "topics" %}</a> | <a href="{% url "transaction_list" %}">{% trans "transactions" %}</a> | <a href="{% url "user_list" %}">{% trans "users" %}</a></p>
-{% if user.is_authenticated %}<p class="tools screenonly"><a href="{% url "create_ticket" %}">{% trans "Create new ticket" %}</a></p>{% endif %}
+{% if user.is_authenticated %}<p class="tools screenonly"><a href="{% url "create_ticket" %}" class="btn btn-primary">{% trans "Create new ticket" %}</a></p>{% endif %}
 {% include "tracker/paginator.html" with url_name="ticket_list" extra_class="top" %}
 <h1>{% trans "Ticket list" %}</h1>
 
@@ -23,7 +23,15 @@
 {% endif %}
 {% block below_list %}{% endblock %}
 
+<div class="container">
 {% include "tracker/paginator.html" with url_name="ticket_list" extra_class="bottom" %}
+</div>
 
-{% if user.is_authenticated %}<p><a href="{% url "create_ticket" %}">{% trans "Create new ticket" %}</a></p>{% endif %}
+<div class="container">
+{% if user.is_authenticated %}
+<a href="{% url "create_ticket" %}"><button class="btn btn-primary">{% trans "Create new ticket" %}</button></a>
+<a href="{% url "importcsv" %}"><button class="btn btn-primary">{% trans "Import" %}</button></a>
+{% endif %}
+<a href="{% url "export" %}"><button class="btn btn-primary">{% trans "Export" %}</button></a>
 {% endblock content %}
+</div>

@@ -16,6 +16,9 @@ class MediaInfoAdmin(admin.TabularInline):
 class ExpeditureAdmin(admin.TabularInline):
     model = models.Expediture
 
+class PreexpeditureAdmin(admin.TabularInline):
+    model = models.Preexpediture
+
 class AddAckForm(forms.Form):
     ack_type = forms.ChoiceField(choices=models.ACK_TYPES, label=_('Type'))
     comment = forms.CharField(required=False, max_length=255, widget=forms.TextInput(attrs={'size':'40'}))
@@ -36,14 +39,14 @@ class TicketAdmin(admin.ModelAdmin):
         extra_context['add_ack_form'] = AddAckForm()
         return super(TicketAdmin, self).change_view(request, object_id, extra_context=extra_context)
     
-    exclude = ('updated', 'sort_date', 'cluster')
-    readonly_fields = ('state_str', 'payment_status', 'requested_user_details')
-    list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str', 'payment_status')
+    exclude = ('updated', 'sort_date', 'cluster', 'payment_status')
+    readonly_fields = ('state_str', 'requested_user_details')
+    list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
     list_display_links = ('summary',)
     list_filter = ('topic', 'payment_status')
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
-    inlines = [MediaInfoAdmin, ExpeditureAdmin]
+    inlines = [MediaInfoAdmin, PreexpeditureAdmin, ExpeditureAdmin]
     
     @staticmethod
     def _render(request, template_name, context_data):
@@ -55,6 +58,12 @@ class TicketAdmin(admin.ModelAdmin):
         if (request.method == 'POST'):
             form = AddAckForm(request.POST)
             if form.is_valid():
+                if form.cleaned_data['ack_type'] == 'content' and ticket.rating_percentage == None:
+                    return HttpResponse(json.dumps({
+                        'form':self._render(request, 'admin/tracker/ticket/ack_norating_error.html', {}),
+                        'id':-1,
+                        'success':False,
+                    }))
                 ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
                 return HttpResponse(json.dumps({
                     'form':self._render(request, 'admin/tracker/ticket/ack_line.html', {'ack':ack}),
@@ -84,6 +93,7 @@ class TicketAdmin(admin.ModelAdmin):
             url(r'^(?P<object_id>\d+)/acks/add/$', self.add_ack),
             url(r'^(?P<object_id>\d+)/acks/remove/$', self.remove_ack),
         ) + super(TicketAdmin, self).get_urls()
+
 admin.site.register(models.Ticket, TicketAdmin)
 
 class TopicAdmin(admin.ModelAdmin):
@@ -99,7 +109,7 @@ class TopicAdmin(admin.ModelAdmin):
         else:
             return request.user.topic_set.all()
     
-    list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses')
+    list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses')
     list_filter = ('grant', 'open_for_tickets')
     filter_horizontal = ('admin', )
 admin.site.register(models.Topic, TopicAdmin)
@@ -107,13 +117,6 @@ admin.site.register(models.Topic, TopicAdmin)
 class GrantAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('short_name',)}
 admin.site.register(models.Grant, GrantAdmin)
-
-class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('date', 'other_party', 'amount', 'description', 'ticket_ids', 'accounting_info')
-    list_display_links = ('amount', 'description')
-    filter_vertical = ('tickets', )
-    exclude = ('cluster', )
-admin.site.register(models.Transaction, TransactionAdmin)
 
 # piggypatch admin site to display our own index template with some bonus links
 admin.site.index_template = 'tracker/admin_index_override.html'

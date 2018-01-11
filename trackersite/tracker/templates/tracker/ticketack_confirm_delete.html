@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Edit confirmation" %}: {{ticketack.ticket.summary}}{% endblock %}
+{% block title %}{% trans "Remove" %}: {{ticketack.ticket.summary}}{% endblock %}
 
 {% block content %}
 <p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "ticket_detail" ticketack.ticket.id %}">{{ticketack.ticket.summary}}</a> &gt; {% trans "confirmations" %} &gt;</p>
-<h1>{% trans "Remove confirmation" %}: {{ticketack.get_ack_type_display}}</h1>
+<h1>{% trans "Remove" %}: {{ticketack.get_ack_type_display}}</h1>
 
 <p>{% trans "Type" %}: {{ticketack.get_ack_type_display}}
 <br>{% trans "Added" %}: {{ticketack.added}}
@@ -13,7 +13,7 @@
 {% if ticketack.comment %}<br>{% trans "Comment" %}: {{ticketack.comment}}{% endif %}</p>
 
 <form method="POST" action="">
-<input type="submit" value="{% trans "Remove confirmation" %}">
+<input class="form-control" type="submit" value="{% trans "Submit" %}">
 <a href="{{ticketack.ticket.get_absolute_url}}">{% trans "back to ticket" %}</a>
 {% csrf_token %}</form></p>
 {% endblock %}

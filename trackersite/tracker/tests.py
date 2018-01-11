@@ -11,42 +11,44 @@ from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
+import StringIO
+import csv
 
 from users.models import UserWrapper
-from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, Transaction, TrackerProfile, Document, Cluster
+from tracker.models import Ticket, Topic, FinanceStatus, Grant, MediaInfo, Expediture, TrackerProfile, Document, Cluster
 
 class SimpleTicketTest(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic1', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
-        
+
         self.ticket1 = Ticket(summary='foo', requested_text='req1', topic=self.topic, description='foo foo')
         self.ticket1.save()
-        
+
         self.ticket2 = Ticket(summary='bar', requested_text='req2', topic=self.topic, description='bar bar')
         self.ticket2.save()
-    
+
     def test_ticket_sort_date(self):
         # sort date is equal to event date (when applicable) and default to creation date
         self.assertEqual(self.ticket1.created.date(), self.ticket1.sort_date)
-        
+
         self.ticket1.event_date = datetime.date(2011, 10, 13)
         self.ticket1.save()
         self.assertEqual(datetime.date(2011, 10, 13), self.ticket1.sort_date)
-        
+
         self.ticket1.event_date = None
         self.ticket1.save()
         self.assertEqual(self.ticket1.created.date(), self.ticket1.sort_date)
-    
+
     def test_ticket_timestamps(self):
         self.assertTrue(self.ticket2.created > self.ticket1.created) # check ticket 2 is newer
-        
+
         # check new update of ticket changed updated ts
         old_updated = self.ticket1.updated
         self.ticket1.description = 'updated description'
         self.ticket1.save()
         self.assertTrue(self.ticket1.updated > old_updated)
-    
+
     def test_ticket_list(self):
         response = Client().get(reverse('ticket_list'))
         self.assertEqual(response.status_code, 200)
@@ -55,43 +57,43 @@ class SimpleTicketTest(TestCase):
     def test_ticket_detail(self):
         response = Client().get(reverse('ticket_detail', kwargs={'pk':self.ticket1.id}))
         self.assertEqual(response.status_code, 200)
-    
+
     def test_ticket_url_escape(self):
         url = 'http://meta.wikimedia.org/wiki/Mediagrant/Fotografie_um%C4%9Bleck%C3%BDch_pam%C3%A1tek_v_%C4%8Cesk%C3%A9m_Krumlov%C4%9B'
         self.ticket1.description = '<a href="%s">foo link</a>' % url
         self.ticket1.save()
         response = Client().get(reverse('ticket_detail', kwargs={'pk':self.ticket1.id}))
         self.assertContains(response, 'href="%s"' % url, 1)
-    
+
     def test_ticket_absolute_url(self):
         t = self.ticket1
         self.assertEqual(reverse('ticket_detail', kwargs={'pk':t.id}), t.get_absolute_url())
-    
+
     def test_topic_list(self):
         response = Client().get(reverse('topic_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['topic_list']), 1)
-    
+
     def test_javascript_topic_list(self):
         response = Client().get(reverse('topics_js'))
         self.assertEqual(response.status_code, 200)
-    
+
     def test_topic_detail(self):
         response = Client().get(reverse('topic_detail', kwargs={'pk':self.topic.id}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['topic'].ticket_set.all()), 2)
-    
+
     def test_topic_absolute_url(self):
         t = self.topic
         self.assertEqual(reverse('topic_detail', kwargs={'pk':t.id}), t.get_absolute_url())
-    
+
     def _test_one_feed(self, url_name, topic_id, expected_ticket_count):
         url_kwargs = {'pk':topic_id} if topic_id is not None else {}
         response = Client().get(reverse(url_name, kwargs=url_kwargs))
         self.assertEqual(response.status_code, 200)
         items_in_response = re.findall(r'<item>', response.content) # ugly, mostly works
         self.assertEqual(expected_ticket_count, len(items_in_response))
-    
+
     def test_feeds(self):
         self.ticket1.add_acks('user_content')
         self._test_one_feed('ticket_list_feed', None, 2)
@@ -99,33 +101,38 @@ class SimpleTicketTest(TestCase):
         self._test_one_feed('topic_ticket_feed', self.topic.id, 2)
         self._test_one_feed('topic_submitted_ticket_feed', self.topic.id, 1)
 
+    def test_historical(self):
+        self.ticket1.imported = True
+        self.ticket1.save()
+        self.assertEqual(self.ticket1.state_str(), 'historical')
+
 class OldRedirectTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
         self.ticket = Ticket(summary='foo', requested_text='req', topic=self.topic, description='foo foo')
         self.ticket.save()
-    
+
     def assert301(self, *args, **kwargs):
         kwargs['status_code'] = 301
         self.assertRedirects(*args, **kwargs)
-    
+
     def test_old_index(self):
         response = Client().get('/old/')
         self.assert301(response, '/', target_status_code=302) # 302 = now index is a non-permanent redirect
-    
+
     def test_topic_index(self):
         response = Client().get('/old/topics/')
         self.assert301(response, reverse('topic_list'))
-    
+
     def test_ticket(self):
         response = Client().get('/old/ticket/%s/' % self.ticket.id)
         self.assert301(response, self.ticket.get_absolute_url())
-    
+
     def test_new_ticket(self):
         response = Client().get('/old/ticket/new/')
         self.assert301(response, reverse('create_ticket'), target_status_code=302) # 302 = redirect to login
-    
+
     def test_topic(self):
         response = Client().get('/old/topic/%s/' % self.topic.id)
         self.assert301(response, self.topic.get_absolute_url())
@@ -134,16 +141,16 @@ class TicketSumTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
-        
+
     def test_empty_ticket(self):
         empty_ticket = Ticket(topic=self.topic, requested_text='someone', summary='empty ticket')
         empty_ticket.save()
-        
+
         self.assertEqual(0, empty_ticket.media_count()['objects'])
         self.assertEqual(0, empty_ticket.expeditures()['count'])
         self.assertEqual(0, self.topic.media_count()['objects'])
         self.assertEqual(0, self.topic.expeditures()['count'])
-    
+
     def test_full_ticket(self):
         full_ticket = Ticket(topic=self.topic, requested_text='someone', summary='full ticket')
         full_ticket.save()
@@ -152,7 +159,7 @@ class TicketSumTests(TestCase):
         full_ticket.mediainfo_set.create(description='Even more pictures', count=16)
         full_ticket.expediture_set.create(description='Some expense', amount=99)
         full_ticket.expediture_set.create(description='Some other expense', amount=101)
-        
+
         self.assertEqual({'objects': 3, 'media': 31}, full_ticket.media_count())
         self.assertEqual({'count': 2, 'amount': 200}, full_ticket.expeditures())
         self.assertEqual({'objects': 3, 'media': 31}, self.topic.media_count())
@@ -162,46 +169,52 @@ class TicketTests(TestCase):
     def setUp(self):
         self.open_topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.open_topic.save()
-        
+
         self.password = 'password'
         self.user = User(username='user')
         self.user.set_password(self.password)
         self.user.save()
-    
+
     def get_client(self):
         c = Client()
         c.login(username=self.user.username, password=self.password)
         return c
-    
+
     def test_ticket_creation_denied(self):
         response = Client().get(reverse('create_ticket'))
         self.assertEqual(302, response.status_code) # redirects to login
-    
+
     def test_ticket_creation(self):
         c = self.get_client()
         response = c.get(reverse('create_ticket'))
         self.assertEqual(200, response.status_code)
-        
+
         response = c.post(reverse('create_ticket'))
         self.assertEqual(400, response.status_code)
-        
+
         response = c.post(reverse('create_ticket'), {
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'summary', 'This field is required.')
-        
+        self.assertFormError(response, 'ticketform', 'deposit', 'This field is required.')
+
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': self.open_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
@@ -210,31 +223,34 @@ class TicketTests(TestCase):
         self.assertEqual(self.user.username, ticket.requested_by())
         self.assertEqual('draft', ticket.state_str())
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
-    
+
     def test_ticket_creation_with_media(self):
         c = self.get_client()
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': self.open_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
                 'mediainfo-0-description': 'image 1',
                 'mediainfo-0-url': 'http://www.example.com/image1.jpg',
                 'mediainfo-1-count': '',
-                'mediainfo-1-description': '', 
+                'mediainfo-1-description': '',
                 'mediainfo-1-url': '',
                 'mediainfo-2-count': '3',
                 'mediainfo-2-description': 'image 2 - group',
                 'mediainfo-2-url': 'http://www.example.com/imagegroup/',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(302, response.status_code)
         self.assertEqual(1, Ticket.objects.count())
         ticket = Ticket.objects.order_by('-created')[0]
-        
+
         media = ticket.mediainfo_set.order_by('description')
         self.assertEqual(2, len(media))
         self.assertEqual('image 1', media[0].description)
@@ -243,37 +259,112 @@ class TicketTests(TestCase):
         self.assertEqual('image 2 - group', media[1].description)
         self.assertEqual('http://www.example.com/imagegroup/', media[1].url)
         self.assertEqual(3, media[1].count)
-    
+
     def test_wrong_topic_id(self):
         c = self.get_client()
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': 'gogo',
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
-    
+
     def test_closed_topic(self):
         closed_topic = Topic(name='closed topic', open_for_tickets=False, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         closed_topic.save()
-        
+
         c = self.get_client()
         response = c.post(reverse('create_ticket'), {
                 'summary': 'ticket',
                 'topic': closed_topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertFormError(response, 'ticketform', 'topic', 'Select a valid choice. That choice is not one of the available choices.')
+
+    def test_too_big_deposit(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '100',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'ticketform', 'deposit', 'Your deposit is bigger than your preexpeditures')
+
+    def test_too_big_deposit2(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '50.01',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '1',
+                'preexpediture-0-description': 'foo',
+                'preexpediture-0-amount': '50',
+            })
+        self.assertEqual(200, response.status_code)
+        self.assertFormError(response, 'ticketform', 'deposit', 'Your deposit is bigger than your preexpeditures')
+
+    def test_correct_deposit(self):
+        c = self.get_client()
+        response = c.post(reverse('create_ticket'), {
+                'summary': 'ticket',
+                'topic': self.open_topic.id,
+                'description': 'some desc',
+                'deposit': '30.1',
+                'mediainfo-INITIAL_FORMS': '0',
+                'mediainfo-TOTAL_FORMS': '0',
+                'expediture-INITIAL_FORMS': '0',
+                'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '2',
+                'preexpediture-0-description': 'pre1',
+                'preexpediture-0-amount': '10.0',
+                'preexpediture-1-description': 'pre2',
+                'preexpediture-1-amount': '20.1',
+                'preexpediture-1-wage': 'true',
+            })
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(1, Ticket.objects.count())
+        ticket = Ticket.objects.order_by('-created')[0]
+        self.assertEqual(Decimal('30.1'), ticket.deposit)
+
+        preexpeditures = ticket.preexpediture_set.order_by('description')
+        self.assertEqual(2, len(preexpeditures))
+        self.assertEqual('pre1', preexpeditures[0].description)
+        self.assertEqual(Decimal(10), preexpeditures[0].amount)
+        self.assertEqual(False, preexpeditures[0].wage)
+        self.assertEqual('pre2', preexpeditures[1].description)
+        self.assertEqual(Decimal('20.1'), preexpeditures[1].amount)
+        self.assertEqual(True, preexpeditures[1].wage)
 
 class TicketEditTests(TestCase):
     def test_correct_choices(self):
@@ -286,67 +377,71 @@ class TicketEditTests(TestCase):
         t_assigned.save()
         ticket = Ticket(summary='ticket', topic=t_assigned)
         ticket.save()
-        
+
         from tracker.views import get_edit_ticket_form_class
         EditForm = get_edit_ticket_form_class(ticket)
         choices = {t.id for t in EditForm().fields['topic'].queryset.all()}
         wanted_choices = {t_open.id, t_assigned.id}
         self.assertEqual(wanted_choices, choices)
-    
+
     def test_ticket_edit(self):
         topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         topic.save()
-        
+
         password = 'my_password'
         user = User(username='my_user')
         user.set_password(password)
         user.save()
-        
+
         ticket = Ticket(summary='ticket', topic=topic, requested_user=None, requested_text='foo')
         ticket.save()
         ticket.add_acks('close')
-        
+
         c = Client()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(302, response.status_code) # should be redirect to login page
-        
+
         c.login(username=user.username, password=password)
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # denies edit of non-own ticket
-        
+
         ticket.requested_user = user
         ticket.requested_text = ''
         ticket.save()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(403, response.status_code) # still deny edit, ticket locked
-        
+
         ticket.ticketack_set.filter(ack_type='close').delete()
         response = c.get(reverse('edit_ticket', kwargs={'pk':ticket.id}))
         self.assertEqual(200, response.status_code) # now it should pass
-        
+
         # try to submit the form
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
-        
+
         # check changed ticket data
         ticket = Ticket.objects.get(id=ticket.id)
         self.assertEqual(user, ticket.requested_user)
         self.assertEqual('new summary', ticket.summary)
         self.assertEqual('new desc', ticket.description)
-        
+
         # b0rked media item aborts the submit
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'ticket',
                 'topic': ticket.topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '1',
                 'mediainfo-0-count': 'foo',
@@ -354,37 +449,43 @@ class TicketEditTests(TestCase):
                 'mediainfo-0-url': 'http://www.example.com/image1.jpg',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '0',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('Enter a whole number.', response.context['mediainfo'].forms[0].errors['count'][0])
-        
+
         # b0rked expediture items aborts the submit
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'ticket',
                 'topic': ticket.topic.id,
                 'description': 'some desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '0',
                 'expediture-INITIAL_FORMS': '0',
                 'expediture-TOTAL_FORMS': '1',
                 'expediture-0-description': 'foo',
                 'expediture-0-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertEqual(200, response.status_code)
         self.assertEqual('This field is required.', response.context['expeditures'].forms[0].errors['amount'][0])
-        
+
         # add some inline items
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '0',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-count': '',
                 'mediainfo-0-description': 'image 1',
                 'mediainfo-0-url': 'http://www.example.com/image1.jpg',
                 'mediainfo-1-count': '',
-                'mediainfo-1-description': '', 
+                'mediainfo-1-description': '',
                 'mediainfo-1-url': '',
                 'mediainfo-2-count': '3',
                 'mediainfo-2-description': 'image 2 - group',
@@ -395,6 +496,8 @@ class TicketEditTests(TestCase):
                 'expediture-0-amount': '10.50',
                 'expediture-1-description': 'hundred',
                 'expediture-1-amount': '100',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.order_by('description')
@@ -411,12 +514,13 @@ class TicketEditTests(TestCase):
         self.assertEqual(10.5, expeditures[0].amount)
         self.assertEqual('hundred', expeditures[1].description)
         self.assertEqual(100, expeditures[1].amount)
-        
+
         # edit inline items
         response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
                 'summary': 'new summary',
                 'topic': ticket.topic.id,
                 'description': 'new desc',
+                'deposit': '0',
                 'mediainfo-INITIAL_FORMS': '2',
                 'mediainfo-TOTAL_FORMS': '3',
                 'mediainfo-0-id': media[0].id,
@@ -429,7 +533,7 @@ class TicketEditTests(TestCase):
                 'mediainfo-1-description': 'image 2 - group',
                 'mediainfo-1-url': 'http://www.example.com/imagegroup/',
                 'mediainfo-2-count': '',
-                'mediainfo-2-description': '', 
+                'mediainfo-2-description': '',
                 'mediainfo-2-url': '',
                 'expediture-INITIAL_FORMS': '2',
                 'expediture-TOTAL_FORMS': '3',
@@ -442,6 +546,8 @@ class TicketEditTests(TestCase):
                 'expediture-1-amount': '101',
                 'expediture-2-description': '',
                 'expediture-2-amount': '',
+                'preexpediture-INITIAL_FORMS': '0',
+                'preexpediture-TOTAL_FORMS': '0',
             })
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
         media = ticket.mediainfo_set.all()
@@ -453,7 +559,49 @@ class TicketEditTests(TestCase):
         self.assertEqual(1, len(expeditures))
         self.assertEqual('hundred+1', expeditures[0].description)
         self.assertEqual(101, expeditures[0].amount)
-    
+
+        # add preexpeditures, and amount flag preack
+        deposit_amount = Decimal('12324.37')
+        ticket = Ticket.objects.get(id=ticket.id)
+        ticket.deposit = deposit_amount
+        ticket.preexpediture_set.create(description='some preexp', amount=15)
+        ticket.save()
+        ticket.add_acks('precontent')
+
+        # edit should work and ignore new data
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+            'summary': 'new summary',
+            'topic': ticket.topic.id,
+            'description': 'new desc',
+            'deposit': '333',
+            'mediainfo-INITIAL_FORMS': '0',
+            'mediainfo-TOTAL_FORMS': '0',
+            'expediture-INITIAL_FORMS': '0',
+            'expediture-TOTAL_FORMS': '0',
+            'preexpediture-INITIAL_FORMS': '0',
+            'preexpediture-TOTAL_FORMS': '0',
+        })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        ticket = Ticket.objects.get(id=ticket.id)
+        self.assertEqual(deposit_amount, ticket.deposit)
+        self.assertEqual(1, ticket.preexpediture_set.count())
+
+        # also, edit should work and not fail on missing preack-ignored fields
+        response = c.post(reverse('edit_ticket', kwargs={'pk':ticket.id}), {
+            'summary': 'new summary',
+            'topic': ticket.topic.id,
+            'description': 'new desc',
+            'mediainfo-INITIAL_FORMS': '0',
+            'mediainfo-TOTAL_FORMS': '0',
+            'expediture-INITIAL_FORMS': '0',
+            'expediture-TOTAL_FORMS': '0',
+        })
+        self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':ticket.id}))
+        ticket = Ticket.objects.get(id=ticket.id)
+        self.assertEqual(deposit_amount, ticket.deposit)
+        self.assertEqual(1, ticket.preexpediture_set.count())
+
+
 class TicketAckTests(TestCase):
     def setUp(self):
         self.grant = Grant.objects.create(full_name='g', short_name='g', slug='g')
@@ -463,53 +611,56 @@ class TicketAckTests(TestCase):
         self.user.set_password(self.password)
         self.user.save()
         self.ticket = Ticket.objects.create(summary='ticket', topic=self.topic, requested_user=self.user)
-    
+
     def test_ack_user_edit(self):
         # two user acks are possible
         self.assertEqual(
-            set(['user_content', 'user_docs']),
-            set([a.ack_type for a in self.ticket.possible_user_acks()])
+            {'user_precontent', 'user_content', 'user_docs'},
+            {a.ack_type for a in self.ticket.possible_user_acks()}
         )
-        
+
         # add some acks, now only user_content is possible to add
-        self.ticket.add_acks('user_docs')
-        self.assertEqual(['user_content'], [a.ack_type for a in self.ticket.possible_user_acks()])
-        
+        self.ticket.add_acks('user_docs', 'user_precontent')
+        self.assertEqual(
+            {'user_content',},
+            {a.ack_type for a in self.ticket.possible_user_acks()}
+        )
+
         # user_docs can be removed
         ud = self.ticket.ticketack_set.get(ack_type='user_docs')
         self.assertTrue(ud.user_removable)
-        
+
         # content can't be removed
         self.ticket.add_acks('content')
         cont = self.ticket.ticketack_set.get(ack_type='content')
         self.assertFalse(cont.user_removable)
-    
+
     def test_ack_user_delete(self):
         self.ticket.add_acks('user_docs')
         ud = self.ticket.ticketack_set.get(ack_type='user_docs')
-        
+
         c = Client()
         c.login(username=self.user.username, password=self.password)
         delete_url = reverse('ticket_ack_delete', kwargs={'pk':self.ticket.id, 'ack_id':ud.id})
         response = c.get(delete_url)
         self.assertEqual(response.status_code, 200)
-        
+
         response = c.post(delete_url)
         self.assertRedirects(response, reverse('ticket_detail', kwargs={'pk':self.ticket.id}))
         self.assertTrue('user_docs' not in self.ticket.ack_set())
-    
+
     def test_ack_not_deletable_by_anon(self):
         self.ticket.add_acks('user_docs')
         ud = self.ticket.ticketack_set.get(ack_type='user_docs')
-        
+
         c = Client()
         response = c.post(reverse('ticket_ack_delete', kwargs={'pk':self.ticket.id, 'ack_id':ud.id}))
         self.assertEqual(response.status_code, 403)
-    
+
     def test_ack_not_deletable_when_admin_only(self):
         self.ticket.add_acks('content')
         cont = self.ticket.ticketack_set.get(ack_type='content')
-        
+
         c = Client()
         c.login(username=self.user.username, password=self.password)
         response = c.post(reverse('ticket_ack_delete', kwargs={'pk':self.ticket.id, 'ack_id':cont.id}))
@@ -524,70 +675,70 @@ class TicketAckTests(TestCase):
         c = Client()
         response = c.get(reverse('topic_content_acks_per_user_csv'))
         self.assertEqual(response.status_code, 200)
-    
+
 class TicketEditLinkTests(TestCase):
     def setUp(self):
         self.topic = Topic(name='topic', grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
-        
+
         self.password = 'my_password'
         self.user = User(username='my_user')
         self.user.set_password(self.password)
         self.user.save()
-        
+
         self.ticket = Ticket(summary='ticket', topic=self.topic, requested_user=None, requested_text='foo')
         self.ticket.save()
-    
+
     def get_ticket_response(self):
         c = Client()
         c.login(username=self.user.username, password=self.password)
         response = c.get(reverse('ticket_detail', kwargs={'pk':self.ticket.id}))
         self.assertEqual(response.status_code, 200)
         return response
-    
+
     def test_clear_ticket(self):
         response = self.get_ticket_response()
         self.assertEqual(False, response.context['user_can_edit_ticket'])
         self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
-        
+
     def test_own_ticket(self):
         self.ticket.requested_user = self.user
         self.ticket.save()
         response = self.get_ticket_response()
         self.assertEqual(True, response.context['user_can_edit_ticket'])
         self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
-    
+
     def test_bare_admin(self):
         self.user.is_staff = True
         self.user.save()
         response = self.get_ticket_response()
         self.assertEqual(False, response.context['user_can_edit_ticket'])
         self.assertEqual(False, response.context['user_can_edit_ticket_in_admin'])
-    
+
     def test_tracker_supervisor(self):
         self.user.is_staff = True
         topic_content = ContentType.objects.get(app_label='tracker', model='Topic')
         self.user.user_permissions.add(Permission.objects.get(content_type=topic_content, codename='supervisor'))
         self.user.save()
-        
+
         response = self.get_ticket_response()
         self.assertEqual(False, response.context['user_can_edit_ticket'])
         self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
-        
+
     def test_total_supervisor(self):
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
-        
+
         response = self.get_ticket_response()
         self.assertEqual(False, response.context['user_can_edit_ticket'])
         self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
-    
+
     def test_own_topic(self):
         self.user.is_staff = True
         self.user.topic_set.add(self.topic)
         self.user.save()
-        
+
         response = self.get_ticket_response()
         self.assertEqual(False, response.context['user_can_edit_ticket'])
         self.assertEqual(True, response.context['user_can_edit_ticket_in_admin'])
@@ -596,13 +747,13 @@ class UserDetailsTest(TestCase):
     def setUp(self):
         self.topic = Topic(name='test_topic', open_for_tickets=True, ticket_media=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
-        
+
         self.user = User(username='user')
         self.user.save()
-        
+
         self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, description='foo foo')
         self.ticket.save()
-    
+
     def test_user_details(self):
         c = Client()
         response = c.get(UserWrapper(self.user).get_absolute_url())
@@ -613,17 +764,17 @@ class SummaryTest(TestCase):
     def setUp(self):
         self.user = User(username='user')
         self.user.save()
-        
-        self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
+
+        self.topic = Topic(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.topic.save()
-        
+
         self.ticket = Ticket(summary='foo', requested_user=self.user, topic=self.topic, rating_percentage=50)
         self.ticket.save()
         self.ticket.add_acks('content', 'docs', 'archive')
         self.ticket.expediture_set.create(description='foo', amount=200)
         self.ticket.expediture_set.create(description='foo', amount=100)
         self.ticket.mediainfo_set.create(description='foo', count=5)
-        
+
         self.ticket2 = Ticket(summary='foo', requested_user=self.user, topic=self.topic, rating_percentage=100)
         self.ticket2.save()
         self.ticket2.add_acks('content', 'docs', 'archive')
@@ -631,11 +782,12 @@ class SummaryTest(TestCase):
         self.ticket2.expediture_set.create(description='foo', amount=10)
         self.ticket2.mediainfo_set.create(description='foo', count=5)
         self.ticket2.mediainfo_set.create(description='foo', count=3)
-    
+
     def test_topic_ticket_counts(self):
         self.assertEqual({'unpaid':2}, self.topic.tickets_per_payment_status())
-        trans = Transaction.objects.create(date=datetime.date.today(), other=self.user, amount=150)
-        trans.tickets.add(self.ticket)
+        for e in self.ticket.expediture_set.all():
+			e.paid = True
+			e.save()
         self.assertEqual({'unpaid':1, 'paid':1}, self.topic.tickets_per_payment_status())
 
     def test_topic_ticket_counts2(self):
@@ -650,15 +802,15 @@ class SummaryTest(TestCase):
         self.ticket.ticketack_set.filter(ack_type='archive').delete()
         self.ticket.rating_percentage = None
         self.ticket.save()
-        
+
         self.assertEqual({'objects':1, 'media':5}, self.ticket.media_count())
         self.assertEqual({'count':2, 'amount':300}, self.ticket.expeditures())
         self.assertEqual(0, self.ticket.accepted_expeditures())
-        
+
         self.ticket.rating_percentage = 50
         self.ticket.save()
         self.assertEqual(0, self.ticket.accepted_expeditures())
-        
+
         self.ticket.add_acks('archive')
         self.assertEqual(150, self.ticket.accepted_expeditures())
 
@@ -666,306 +818,15 @@ class SummaryTest(TestCase):
         self.assertEqual({'objects':3, 'media':13}, self.topic.media_count())
         self.assertEqual({'count':4, 'amount':910}, self.topic.expeditures())
         self.assertEqual(150 + 610, self.topic.accepted_expeditures())
-    
+
     def test_user_summary(self):
         profile = self.user.trackerprofile
         self.assertEqual({'objects':3, 'media':13}, profile.media_count())
         self.assertEqual(150 + 610, profile.accepted_expeditures())
-        self.assertEqual({'count':0, 'amount':None}, profile.transactions())
-    
-    def test_transaction_summary(self):
-        def add_trans(amount):
-            self.user.transaction_set.create(date=datetime.date.today(), amount=amount, description='foo')
-        
-        add_trans(500)
-        self.assertEqual({'count':1, 'amount':500}, self.user.trackerprofile.transactions())
 
-class TransactionTest(TestCase):
-    
-    def setUp(self):
-        self.user = User.objects.create(username='user')
-        self.tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=500, other=self.user, description='some desc')
-        
-        # more transactions
-        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=-200, other=self.user, description='other')
-        self.user2 = User.objects.create(username='user2')
-        Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=300, other=self.user2, description='user2')
-    
-    def test_transaction_string(self):        
-        self.assertEqual(u"%s, 500 %s: some desc" % (self.tr.date, settings.TRACKER_CURRENCY), unicode(self.tr))
-    
-    def test_transaction_list(self):
-        c = Client()
-        response = c.get(reverse('transaction_list'))
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(600, response.context['total'])
-    
-    def test_transactions_csv(self):
-        c = Client()
-        response = c.get(reverse('transactions_csv'))
-        self.assertEqual(200, response.status_code)
-        self.assertEqual('text/csv', response['Content-Type'])
-        self.assertEqual(
-            "DATE;OTHER PARTY;AMOUNT CZK;DESCRIPTION;TICKETS;GRANTS;ACCOUNTING INFO\r\n"
-            + "2011-12-26;user2;300.00;user2;;;\r\n"
-            + "2011-12-25;user;-200.00;other;;;\r\n"
-            + "2011-12-24;user;500.00;some desc;;;\r\n", response.content)
-    
-    def test_user_list(self):
-        topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
-        ticket = Ticket.objects.create(summary='foo', requested_user=self.user2, topic=topic, rating_percentage=100)
-        ticket.add_acks('content', 'docs', 'archive')
-        ticket.expediture_set.create(description='exp', amount=300)
-        ticket.mediainfo_set.create(description='media', count=5)
-        
-        unt = Ticket.objects.create(summary='anon', topic=topic)
-        unt.mediainfo_set.create(description='media', count=3)
-        
-        c = Client()
-        response = c.get(reverse('user_list'))
-        self.assertEqual(200, response.status_code)
-        
-        expected_totals = {
-            'ticket_count': 2,
-            'media': {'objects':2, 'media':8},
-            'accepted_expeditures': 300,
-            'transactions': 600,
-        }
-        self.assertEqual(expected_totals, response.context['totals'])
-        
-        expected_unassigned = {
-            'ticket_count': 1,
-            'media': {'objects':1, 'media':3},
-            'accepted_expeditures': 0,
-        }
-        self.assertEqual(expected_unassigned, response.context['unassigned'])
-
-class ClusterTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create(username='user')
-        self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g'))
-        
-    
-    def test_simple_ticket(self):
-        ticket = Ticket.objects.create(summary='foo', topic=self.topic, rating_percentage=100)
-        ticket.add_acks('content')
-        tid = ticket.id
-        self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
-        
-        ticket.add_acks('docs', 'archive')
-        self.assertEqual('n_a', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':0, 'overpaid':0}, Cluster.cluster_sums())
-        
-        Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
-        self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(unpaid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':100, 'paid':0, 'overpaid':0}, Cluster.cluster_sums())
-        
-        tr = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=50, other=self.user, description='part one')
-        tr.tickets.add(ticket)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(unpaid=50, paid=50), self.topic.payment_summary())
-        self.assertEqual({'unpaid':50, 'paid':50, 'overpaid':0}, Cluster.cluster_sums())
-        
-        tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=50, other=self.user, description='part one')
-        tr.tickets.add(ticket)
-        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-        
-        tr = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=50, other=self.user, description='overkill')
-        tr.tickets.add(ticket)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(paid=100, overpaid=50), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':50}, Cluster.cluster_sums())
-        
-        c = Ticket.objects.get(id=tid).cluster
-        self.assertEqual(tid, c.id)
-        self.assertEqual(False, c.more_tickets)
-        self.assertEqual(100, c.total_tickets)
-        self.assertEqual(150, c.total_transactions)
-    
-    def test_rounding(self):
-        ticket = Ticket.objects.create(summary='foo', topic=self.topic, rating_percentage=37)
-        tid = ticket.id
-        Expediture.objects.create(ticket_id=tid, description='exp', amount=1075.50)
-        ticket.add_acks('content', 'docs', 'archive')
-        
-        self.assertEqual('unpaid', Ticket.objects.get(id=tid).payment_status)
-        
-        tr = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=397.94, other=self.user, description='payment')
-        tr.tickets.add(ticket)
-        self.assertEqual(Decimal('397.94'), ticket.accepted_expeditures())
-        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-
-    def test_rounding2(self):
-        ticket = Ticket.objects.create(summary='foo', topic=self.topic, rating_percentage=90)
-        tid = ticket.id
-        Expediture.objects.create(ticket_id=tid, description='exp', amount=859.50)
-        ticket.add_acks('content', 'docs', 'archive')
-        self.assertEqual(Decimal('773.55'), ticket.accepted_expeditures())
-    
-    def test_real_cluster(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
-        ticket1.add_acks('content', 'docs', 'archive')
-        tid1 = ticket1.id
-        Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
-        
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
-        ticket2.add_acks('content', 'docs', 'archive')
-        tid2 = ticket2.id
-        Expediture.objects.create(ticket_id=tid2, description='exp', amount=200)
-        
-        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
-        tr1.tickets.add(ticket1)
-        tr1.tickets.add(ticket2)
-        
-        # check there is a correct cluster
-        cid = min(tid1, tid2)
-        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
-        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
-        c = Ticket.objects.get(id=tid1).cluster
-        self.assertEqual(True, c.more_tickets)
-        self.assertEqual(300, c.total_tickets)
-        self.assertEqual(100, c.total_transactions)
-        
-        # check status
-        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual(FinanceStatus(unpaid=200, paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':200, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-        
-        # complete payment
-        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=200, other=self.user, description='pay2')
-        tr2.tickets.add(ticket2)
-        
-        # check cluster
-        self.assertEqual(cid, Ticket.objects.get(id=tid1).cluster.id)
-        self.assertEqual(cid, Ticket.objects.get(id=tid2).cluster.id)
-        self.assertEqual(cid, Transaction.objects.get(id=tr1.id).cluster.id)
-        self.assertEqual(cid, Transaction.objects.get(id=tr2.id).cluster.id)
-        c = Transaction.objects.get(id=tr2.id).cluster
-        self.assertEqual(True, c.more_tickets)
-        self.assertEqual(300, c.total_tickets)
-        self.assertEqual(300, c.total_transactions)
-        
-        # check status
-        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual(FinanceStatus(paid=300), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':0}, Cluster.cluster_sums())
-        
-        # overpay ticket1
-        tr1p = Transaction.objects.create(date=datetime.date(2011, 12, 26), amount=5, other=self.user, description='pay1plus')
-        tr1p.tickets.add(ticket1)
-        
-        self.assertEqual(cid, Transaction.objects.get(id=tr1p.id).cluster.id)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
-        
-        # separate clusters
-        tr1.tickets.remove(ticket2)
-        
-        self.assertEqual(tid1, Ticket.objects.get(id=tid1).cluster.id)
-        self.assertEqual(tid1, Transaction.objects.get(id=tr1.id).cluster.id)
-        self.assertEqual(tid1, Transaction.objects.get(id=tr1p.id).cluster.id)
-        self.assertEqual(tid2, Ticket.objects.get(id=tid2).cluster.id)
-        self.assertEqual(tid2, Transaction.objects.get(id=tr2.id).cluster.id)
-        
-        self.assertEqual(False, Ticket.objects.get(id=tid1).cluster.more_tickets)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid1).payment_status)
-        
-        self.assertEqual(False, Ticket.objects.get(id=tid2).cluster.more_tickets)
-        self.assertEqual('paid', Ticket.objects.get(id=tid2).payment_status)
-        
-        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
-        
-        # reconnect make ticket2 overpaid again
-        tr1.tickets.add(ticket2)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid2).payment_status)
-        self.assertEqual(FinanceStatus(paid=300, overpaid=5), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':300, 'overpaid':5}, Cluster.cluster_sums())
-
-    def test_cluster_transaction_delete(self):
-        ticket = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
-        ticket.add_acks('content', 'docs', 'archive')
-        tid = ticket.id
-        Expediture.objects.create(ticket_id=tid, description='exp', amount=100)
-        
-        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
-        tr1.tickets.add(ticket)
-        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-        
-        tr2 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=5, other=self.user, description='pay1plus')
-        tr2.tickets.add(ticket)
-        self.assertEqual('overpaid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(paid=100, overpaid=5), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':5}, Cluster.cluster_sums())
-        
-        # delete tr2 to make ticket 'paid' again
-        tr2.delete()
-        self.assertEqual('paid', Ticket.objects.get(id=tid).payment_status)
-        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-    
-    def test_cluster_ticket_delete(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
-        ticket1.add_acks('content', 'docs', 'archive')
-        tid1 = ticket1.id
-        Expediture.objects.create(ticket_id=tid1, description='exp', amount=100)
-        
-        # pay ticket with one transaction
-        tr1 = Transaction.objects.create(date=datetime.date(2011, 12, 25), amount=100, other=self.user, description='pay1')
-        tr1.tickets.add(ticket1)
-        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-        
-        # add another ticket to the transaction cluster
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
-        ticket2.add_acks('content', 'docs', 'archive')
-        Expediture.objects.create(ticket_id=ticket2.id, description='exp', amount=50)
-        tr1.tickets.add(ticket2)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual(FinanceStatus(unpaid=50, paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':50, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-        
-        # delete tr2 to make ticket 'paid' again
-        ticket2.delete()
-        self.assertEqual('paid', Ticket.objects.get(id=tid1).payment_status)
-        self.assertEqual(FinanceStatus(paid=100), self.topic.payment_summary())
-        self.assertEqual({'unpaid':0, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
-    
-    def test_fuzzy_cluster(self):
-        ticket1 = Ticket.objects.create(summary='one', topic=self.topic, rating_percentage=100)
-        ticket1.add_acks('content', 'docs', 'archive')
-        Expediture.objects.create(ticket_id=ticket1.id, description='exp', amount=100)
-        
-        ticket2 = Ticket.objects.create(summary='two', topic=self.topic, rating_percentage=100)
-        ticket2.add_acks('content', 'docs', 'archive')
-        Expediture.objects.create(ticket_id=ticket2.id, description='exp', amount=70)
-        
-        another_topic = Topic.objects.create(name='another_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
-        ticket3 = Ticket.objects.create(summary='three', topic=another_topic, rating_percentage=100)
-        ticket3.add_acks('content', 'docs', 'archive')
-        Expediture.objects.create(ticket_id=ticket3.id, description='exp', amount=50)
-        
-        trans = Transaction.objects.create(date=datetime.date(2011, 12, 24), amount=100, other=self.user, description='pay1')
-        trans.tickets.add(ticket1, ticket2, ticket3)
-        
-        self.assertEqual('partially_paid', Ticket.objects.get(id=ticket1.id).payment_status)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=ticket2.id).payment_status)
-        self.assertEqual('partially_paid', Ticket.objects.get(id=ticket3.id).payment_status)
-        self.assertEqual(FinanceStatus(fuzzy=True, unpaid=60, paid=50), self.topic.payment_summary())
-        self.assertEqual(FinanceStatus(fuzzy=True, unpaid=60, paid=50), another_topic.payment_summary())
-        self.assertEqual({'unpaid':120, 'paid':100, 'overpaid':0}, Cluster.cluster_sums())
+    def test_topic_finance(self):
+        response = Client().get(reverse('topic_finance'))
+        self.assertEqual(response.status_code, 200)
 
 class UserProfileTests(TestCase):
     def test_simple_create(self):
@@ -975,6 +836,117 @@ class UserProfileTests(TestCase):
         except TrackerProfile.DoesNotExist:
             self.assertTrue(False)
 
+class ImportTests(TestCase):
+
+    def get_test_data(self, type):
+        csvfile = StringIO.StringIO()
+        csvwriter = csv.writer(csvfile, delimiter=';')
+        if type == 'ticket':
+            csvwriter.writerow(['event_date', 'summary', 'topic', 'event_url', 'description', 'deposit'])
+            csvwriter.writerow([u'2010-04-23', u'Nazev ticketu', u'Nazev tematu', u'http://wikimedia.cz', u'Popis ticketu', u'0'])
+        elif type == 'topic':
+            csvwriter.writerow(['name', 'grant', 'new_tickets', 'media', 'preexpenses', 'expenses', 'description', 'form_description'])
+            csvwriter.writerow([u'Nazev tematu', u'Nazev grantu', u'True', u'True', u'True', u'True', u'Popis tematu', u'Popis formulare tematu'])
+        elif type == 'grant':
+            csvwriter.writerow(['full_name', 'short_name', 'slug', 'description'])
+            csvwriter.writerow([u'Nazev grantu', u'grant', u'grant', u'Popis'])
+        elif type == 'user':
+            csvwriter.writerow(['username', 'password', 'first_name', 'last_name', 'is_superuser', 'is_staff', 'is_active', 'email'])
+            csvwriter.writerow([u'username', u'Heslo', u'name', u'surname', u'False', u'False', u'True', u'emailova@adresa.cz'])
+        elif type == 'media':
+            csvwriter.writerow(['ticket_id', 'url', 'description', 'number'])
+            csvwriter.writerow(['1', 'http://wikimedia.cz', 'popis', '1'])
+        elif type == 'expense':
+            csvwriter.writerow(['ticket_id', 'description', 'amount', 'wage', 'accounting_info', 'paid'])
+            csvwriter.writerow(['1', 'popisek', '100', True, 'accounting info', False])
+        elif type == 'preexpense':
+            csvwriter.writerow(['ticket_id', 'description', 'amount', 'wage'])
+            csvwriter.writerow(['1', 'popisek', '100', True])
+        csvfile.seek(0)
+        return csvfile
+
+    def reset_attempt(self, type):
+        if type == 'ticket':
+            for t in Ticket.objects.all():
+                t.delete()
+        if type == 'topic':
+            for t in Topic.objects.all():
+                t.delete()
+        if type == 'grant':
+            for t in Grant.objects.all():
+                t.delete()
+        if type == 'user':
+            for t in User.objects.exclude(username='user').exclude(username='staffer').exclude(username='superuser'):
+                t.delete()
+        if type == 'media':
+            for t in MediaInfo.objects.all():
+                t.delete()
+        if type == 'expense':
+            for t in Expediture.objects.all():
+                t.delete()
+        if type == 'preexpense':
+            for t in Preexpediture.objects.all():
+                t.delete()
+
+
+    def test_access_rights(self):
+        user = {'user': User.objects.create(username='user'), 'password':'pw1'}
+        staffer = {'user': User.objects.create(username='staffer', is_staff=True), 'password':'pw2'}
+        superuser = {'user': User.objects.create(username='superuser', is_staff=True, is_superuser=True), 'password':'pw3'}
+        for u in (user, staffer, superuser):
+            u['user'].set_password(u['password'])
+            u['user'].save()
+        testConfigurations = [
+            {
+                'type': 'grant',
+                'normal': 403,
+                'staffer': 302,
+                'superuser': 302,
+            },
+            {
+                'type': 'topic',
+                'normal': 403,
+                'staffer': 302,
+                'superuser': 302,
+            },
+            {
+                'type': 'user',
+                'normal': 403,
+                'staffer': 403,
+                'superuser': 302,
+            },
+            {
+                'type': 'ticket',
+                'normal': 302,
+                'staffer': 302,
+                'superuser': 302
+            },
+        ]
+        for testConfiguration in testConfigurations:
+            c = Client()
+            c.login(username=user['user'].username, password=user['password']) # Login with normal user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['normal'], response.status_code)
+            self.reset_attempt(testConfiguration['type'])
+            c = Client()
+            c.login(username=staffer['user'].username, password=staffer['password']) # Login with staffer user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['staffer'], response.status_code)
+            self.reset_attempt(testConfiguration['type'])
+            c = Client()
+            c.login(username=superuser['user'].username, password=superuser['password']) # Login with superuser user account
+            response = c.post(reverse('importcsv'), {
+                'type': testConfiguration['type'],
+                'csvfile': self.get_test_data(testConfiguration['type'])
+            })
+            self.assertEqual(testConfiguration['superuser'], response.status_code)
+
 class DocumentAccessTests(TestCase):
     def setUp(self):
         self.owner = {'user': User.objects.create(username='ticket_owner'), 'password':'pw1'}
@@ -982,14 +954,14 @@ class DocumentAccessTests(TestCase):
         for u in (self.owner, self.other_user):
             u['user'].set_password(u['password'])
             u['user'].save()
-    
+
         self.topic = Topic.objects.create(name='test_topic', ticket_expenses=True, grant=Grant.objects.create(full_name='g', short_name='g', slug='g'))
         self.ticket = Ticket.objects.create(summary='ticket', topic=self.topic, requested_user=self.owner['user'])
-        
+
         self.doc = {'name':'test.txt', 'content_type':'text/plain', 'payload':'hello, world!'}
         document = Document(ticket=self.ticket, filename=self.doc['name'], size=len(self.doc['payload']), content_type=self.doc['content_type'])
         document.payload.save(self.doc['name'], ContentFile(self.doc['payload']))
-    
+
     def check_user_access(self, user, can_see, can_edit):
         c = Client()
         if user != None:
@@ -997,42 +969,42 @@ class DocumentAccessTests(TestCase):
             deny_code = 403
         else:
             deny_code = 302
-        
+
         response = c.get(reverse('ticket_detail', kwargs={'pk':self.ticket.id}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['user_can_see_documents'], can_see)
         self.assertEqual(response.context['user_can_edit_documents'], can_edit)
-        
+
         response = c.get(reverse('edit_ticket_docs', kwargs={'pk':self.ticket.id}))
         self.assertEqual(response.status_code, {True:200, False:deny_code}[can_edit])
-        
+
         response = c.get(reverse('upload_ticket_doc', kwargs={'pk':self.ticket.id}))
         self.assertEqual(response.status_code, {True:200, False:deny_code}[can_edit])
-        
+
         response = c.get(reverse('download_document', kwargs={'ticket_id':self.ticket.id, 'filename':self.doc['name']}))
         if can_see:
             self.assertEqual(response.status_code, 200)
             self.assertEqual(''.join(response.streaming_content), self.doc['payload'])
         else:
             self.assertEqual(response.status_code, deny_code)
-        
-    
+
+
     def test_anonymous_user_access(self):
         self.check_user_access(user=None, can_see=False, can_edit=False)
-    
+
     def test_unrelated_user_access(self):
         self.check_user_access(user=self.other_user, can_see=False, can_edit=False)
-    
+
     def test_ticket_owner_access(self):
         self.check_user_access(user=self.owner, can_see=True, can_edit=True)
-    
+
     def test_auditor_access(self):
         topic_content = ContentType.objects.get(app_label='tracker', model='Document')
         ou = self.other_user['user']
         ou.user_permissions.add(Permission.objects.get(content_type=topic_content, codename='see_all_docs'))
         ou.save()
         self.check_user_access(user=self.other_user, can_see=True, can_edit=False)
-    
+
     def test_supervisor_access(self):
         topic_content = ContentType.objects.get(app_label='tracker', model='Document')
         ou = self.other_user['user']

@@ -1,9 +1,9 @@
 {% load i18n %}
 {% if is_paginated %}
-<ul class="paginator {{extra_class}}">
+<ul class="pagination {{extra_class}}">
 {% if page_obj.has_previous %}<li class="page"><a href="{% if page_obj.previous_page_number != 1 %}{% url url_name page=page_obj.previous_page_number %}{% else %}{% url url_name %}{% endif %}">&larr; {% trans "previous" %}</a></li>{% endif %}
 {% for pg in paginator.page_range %}
-{% if pg != page_obj.number %}<li class="page"><a href="{% if pg != 1 %}{% url url_name page=pg %}{% else %}{% url url_name %}{% endif %}">{{pg}}</a></li>{% else %}<li class="page selected">{{pg}}</li>{% endif %}
+{% if pg != page_obj.number %}<li class="page"><a href="{% if pg != 1 %}{% url url_name page=pg %}{% else %}{% url url_name %}{% endif %}">{{pg}}</a></li>{% else %}<li class="page active"><a href="#">{{pg}}</a></li>{% endif %}
 {% endfor %}
 {% if page_obj.has_next %}<li class="page"><a href="{% url url_name page=page_obj.next_page_number %}">{% trans "next" %} &rarr;</a></li>{% endif %}
 </ul>
