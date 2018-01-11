@@ -208,6 +208,8 @@ class Ticket(CachedModel):
         else:
             if 'user_precontent' in acks:
                 return _('waiting for preapproval')
+            elif 'user_content' in acks:
+                return _('waiting for approval')
             else:
                 return _('draft')
     state_str.admin_order_field = 'state'
