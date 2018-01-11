@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-10 15:26+0100\n"
+"POT-Creation-Date: 2018-01-11 07:14+0100\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -126,7 +126,7 @@ msgstr "neplaceno"
 msgid "partially paid"
 msgstr "částečně proplaceno"
 
-#: tracker/models.py:27 tracker/models.py:511
+#: tracker/models.py:27 tracker/models.py:512
 #: tracker/templates/tracker/export.html:240
 #: tracker/templates/tracker/topic_finance.html:17
 #: tracker/templates/tracker/topic_table.html:15
@@ -175,7 +175,7 @@ msgstr "archivováno"
 msgid "closed"
 msgstr "uzavřeno"
 
-#: tracker/models.py:105 tracker/models.py:679
+#: tracker/models.py:105 tracker/models.py:680
 msgid "created"
 msgstr "vytvořeno"
 
@@ -264,9 +264,9 @@ msgstr "odkaz na akci"
 msgid "Link to a public page describing the event, if it exist"
 msgstr "Odkažte na veřejnou stránku popisující akci, pokud existuje"
 
-#: tracker/models.py:117 tracker/models.py:401 tracker/models.py:471
-#: tracker/models.py:494 tracker/models.py:508 tracker/models.py:529
-#: tracker/models.py:619 tracker/views.py:406
+#: tracker/models.py:117 tracker/models.py:401 tracker/models.py:472
+#: tracker/models.py:495 tracker/models.py:509 tracker/models.py:530
+#: tracker/models.py:620 tracker/views.py:406
 msgid "description"
 msgstr "popis"
 
@@ -304,10 +304,8 @@ msgid "payment status"
 msgstr "stav platby"
 
 #: tracker/models.py:124
-#, fuzzy
-#| msgid "Import"
 msgid "imported"
-msgstr "Import"
+msgstr "importovaný"
 
 #: tracker/models.py:124
 msgid "Was this ticket imported from older Tracker version?"
@@ -315,7 +313,7 @@ msgstr ""
 
 #: tracker/models.py:186
 msgid "historical"
-msgstr ""
+msgstr "historický"
 
 #: tracker/models.py:195
 msgid "waiting for content rating"
@@ -361,7 +359,7 @@ msgstr "stav"
 msgid "E-mail"
 msgstr "E-mail"
 
-#: tracker/models.py:238 tracker/models.py:580
+#: tracker/models.py:238 tracker/models.py:581
 #: tracker/templates/tracker/admin_user_list.html:29
 #: tracker/templates/tracker/admin_user_list.html:32
 msgid "Other contact"
@@ -436,7 +434,7 @@ msgstr "plánované výdaje tiketu"
 msgid "Does this topic track preexpenses?"
 msgstr "Používá tohle téma u tiketů informace o plánovaných výdajích?"
 
-#: tracker/models.py:401 tracker/models.py:471
+#: tracker/models.py:401 tracker/models.py:472
 msgid ""
 "Detailed description; HTML is allowed for now, line breaks are auto-parsed"
 msgstr "Detailní popis; HTML je zatím povoleno, konce řádků jsou zachovány"
@@ -457,7 +455,7 @@ msgstr "správce tématu"
 msgid "Selected users will have administration access to this topic."
 msgstr "Zvolení uživatelé budou mít správcovský přístup k tématu."
 
-#: tracker/models.py:459 tracker/templates/tracker/ticket_common_detail.html:8
+#: tracker/models.py:460 tracker/templates/tracker/ticket_common_detail.html:8
 #: tracker/templates/tracker/ticket_table.html:13
 #: tracker/templates/tracker/ticket_table.html:26
 #: tracker/templates/tracker/topic_content_acks_per_user.html:14
@@ -466,37 +464,37 @@ msgstr "Zvolení uživatelé budou mít správcovský přístup k tématu."
 msgid "Topic"
 msgstr "Téma"
 
-#: tracker/models.py:460 tracker/templates/tracker/export.html:53
+#: tracker/models.py:461 tracker/templates/tracker/export.html:53
 #: tracker/templates/tracker/export.html:204
 #: tracker/templates/tracker/import.html:26
 msgid "Topics"
 msgstr "Témata"
 
-#: tracker/models.py:468
+#: tracker/models.py:469
 msgid "full name"
 msgstr "dlouhý název"
 
-#: tracker/models.py:468
+#: tracker/models.py:469
 msgid "Full name for headlines and such"
 msgstr "Plné jméno pro nadpisy a podoble"
 
-#: tracker/models.py:469
+#: tracker/models.py:470
 msgid "short name"
 msgstr "krátký název"
 
-#: tracker/models.py:469
+#: tracker/models.py:470
 msgid "Shorter name for use in tables"
 msgstr "Krátké jméno pro použití v tabulkách"
 
-#: tracker/models.py:470
+#: tracker/models.py:471
 msgid "slug"
 msgstr "slug"
 
-#: tracker/models.py:470
+#: tracker/models.py:471
 msgid "Shortcut for usage in URLs"
 msgstr "Zkratka pro použití v adresách URL"
 
-#: tracker/models.py:480 tracker/templates/tracker/ticket_table.html:12
+#: tracker/models.py:481 tracker/templates/tracker/ticket_table.html:12
 #: tracker/templates/tracker/ticket_table.html:25
 #: tracker/templates/tracker/topic_content_acks_per_user.html:13
 #: tracker/templates/tracker/topic_finance.html:10
@@ -505,119 +503,119 @@ msgstr "Zkratka pro použití v adresách URL"
 msgid "Grant"
 msgstr "Grant"
 
-#: tracker/models.py:481 tracker/templates/tracker/export.html:133
+#: tracker/models.py:482 tracker/templates/tracker/export.html:133
 #: tracker/templates/tracker/import.html:34
 msgid "Grants"
 msgstr "Granty"
 
-#: tracker/models.py:493 tracker/models.py:507 tracker/models.py:528
+#: tracker/models.py:494 tracker/models.py:508 tracker/models.py:529
 msgid "ticket"
 msgstr "tiket"
 
-#: tracker/models.py:493
+#: tracker/models.py:494
 msgid "Ticket this media info belongs to"
 msgstr "Tiket ke kterému patří tato média"
 
-#: tracker/models.py:494
+#: tracker/models.py:495
 msgid "Item description to show"
 msgstr "Popis položky do seznamu"
 
-#: tracker/models.py:495
+#: tracker/models.py:496
 msgid "URL"
 msgstr "URL"
 
-#: tracker/models.py:495
+#: tracker/models.py:496
 msgid "Link to media files"
 msgstr "Odkaz na soubory"
 
-#: tracker/models.py:496
+#: tracker/models.py:497
 msgid "count"
 msgstr "počet"
 
-#: tracker/models.py:496
+#: tracker/models.py:497
 msgid "Number of files"
 msgstr "Počet souborů"
 
-#: tracker/models.py:502 tracker/models.py:503
+#: tracker/models.py:503 tracker/models.py:504
 msgid "Ticket media"
 msgstr "Média tiketu"
 
-#: tracker/models.py:507
+#: tracker/models.py:508
 msgid "Ticket this expediture belongs to"
 msgstr "Tiket ke kterému tento reálný výdaj patří"
 
-#: tracker/models.py:508
+#: tracker/models.py:509
 msgid "Description of this expediture"
 msgstr "Popis tohoto reálného výdaje"
 
-#: tracker/models.py:509 tracker/models.py:530 tracker/models.py:618
+#: tracker/models.py:510 tracker/models.py:531 tracker/models.py:619
 msgid "amount"
 msgstr "částka"
 
-#: tracker/models.py:509
+#: tracker/models.py:510
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:510 tracker/models.py:620
+#: tracker/models.py:511 tracker/models.py:621
 msgid "accounting info"
 msgstr "účetní údaje"
 
-#: tracker/models.py:510
+#: tracker/models.py:511
 msgid "Accounting info, this is editable only through admin field"
 msgstr "Účetní poznámky; toto pole lze editovat jen v administraci"
 
-#: tracker/models.py:512 tracker/models.py:531
+#: tracker/models.py:513 tracker/models.py:532
 msgid "wage"
 msgstr "mzdový"
 
-#: tracker/models.py:515 tracker/models.py:534
+#: tracker/models.py:516 tracker/models.py:535
 #, python-format
 msgid "%(description)s (%(amount)s %(currency)s)"
 msgstr "%(description)s (%(amount)s %(currency)s)"
 
-#: tracker/models.py:523
+#: tracker/models.py:524
 msgid "Ticket expediture"
 msgstr "Reálný výdaj tiketu"
 
-#: tracker/models.py:524
+#: tracker/models.py:525
 msgid "Ticket expeditures"
 msgstr "Reálné výdaje tiketu"
 
-#: tracker/models.py:528
+#: tracker/models.py:529
 msgid "Ticket this preexpediture belogns to"
 msgstr "Tiket ke kterému tento plánovaný výdaj patří"
 
-#: tracker/models.py:529
+#: tracker/models.py:530
 msgid "Description of this preexpediture"
 msgstr "Popis tohoto plánovaného výdaje"
 
-#: tracker/models.py:530
+#: tracker/models.py:531
 msgid "Preexpediture amount in"
 msgstr "Položka rozpočtu v "
 
-#: tracker/models.py:537
+#: tracker/models.py:538
 msgid "Ticket preexpediture"
 msgstr "Plánovaný výdaj tiketu"
 
-#: tracker/models.py:538
+#: tracker/models.py:539
 msgid "Ticket preexpeditures"
 msgstr "Plánované výdaje tiketu"
 
-#: tracker/models.py:547 tracker/views.py:405
+#: tracker/models.py:548 tracker/views.py:405
 msgid "We need a sane file name, such as my-invoice123.jpg"
 msgstr ""
 "Jméno souboru musí vypadat jako jméno bez speciálních znaků; použijte něco "
 "jako faktura-za-ocet123.jpg"
 
-#: tracker/models.py:579 tracker/templates/tracker/admin_user_list.html:28
+#: tracker/models.py:580 tracker/templates/tracker/admin_user_list.html:28
 msgid "Bank account"
 msgstr "Bankovní účet"
 
-#: tracker/models.py:579
+#: tracker/models.py:580
 msgid "Bank account information for money transfers"
 msgstr "Údaje o účtu pro bankovní převody"
 
-#: tracker/models.py:580
+#: tracker/models.py:581
 msgid ""
 "Other contact such as wiki account; can be useful in case of topic "
 "administrators need to clarify some information"
@@ -625,38 +623,38 @@ msgstr ""
 "Další kontakt (např. účet na wiki); může se hodit třeba pokud budou "
 "schvalovatelé potřebovat nějaká upřesnění"
 
-#: tracker/models.py:581 tracker/templates/tracker/admin_user_list.html:30
+#: tracker/models.py:582 tracker/templates/tracker/admin_user_list.html:30
 msgid "Other identification"
 msgstr "Další identifikační údaje"
 
-#: tracker/models.py:581
+#: tracker/models.py:582
 msgid ""
 "Address, or other identification information, so we know who are we sending "
 "money to"
 msgstr ""
 "Adresa, rodné číslo, nebo něco podobného pro případné doplnění do účetnictví"
 
-#: tracker/models.py:615
+#: tracker/models.py:616
 msgid "date"
 msgstr "datum"
 
-#: tracker/models.py:616 tracker/models.py:635
+#: tracker/models.py:617 tracker/models.py:636
 msgid "other party"
 msgstr "druhá strana"
 
-#: tracker/models.py:616
+#: tracker/models.py:617
 msgid "The other party; user who sent or received the payment"
 msgstr "Druhá strana převodu: uživatel který poslal nebo dostal platbu"
 
-#: tracker/models.py:617
+#: tracker/models.py:618
 msgid "other party (text)"
 msgstr "druhá strana (text)"
 
-#: tracker/models.py:617
+#: tracker/models.py:618
 msgid "The other party; this text is used when user is not selected"
 msgstr "Druhá strana převodu; tento text je použit není-li vyplněn uživatel"
 
-#: tracker/models.py:618
+#: tracker/models.py:619
 msgid ""
 "Payment amount; Positive value means transaction to the user, negative is a "
 "transaction from the user"
@@ -664,11 +662,11 @@ msgstr ""
 "Převedená částka. Kladná hodnota znamená platbu uživateli, záporná že "
 "uživatel dal peníze nám"
 
-#: tracker/models.py:619
+#: tracker/models.py:620
 msgid "Description of this transaction"
 msgstr "Popis převodu"
 
-#: tracker/models.py:620 tracker/templates/feeds/transaction_description.html:6
+#: tracker/models.py:621 tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:51
 #: tracker/templates/tracker/ticket_detail.html:28
@@ -677,25 +675,25 @@ msgstr "Popis převodu"
 msgid "Accounting info"
 msgstr "Účetní údaje"
 
-#: tracker/models.py:621
+#: tracker/models.py:622
 msgid "related tickets"
 msgstr "související tikety"
 
-#: tracker/models.py:621
+#: tracker/models.py:622
 msgid "Tickets this trackaction is related to"
 msgstr "Tikety ke kterým se tato platba vztahuje"
 
-#: tracker/models.py:657
+#: tracker/models.py:658
 msgid "Transaction"
 msgstr "Platba"
 
-#: tracker/models.py:658 tracker/templates/tracker/cluster_detail.html:18
+#: tracker/models.py:659 tracker/templates/tracker/cluster_detail.html:18
 #: tracker/templates/tracker/ticket_detail.html:26
 #: tracker/templates/tracker/user_detail.html:19
 msgid "Transactions"
 msgstr "Platby"
 
-#: tracker/models.py:681
+#: tracker/models.py:682
 msgid "comment"
 msgstr "komentář"
 
@@ -1363,16 +1361,13 @@ msgstr "Shrnutí"
 
 #: tracker/templates/tracker/ticket_table.html:16
 #: tracker/templates/tracker/ticket_table.html:28
-#, fuzzy
-#| msgid "Accepted expeditures"
 msgid "Requested expeditures"
-msgstr "Schválené reálné výdaje"
+msgstr "Požadované reálné výdaje"
 
 #: tracker/templates/tracker/ticket_table.html:18
-#, fuzzy
-#| msgid "Preexpeditures"
+#: tracker/templates/tracker/ticket_table.html:30
 msgid "Paid expeditures"
-msgstr "Plánované výdaje"
+msgstr "Zaplacené výdaje"
 
 #: tracker/templates/tracker/ticket_table.html:19
 msgid "Status"
@@ -1401,12 +1396,6 @@ msgstr "Počet souborů"
 #: tracker/templates/tracker/user_list.html:12
 msgid "Fil."
 msgstr "Soub."
-
-#: tracker/templates/tracker/ticket_table.html:30
-#, fuzzy
-#| msgid "Preexpeditures"
-msgid "Paid expedtures"
-msgstr "Plánované výdaje"
 
 #: tracker/templates/tracker/ticketack_add.html:7
 #: tracker/templates/tracker/ticketack_confirm_delete.html:7
@@ -1885,6 +1874,9 @@ msgstr ""
 #, python-format
 msgid "User %s created."
 msgstr "Vytvořen uživatel %s."
+
+#~ msgid "Paid expedtures"
+#~ msgstr "Placené výdaje"
 
 #~ msgid "Paid out in total"
 #~ msgstr "Vyplaceno celkem"
