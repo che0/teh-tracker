@@ -186,7 +186,7 @@ class Ticket(CachedModel):
             return _('historical')
 
         acks = self.ack_set()
-        if 'closed' in acks:
+        if 'close' in acks:
             return _('closed')
         elif 'archive' in acks:
             return _('archived')
