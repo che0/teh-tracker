@@ -799,7 +799,7 @@ class SummaryTest(TestCase):
         self.assertEqual({'unpaid':2}, self.topic.tickets_per_payment_status())
 
     def test_ticket_summary(self):
-        self.ticket.ticketack_set.filter(ack_type='archive').delete()
+        self.ticket.ticketack_set.filter(ack_type='content').delete()
         self.ticket.rating_percentage = None
         self.ticket.save()
 
@@ -811,7 +811,7 @@ class SummaryTest(TestCase):
         self.ticket.save()
         self.assertEqual(0, self.ticket.accepted_expeditures())
 
-        self.ticket.add_acks('archive')
+        self.ticket.add_acks('content')
         self.assertEqual(150, self.ticket.accepted_expeditures())
 
     def test_topic_summary(self):
