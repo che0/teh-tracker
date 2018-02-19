@@ -479,6 +479,15 @@ class Grant(models.Model):
     def get_absolute_url(self):
         return reverse('grant_detail', kwargs={'slug':self.slug})
 
+    def total_tickets(self):
+        return sum([x.ticket_set.count() for x in self.topic_set.all()])
+
+    def total_paid_wages(self):
+        return sum([x.paid_wages() for x in self.topic_set.all()])
+
+    def total_paid_together(self):
+        return sum([x.paid_together() for x in self.topic_set.all()])
+
     class Meta:
         verbose_name = _('Grant')
         verbose_name_plural = _('Grants')

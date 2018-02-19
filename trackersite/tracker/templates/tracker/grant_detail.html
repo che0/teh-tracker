@@ -10,6 +10,6 @@
 <h1>{{grant.full_name}}</h1>
 {% if grant.description %}<div>{{ grant.description|safe|linebreaks }}</div>{% endif %}
 
-{% include "tracker/topic_table.html" with topic_list=grant.topic_set.all %}
+{% include "tracker/topic_table.html" with topic_list=grant.topic_set.all grant=grant %}
 
 {% endblock content %}

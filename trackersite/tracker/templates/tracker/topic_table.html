@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if topic_list %}
-<table class="table table-striped table-hover"><tr>
+<table class="table table-striped table-hover"><thead><tr>
 <th rowspan="2">{% trans "Topic" %}</th>
 {% if show_grants %}<th rowspan="2"><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
 <th rowspan="2">{% trans "Tickets" %}</th>
@@ -14,7 +14,8 @@
 <th><abbr title="{% trans "partially paid" %}">&lt;</abbr></th>
 <th><abbr title="{% trans "paid" %}">=</abbr></th>
 <th><abbr title="{% trans "overpaid" %}">&gt;</abbr></th>
-</tr>
+</tr></thead>
+<tbody>
 {% for topic in topic_list %}{% with tpps=topic.tickets_per_payment_status %}
 <tr>
 <td><a href="{% url "topic_detail" topic.id %}">{{topic.name}}</a></td>
@@ -30,6 +31,21 @@
 <td>{% for admin in topic.admin.all %}{{ admin.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 </tr>
 {% endwith %}{% endfor %}
+</tbody>
+{% if grant %}
+<tr>
+<td></td>
+<td>{{grant.total_tickets}}</td>
+<td>{{grant.total_paid_wages}} {% trans "CZK" %}</td>
+<td>{{grant.total_paid_together}} {% trans "CZK" %}</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+{% endif %}
 </table>
 
 {% else %}
