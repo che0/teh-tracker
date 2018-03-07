@@ -438,20 +438,16 @@ class Topic(CachedModel):
     def paid_wages(self):
         tosum = []
         for ticket in self.ticket_set.filter(id__gt=0):
-            ticketsum = []
             for expediture in ticket.expediture_set.filter(wage=True, paid=True):
-                ticketsum.append(expediture.amount)
-            tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
+                tosum.append(expediture.amount)
         return sum(tosum)
 
     @cached_getter
     def paid_together(self):
         tosum = []
         for ticket in self.ticket_set.filter(id__gt=0):
-            ticketsum = []
             for expediture in ticket.expediture_set.filter(paid=True):
-                ticketsum.append(expediture.amount)
-            tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
+                tosum.append(expediture.amount)
         return sum(tosum)
 
     @cached_getter
