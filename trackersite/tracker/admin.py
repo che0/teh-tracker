@@ -118,5 +118,9 @@ class GrantAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('short_name',)}
 admin.site.register(models.Grant, GrantAdmin)
 
+class TrackerProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'bank_account', 'other_contact', 'other_identification')
+admin.site.register(models.TrackerProfile, TrackerProfileAdmin)
+
 # piggypatch admin site to display our own index template with some bonus links
 admin.site.index_template = 'tracker/admin_index_override.html'

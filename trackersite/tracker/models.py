@@ -620,6 +620,9 @@ class TrackerProfile(models.Model):
     def transactions(self):
         return Transaction.objects.filter(other=self.user).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
+    def __unicode__(self):
+        return unicode(self.user)
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, **kwargs):
     if not kwargs.get('created', False):
