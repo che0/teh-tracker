@@ -7,7 +7,9 @@
 {% trans "Requested by" %}: {% if active_links %}{{ticket.requested_by_html}}{% else %}{{ticket.requested_by}}{% endif %}<br />
 {% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
 {% trans "State" %}: {{ ticket.state_str }}<br />
-{% if ticket.is_concept == False %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />{% endif %}
+{% if ticket.is_concept == False %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
+{% trans "Report URL" %}: {% if ticket.report_url == "" %}{% trans "No report filled" %}{% else %}<a href="{{ticket.report_url}}">{{ticket.report_url}}</a>{% endif %}<br>
+{% endif %}
 {% trans "Deposit" %}: {{ ticket.deposit }} {% trans "CZK" %}<br />
 {% if ticket.event_url %}{% trans "Event URL" %}: <a href="{{ ticket.event_url }}">{{ ticket.event_url }}</a><br />{% endif %}
 {% if "content" in ticket.ack_set %}<span {% if ticket.rating_percentage < 100 %}class="ratingpercentageunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;% </span><br /><br />{% endif %}
