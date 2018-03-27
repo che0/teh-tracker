@@ -155,7 +155,7 @@ class Ticket(CachedModel):
             self.sort_date = self.created.date()
         else:
             self.sort_date = datetime.date.today()
-        
+
         if not just_payment_status:
             self.update_payment_status(save_afterwards=False)
 
@@ -178,6 +178,9 @@ class Ticket(CachedModel):
                 if ticket.custom_state != '':
                     result.append(ticket)
         return result
+
+    def is_concept(self):
+        return len(self.ack_set()) == 0
 
     def state_str(self):
         if self.custom_state:
@@ -289,7 +292,7 @@ class Ticket(CachedModel):
     def can_edit_documents(self, user):
         """ Can given user edit documents belonging to this ticket? """
         return (user == self.requested_user) or user.has_perm('tracker.edit_all_docs')
-    
+
     def can_copy_preexpeditures(self, user):
         return self.can_edit(user) and 'content' not in self.ack_set()
 
@@ -685,7 +688,7 @@ class Cluster(models.Model):
     more_tickets = models.BooleanField() # does this cluster have more tickets?
     total_tickets = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
     total_transactions = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # refreshed on cluster status update
-    
+
     def get_absolute_url(self):
         return reverse('cluster_detail', kwargs={'pk':self.id})
 
