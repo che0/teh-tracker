@@ -30,7 +30,7 @@ class TicketAdmin(admin.ModelAdmin):
             return qs
         else:
             return qs.extra(where=['topic_id in (select topic_id from tracker_topic_admin where user_id = %s)'], params=[request.user.id])
-    
+
     def change_view(self, request, object_id, extra_context=None):
         extra_context = extra_context or {}
         ticket = self.get_object(request, object_id)
@@ -38,7 +38,7 @@ class TicketAdmin(admin.ModelAdmin):
         extra_context['user_can_see_documents'] = ticket.can_see_documents(request.user)
         extra_context['add_ack_form'] = AddAckForm()
         return super(TicketAdmin, self).change_view(request, object_id, extra_context=extra_context)
-    
+
     exclude = ('updated', 'sort_date', 'cluster', 'payment_status', 'imported')
     readonly_fields = ('state_str', 'requested_user_details')
     list_display = ('sort_date', 'id', 'summary', 'topic', 'requested_by', 'state_str')
@@ -47,12 +47,12 @@ class TicketAdmin(admin.ModelAdmin):
     date_hierarchy = 'sort_date'
     search_fields = ['id', 'requested_user__username', 'requested_text', 'summary']
     inlines = [MediaInfoAdmin, PreexpeditureAdmin, ExpeditureAdmin]
-    
+
     @staticmethod
     def _render(request, template_name, context_data):
         c = RequestContext(request, context_data)
         return get_template(template_name).render(c)
-    
+
     def add_ack(self, request, object_id):
         ticket = models.Ticket.objects.get(id=object_id)
         if (request.method == 'POST'):
@@ -64,6 +64,12 @@ class TicketAdmin(admin.ModelAdmin):
                         'id':-1,
                         'success':False,
                     }))
+                if form.cleaned_data['ack_type'] == 'content' and ticket.mandatory_report and ticket.report_url == '':
+                    return HttpResponse(json.dumps({
+                        'form':self._render(request, 'admin/tracker/ticket/ack_noreport_error.html', {}),
+                        'id':-1,
+                        'success': False,
+                    }))
                 ack = ticket.ticketack_set.create(ack_type=form.cleaned_data['ack_type'], added_by=request.user, comment=form.cleaned_data['comment'])
                 return HttpResponse(json.dumps({
                     'form':self._render(request, 'admin/tracker/ticket/ack_line.html', {'ack':ack}),
@@ -74,7 +80,7 @@ class TicketAdmin(admin.ModelAdmin):
             form = AddAckForm()
         form_html = self._render(request, 'admin/tracker/ticket/add_ack.html', {'form':form})
         return HttpResponse(json.dumps({'form':form_html}))
-    
+
     def remove_ack(self, request, object_id):
         ticket = models.Ticket.objects.get(id=object_id)
         if (request.method != 'POST'):
@@ -87,7 +93,7 @@ class TicketAdmin(admin.ModelAdmin):
         return HttpResponse(json.dumps({
             'success':True,
         }))
-    
+
     def get_urls(self):
         return patterns('',
             url(r'^(?P<object_id>\d+)/acks/add/$', self.add_ack),
@@ -102,13 +108,13 @@ class TopicAdmin(admin.ModelAdmin):
             return ()
         else:
             return ('admin', 'grant')
-    
+
     def queryset(self, request):
         if request.user.has_perm('tracker.supervisor'):
             return super(TopicAdmin, self).queryset(request)
         else:
             return request.user.topic_set.all()
-    
+
     list_display = ('name', 'grant', 'open_for_tickets', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses')
     list_filter = ('grant', 'open_for_tickets')
     filter_horizontal = ('admin', )
