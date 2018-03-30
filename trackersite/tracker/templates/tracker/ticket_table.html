@@ -68,7 +68,7 @@
 	{% if summary_item.media_count.objects > 0 %}<td>{{summary_item.media_count.objects}}</td><td>{{summary_item.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-	<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.expeditures.amount|money}}{% endif %}</td>
+	<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.preexpeditures.amount|money}}{% endif %}</td>
 	<td class="money">{{summary_item.accepted_expeditures|money}}</td>
 	<td colspan="3"></td>
 {% else %}
