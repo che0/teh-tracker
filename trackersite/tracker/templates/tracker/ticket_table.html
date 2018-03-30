@@ -45,7 +45,7 @@
 {# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
 {% endif %}
 {% if show_expenses %}
-{# expeditures #}<td class="money">{% if ticket.preexpeditures.count > 0 %}{{ticket.preexpeditures.amount|money}}{% else %}{% if ticket.expeditures > 0 %}{{ticket.expeditures.amount|money}}{% endif %}{% endif %}</td>
+{# expeditures #}<td class="money">{% if ticket.preexpeditures.count > 0 %}{{ticket.preexpeditures.amount|money}}{% endif %}</td>
 {% endif %}
 
 {% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
