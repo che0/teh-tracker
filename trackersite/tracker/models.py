@@ -110,7 +110,6 @@ class Ticket(CachedModel):
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    custom_state = models.CharField(_('custom state'), blank=True, max_length=100, help_text=_('Custom state description'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'), default=100)
     mandatory_report = models.BooleanField(_('report mandatory'), default=False, help_text=_('Is report mandatory?'))
     report_url = models.CharField(_('report url'), blank=True, max_length=255, default='', help_text=_('URL to your report, if you want to report something (or if your report is mandatory per topic administrator).'))
@@ -172,20 +171,14 @@ class Ticket(CachedModel):
         tickets = Ticket.objects.all()
         result = []
         for ticket in tickets:
-            if state != 'custom':
-                if ticket.state_str() == state:
-                    result.append(ticket)
-            else:
-                if ticket.custom_state != '':
-                    result.append(ticket)
+            if ticket.state_str() == state:
+                result.append(ticket)
         return result
 
     def is_concept(self):
         return len(self.ack_set()) == 0
 
     def state_str(self):
-        if self.custom_state:
-            return self.custom_state
         if self.imported:
             return _('historical')
 
