@@ -1199,6 +1199,8 @@ def importcsv(request):
                     url = line[header.index('url')]
                     description = line[header.index('description')]
                     number = line[header.index('number')]
+                    if number == "":
+                        number = None
                     if ticket.can_edit(request.user) or request.user.is_staff:
                         media = MediaInfo.objects.create(ticket=ticket, url=url, description=description, count=number)
                         ticket.save()
