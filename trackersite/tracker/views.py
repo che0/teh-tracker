@@ -1203,7 +1203,7 @@ def importcsv(request):
                         media = MediaInfo.objects.create(ticket=ticket, url=url, description=description, count=number)
                         ticket.save()
                     else:
-                        return HttpResponseForbidden(_("You can't add preexpenses to ticket that you did not created."))
+                        return HttpResponseForbidden(_("You can't add media items to ticket that you did not created."))
             elif request.POST['type'] == 'user':
                 if not request.user.is_superuser:
                     return HttpResponseForbidden(_('You must be superuser in order to be able import users.'))
