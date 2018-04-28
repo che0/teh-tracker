@@ -1198,8 +1198,11 @@ def importcsv(request):
                     ticket = Ticket.objects.get(id=line[header.index('ticket_id')])
                     url = line[header.index('url')]
                     description = line[header.index('description')]
-                    number = line[header.index('number')]
-                    if number == "":
+		    if 'number' in header:
+                        number = line[header.index('number')]
+                        if number == "":
+                            number = None
+                    else:
                         number = None
                     if ticket.can_edit(request.user) or request.user.is_staff:
                         media = MediaInfo.objects.create(ticket=ticket, url=url, description=description, count=number)
