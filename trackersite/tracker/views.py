@@ -35,7 +35,7 @@ class TicketListView(ListView):
             return super(TicketListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        orderget = self.request.GET.get('order', 'sort_date')
+        orderget = self.request.GET.get('order', 'id')
         descasc = self.request.GET.get('descasc', 'desc')
         if descasc == 'asc':
             finalorder = orderget
@@ -166,7 +166,7 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        exclude = ('created', 'updated', 'sort_date', 'requested_user', 'requested_text',
+        exclude = ('created', 'updated', 'requested_user', 'requested_text',
             'custom_state', 'rating_percentage', 'supervisor_notes', 'cluster', 'payment_status', 'mandatory_report', 'imported')
         widgets = {
             'event_date': adminwidgets.AdminDateWidget(),
