@@ -6,6 +6,10 @@
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
 <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
 
+<!-- Datatables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+
 {{form_media}}{% endblock %}
 
 {% block language_code %}{{LANGUAGE_CODE}}{% endblock %}
