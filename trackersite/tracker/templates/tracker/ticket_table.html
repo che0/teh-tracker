@@ -5,23 +5,7 @@
         width: 100% !important;
     }
 </style>
-<script type="text/javascript">
-	$(document).ready(function() {
-		var language = $('meta[http-equiv="Content-Language"]').attr('content');
-		var fullLanguage = "English";
-		switch(language) {
-			case "cs":
-				fullLanguage = "Czech";
-		}
-		var url = "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/" + fullLanguage + ".json";
-    	$('.ticket_list').DataTable({
-			"order": [[ 0, "desc "]],
-			"language": {
-				"url": url,
-			}
-		});
-} );
-</script>
+<script type="text/javascript" src="{{STATIC_URL}}datatables-init.js"></script>
 
 <table class="ticket_list table table-striped table-hover">
 {% if show_media %}
