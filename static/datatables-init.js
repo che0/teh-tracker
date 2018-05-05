@@ -6,7 +6,7 @@ $(document).ready(function() {
 			fullLanguage = "Czech";
 	}
 	var url = "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/" + fullLanguage + ".json";
-	$('.ticket_list').DataTable({
+	$('table').DataTable({
 		"order": [[ 0, "desc "]],
 		"language": {
 			"url": url,
