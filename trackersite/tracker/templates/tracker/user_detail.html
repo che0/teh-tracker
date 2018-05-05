@@ -26,10 +26,12 @@
         <tr><td>{{item.date}}</td><td>{{item.description}}</td><td class="money">{{item.amount|money}}</td>
         <td>{% for ticket in item.tickets_by_id %}<a href="{{ticket.get_absolute_url}}" title="{{ticket.summary}} ({{ticket.sort_date}})">{{ticket.id}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td>
         <td>{{item.accounting_info}}</td></tr>{% endfor %}
-        <tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td class="money">{{user_obj.trackerprofile.transactions.amount|money}}</td><td></td><td></td></tr>
-        <tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td class="money">{{user_obj.trackerprofile.accepted_expeditures|money}}</td><td></td><td></td></tr>
-        </table>
     </tbody>
+    <tfoot>
+            <tr class="total first_total"><td colspan="2">{% trans "Transactions total" %}</td><td class="money">{{user_obj.trackerprofile.transactions.amount|money}}</td><td></td><td></td></tr>
+            <tr class="total"><td colspan="2">{% trans "Accepted expeditures total" %}</td><td class="money">{{user_obj.trackerprofile.accepted_expeditures|money}}</td><td></td><td></td></tr>
+    </tfoot>
+</table>
 {% endif %}
 
 {% endblock content %}
