@@ -5,7 +5,7 @@
         width: 100% !important;
     }
 </style>
-<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
 <!--<script src="{{STATIC_URL}}ordertickets.js" type="text/javascript"></script>-->
@@ -30,44 +30,49 @@
 <tr><th>{% trans "Media item list" %}</th><th><abbr title="{% trans "Item count" %}">{% trans "Itm." %}</abbr></th>
 <th><abbr title="{% trans "File count" %}">{% trans "Fil." %}</abbr></th></tr>
 {% else %}
-<tr><th onclick="order('id')">{% trans "ID" %} <i class="fa "></i></th><th>{% trans "Event date" %}</th><th onclick="order('summary')">{% trans "Summary" %} <i class="fa "></i></th>
-{% if show_grants %}<th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
-{% if show_topics %}<th onclick="order('topic')">{% trans "Topic" %} <i class="fa "></i></th>{% endif %}
-{% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
-{% if show_expenses %}<th>{% trans "Requested expeditures" %}</th>{% endif %}
-{% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th>{% endif %}
-{% if show_expenses %}<th>{% trans "Paid expeditures" %}</th>{% endif %}
-<th>{% trans "State" %}</th>
-<th onclick="order('updated')">{% trans "Last changed" %} <i class="fa "></i></th></tr>
+<thead>
+	<tr><th>{% trans "ID" %} <i class="fa "></i></th><th>{% trans "Event date" %}</th><th>{% trans "Summary" %} <i class="fa "></i></th>
+		{% if show_grants %}<th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>{% endif %}
+		{% if show_topics %}<th>{% trans "Topic" %} <i class="fa "></i></th>{% endif %}
+		{% if show_requester %}<th>{% trans "Requested by" %}</th>{% endif %}
+		{% if show_expenses %}<th>{% trans "Requested expeditures" %}</th>{% endif %}
+		{% if show_expenses %}<th>{% trans "Accepted expeditures" %}</th>{% endif %}
+		{% if show_expenses %}<th>{% trans "Paid expeditures" %}</th>{% endif %}
+		<th>{% trans "State" %}</th>
+		<th>{% trans "Last changed" %} <i class="fa "></i></th></tr>
+		
+</thead>
 {% endif %}
-
-{% for ticket in ticket_list %}
-<td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.id}}</a></a></td>
-<td>{{ticket.sort_date}}</td>
-<td class="ticket-summary"><a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a></td>
-{% if show_grants %}<td><a href="{{ticket.topic.grant.get_absolute_url}}" title="{{ticket.topic.grant.full_name}}">{{ticket.topic.grant.short_name}}</a></td>{% endif %}
-{% if show_topics %}<td><a href="{{ticket.topic.get_absolute_url}}">{{ticket.topic}}</a></td>{% endif %}
-{% if show_requester %}<td>{{ticket.requested_by_html}}</td>{% endif %}
-
-{% if show_media %}
-{# media info #}<td>{% for item in ticket.mediainfo_set.all %}{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-{# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
-{% endif %}
-{% if show_expenses %}
-{# expeditures #}<td class="money">{% if ticket.preexpeditures.count > 0 %}{{ticket.preexpeditures.amount|money}}{% endif %}</td>
-{% endif %}
-
-{% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
-<td class="money">{% if accepted > 0 %}{{accepted|money}}{% endif %}</td>
-{% endwith %}{% endif %}
-{% if show_expenses %}{% with paid=ticket.paid_expeditures %}
-<td class="money">{% if paid > 0 %}{{paid|money}}{% endif %}</td>
-{% endwith %}{% endif %}
-<td>{{ticket.state_str}}</td>
-
-
-<td>{{ticket.updated}}</td></tr>
-{% endfor %}
+<tbody>
+	{% for ticket in ticket_list %}
+	<td><a href="{% url "ticket_detail" ticket.id %}">{{ticket.id}}</a></a></td>
+	<td>{{ticket.sort_date}}</td>
+	<td class="ticket-summary"><a href="{% url "ticket_detail" ticket.id %}">{{ticket.summary}}</a></td>
+	{% if show_grants %}<td><a href="{{ticket.topic.grant.get_absolute_url}}" title="{{ticket.topic.grant.full_name}}">{{ticket.topic.grant.short_name}}</a></td>{% endif %}
+	{% if show_topics %}<td><a href="{{ticket.topic.get_absolute_url}}">{{ticket.topic}}</a></td>{% endif %}
+	{% if show_requester %}<td>{{ticket.requested_by_html}}</td>{% endif %}
+	
+	{% if show_media %}
+	{# media info #}<td>{% for item in ticket.mediainfo_set.all %}{% if item.url %}<a href="{{item.url}}">{{item.description}}</a>{% else %}{{item.description}}{% endif %}{% if item.count %} ({{item.count}}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+	{# item/file counts #}{% if ticket.media_count.objects > 0 %}<td>{{ticket.media_count.objects}}</td><td>{{ticket.media_count.media|default:""}}</td>{% else %}<td></td><td></td>{% endif %}
+	{% endif %}
+	{% if show_expenses %}
+	{# expeditures #}<td class="money">{% if ticket.preexpeditures.count > 0 %}{{ticket.preexpeditures.amount|money}}{% endif %}</td>
+	{% endif %}
+	
+	{% if show_expenses %}{% with accepted=ticket.accepted_expeditures %}
+	<td class="money">{% if accepted > 0 %}{{accepted|money}}{% endif %}</td>
+	{% endwith %}{% endif %}
+	{% if show_expenses %}{% with paid=ticket.paid_expeditures %}
+	<td class="money">{% if paid > 0 %}{{paid|money}}{% endif %}</td>
+	{% endwith %}{% endif %}
+	<td>{{ticket.state_str}}</td>
+	
+	
+	<td>{{ticket.updated}}</td></tr>
+	{% endfor %}
+	
+</tbody>
 
 {% if show_media or show_expenses %}{% if summary_item %}
 <tr class="total">
