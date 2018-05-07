@@ -9,8 +9,21 @@
 </head>
 <body>
 {% block body %}{% endblock %}
+<!-- Scripts -->
 <script type="text/javascript" src="/static/admin/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/jquery.tristate.js"></script>
 <script type="text/javascript" src="/static/bootstrap.min.js"></script>
+<script>
+    $('.tristate').tristate()
+    </script>
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
+<script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
+
+<!-- Datatables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}datatables-init.js"></script>
+
+<!-- Custom scripts -->
+{% block scripts %}{% endblock %}
 </body>
 </html>
