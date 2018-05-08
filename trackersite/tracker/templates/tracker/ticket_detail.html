@@ -25,15 +25,20 @@
 {% if ticket.transaction_set.all.count > 0 %}
 <h2>{% trans "Transactions" %}</h2>
 <p>{% trans "Payment status" %}: {{ticket.get_payment_status_display}}{% if ticket.cluster.more_tickets %} ({% blocktrans with c_id=ticket.cluster.id c_link=ticket.cluster.get_absolute_url cr=CURRENCY total_tickets=ticket.cluster.total_tickets total_transactions=ticket.cluster.total_transactions %}part of <a href="{{c_link}}">cluster {{c_id}}</a>: total tickets {{total_tickets}}&nbsp;{{cr}}, total transactions {{total_transactions}}&nbsp;{{cr}}{% endblocktrans %}){% endif %}</p>
-<table class="table table-striped table-hover"><tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th></tr>
-{% for t in ticket.transaction_set.all %}
-<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td class="money">{{t.amount|money}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
-{% endfor %}
-<tr class="total first_total">
-<td colspan="2">{% trans "Associated transactions total" %}</td>
-<td class="money">{{ticket.associated_transactions_total|money}}</td>
-<td colspan="2">
-</tr>
+<table class="table table-striped table-hover">
+	<thead>
+		<tr><th>{% trans "Date" %}</th><th>{% trans "User" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Description" %}</th><th>{% trans "Accounting info" %}</th></tr>
+	</thead>
+	<tbody>
+		{% for t in ticket.transaction_set.all %}
+		<tr><td>{{t.date}}</td><td>{{t.other_party_html}}</td><td class="money">{{t.amount|money}}</td><td>{{t.description}}</td><td>{{t.accounting_info}}</td></tr>
+		{% endfor %}
+		<tr class="total first_total">
+		<td colspan="2">{% trans "Associated transactions total" %}</td>
+		<td class="money">{{ticket.associated_transactions_total|money}}</td>
+		<td colspan="2">
+		</tr>
+	<tbody>
 </table>
 {% endif %}
 
