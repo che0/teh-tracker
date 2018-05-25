@@ -19,3 +19,5 @@ class Command(NoArgsCommand):
                 c_dict = {u"ack_notifs": ack_notifs, u"ticket_notifs": ticket_notifs, u"comment_notifs": comment_notifs}
                 c = Context(c_dict)
                 user.email_user(subject_text, body_template.render(c))
+            for notification in Notification.objects.filter(target_user=user):
+                notification.delete()
