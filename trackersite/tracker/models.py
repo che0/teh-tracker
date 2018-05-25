@@ -17,6 +17,7 @@ from django.core.validators import RegexValidator
 from django.core.urlresolvers import NoReverseMatch
 from django.core.cache import cache
 from django import template
+from django.template.loader import get_template
 
 from users.models import UserWrapper
 
@@ -37,6 +38,11 @@ ACK_TYPES = (
     ('docs', _('expense documents filed')),
     ('archive', _('archived')),
     ('close', _('closed')),
+)
+
+NOTIFICATION_TYPES = (
+    ('ack', _('ack')),
+    ('ticket', _('ticket')),
 )
 
 USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
@@ -710,10 +716,18 @@ class TicketAck(models.Model):
     class Meta:
         ordering = ['added']
 
+class Notification(models.Model):
+    """Notification that is supposed to be sent."""
+    target_user = models.ForeignKey('auth.User', null=True, blank=True)
+    ticket = models.ForeignKey('tracker.Ticket', null=True)
+    ack = models.ForeignKey('tracker.TicketAck', null=True)
+    notification_type = models.CharField(_('type'), max_length=20, choices=NOTIFICATION_TYPES, null=True)
+
 @receiver(post_save, sender=TicketAck)
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
     if not raw:
         instance.ticket.update_payment_status()
+    Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
 
 @receiver(post_delete, sender=TicketAck)
 def flush_ticket_after_ack_delete(sender, instance, **kwargs):

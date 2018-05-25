@@ -1,0 +1,9 @@
+Dobrý den, 
+
+seznam přidaných acků k Vámi sledovaným ticketům následuje. 
+
+{% for ack_notif in ack_notifs %}
+* {{ack_notif.ack}}
+{% endfor %}
+
+Tracker notifikace
