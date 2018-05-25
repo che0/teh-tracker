@@ -1,3 +1,4 @@
+{% autoescape off %}
 Dobrý den, 
 
 seznam přidaných acků k Vámi sledovaným ticketům následuje. 
@@ -6,4 +7,11 @@ seznam přidaných acků k Vámi sledovaným ticketům následuje.
 * {{ack_notif.ack}}
 {% endfor %}
 
+seznam přidaných komentářů k Vámi sledovaným ticketům následuje.
+
+{% for comment_notif in comment_notifs %}
+* {{comment_notif}}
+{% endfor %}
+
 Tracker notifikace
+{% endautoescape %}

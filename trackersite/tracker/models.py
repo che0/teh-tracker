@@ -503,6 +503,7 @@ def ticket_note_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
         obj.save()
+        Notification.objects.create(target_user=obj.requested_user, ticket=obj, comment=comment, notification_type="comment")
 
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
@@ -721,7 +722,16 @@ class Notification(models.Model):
     target_user = models.ForeignKey('auth.User', null=True, blank=True)
     ticket = models.ForeignKey('tracker.Ticket', null=True)
     ack = models.ForeignKey('tracker.TicketAck', null=True)
+    comment = models.ForeignKey('django_comments.Comment', null=True)
     notification_type = models.CharField(_('type'), max_length=20, choices=NOTIFICATION_TYPES, null=True)
+
+    def __unicode__(self):
+        if self.notification_type == "ack":
+            return u'Ticket #%d %s by %s on %s' % (self.ack.ticket_id, self.ack.get_ack_type_display(), self.ack.added_by, self.ack.added)
+        elif self.notification_type == "comment":
+            return 'Ticket ' + unicode(self.ticket.id) + ': ' + unicode(self.comment)
+        else:
+            return ''
 
 @receiver(post_save, sender=TicketAck)
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
