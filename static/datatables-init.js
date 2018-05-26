@@ -1,4 +1,4 @@
-$(document).ready(function() {
+var dataTablesInit = function() {
 	var language = $('meta[http-equiv="Content-Language"]').attr('content');
     var fullLanguage = "English";
 	switch(language) {
@@ -21,4 +21,17 @@ $(document).ready(function() {
 			"url": url,
 		}
 	});
-} );
+}
+$(document).ready(dataTablesInit);
+
+if ('matchMedia' in window) {
+    // Chrome, Firefox, and IE 10 support mediaMatch listeners
+    window.matchMedia('print').addListener(function(media) {
+        if (media.matches) {
+            $('table').DataTable().destroy();
+        } else {
+            // Fires immediately, so wait for the first mouse movement
+            $(document).one('mouseover', dataTablesInit);
+        }
+    });
+};
