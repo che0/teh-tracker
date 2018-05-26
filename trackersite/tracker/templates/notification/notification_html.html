@@ -3,7 +3,7 @@
 <h1>Seznam nových ticketů</h1>
 <ul>
     {% for ticket_new_notif in ticket_new_notifs %}
-    <li><p>{{ticket_new_notif.ticket.created}}: <a href="{{ABSOLUTE_URL}}{{ticket_new_notif.ticket.get_absolute_url}}">Ticket #{{ticket_new_notif.ticket.id}}</a> ({{ticket_new_notif.ticket.summary}}) byl vytvořen uživatelem {{ticket_new_notif.ticket.requested_by}}</p></li>
+    <li><p>{{ticket_new_notif.ticket.created}}: <a href="{{ABSOLUTE_URL}}{{ticket_new_notif.ticket.get_absolute_url}}">Ticket #{{ticket_new_notif.ticket.id}}</a> ({{ticket_new_notif.ticket.summary}}) byl vytvořen uživatelem <tt>{{ticket_new_notif.ticket.requested_by}}</tt></p></li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -12,7 +12,7 @@
 <h1>Seznam přidaných acků k sledovaným ticketům</h1>
 <ul>
     {% for ack_notif in ack_notifs %}
-    <li><p>{{ack_notif.ack.added}}: <a href="{{ABSOLUTE_URL}}{{ack_notif.ack.ticket.get_absolute_url}}">Ticketu #{{ack_notif.ack.ticket.id}}</a> byl přidán ack <tt>{{ack_notif.ack.ack_type}}</tt> uživatelem {{ack_notif.ack.added_by}}</a></p></li>
+    <li><p>{{ack_notif.ack.added}}: <a href="{{ABSOLUTE_URL}}{{ack_notif.ack.ticket.get_absolute_url}}">Ticketu #{{ack_notif.ack.ticket.id}}</a> byl přidán ack <tt>{{ack_notif.ack.ack_type}}</tt> uživatelem <tt>{{ack_notif.ack.added_by}}</tt></p></li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -21,7 +21,7 @@
 <h1>Seznam přidaných komentářů k sledovaným ticketům</h1>
 <ul>
     {% for comment_notif in comment_notifs %}
-    <li><p>{{comment_notif.comment.submit_date}}: <a href="{{ABSOLUTE_URL}}{{comment_notif.get_absolute_url}}">Ticketu #{{comment_notif.comment.object_pk}}</a> byl přidán uživatelem {{comment_notif.comment.user}} komentář {{comment_notif.comment.comment}}</p></li>
+    <li><p>{{comment_notif.comment.submit_date}}: <a href="{{ABSOLUTE_URL}}{{comment_notif.get_absolute_url}}">Ticketu #{{comment_notif.comment.object_pk}}</a> byl přidán uživatelem <tt>{{comment_notif.comment.user}}</tt> komentář <tt>{{comment_notif.comment.comment}}</tt></p></li>
     {% endfor %}
 </ul>
 {% endif %}
