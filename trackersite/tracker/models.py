@@ -439,7 +439,7 @@ class Topic(CachedModel):
             ticketsum = []
             for expediture in ticket.expediture_set.filter(wage=True, paid=True):
                 ticketsum.append(expediture.amount)
-            if ticket.rating_percentage:
+            if ticket.rating_percentage and ticket.has_all_acks('content'):
                 tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
         return sum(tosum)
 
@@ -450,7 +450,7 @@ class Topic(CachedModel):
             ticketsum = []
             for expediture in ticket.expediture_set.filter(paid=True):
                 ticketsum.append(expediture.amount)
-            if ticket.rating_percentage:
+            if ticket.rating_percentage and ticket.has_all_acks('content'):
                 tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
         return sum(tosum)
 
