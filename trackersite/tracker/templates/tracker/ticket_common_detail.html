@@ -64,6 +64,7 @@
 <tfoot>
 <tr class="total first_total"><td>{% trans "Total expeditures" %}</td><td class="money">{{ticket.expeditures.amount|money}}</td><td></td><td></td><td></td></tr>
 <tr class="total"><td>{% trans "Accepted expeditures" %}</td><td class="money">{{ticket.accepted_expeditures|money}}</td><td></td><td></td><td></td></tr>
+<tr class="total"><td>{% trans "Paid expeditures" %}</td><td class="money">{{ticket.paid_expeditures|money}}</td></tr>
 </tfoot>
 </table>
 {% endif %}
