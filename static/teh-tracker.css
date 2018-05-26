@@ -61,6 +61,7 @@ td.money { text-align:right; }
 	#media_list li { list-style-type:none; display:inline; }
 	#media_list li:after { content:";"; }
 	.comments_empty, .comments_add { display:none; }
+	.dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate { display: none; }
 }
 
 fieldset.noframe { border: none; padding: 0; }
