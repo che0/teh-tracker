@@ -268,7 +268,7 @@ class Ticket(CachedModel):
 
     @cached_getter
     def paid_expeditures(self):
-        if self.rating_percentage == None:
+        if not self.has_all_acks('content') or (self.rating_percentage == None):
             return decimal.Decimal(0)
         else:
             total = sum([x.amount for x in self.expediture_set.filter(paid=True)], decimal.Decimal(0))
