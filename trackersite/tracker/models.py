@@ -503,6 +503,11 @@ def ticket_note_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
         obj.save()
+
+@receiver(comment_was_posted)
+def notify_comment(sender, comment, **kwargs):
+    obj = comment.content_object
+    if type(obj) == Ticket:
         if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, ticket=obj, comment=comment, notification_type="comment")
         for admin in obj.topic.admin.all():
             if admin != comment.user: Notification.objects.create(target_user=admin, ticket=obj, comment=comment, notification_type="comment")
@@ -739,6 +744,9 @@ class Notification(models.Model):
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
     if not raw:
         instance.ticket.update_payment_status()
+
+@receiver(post_save, sender=TicketAck)
+def notify_ack_add(sender, instance, created, **kwargs):
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by: Notification.objects.create(target_user=admin, ticket=instance.ticket, ack=instance, notification_type="ack")
