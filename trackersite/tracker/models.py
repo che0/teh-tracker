@@ -41,8 +41,9 @@ ACK_TYPES = (
 )
 
 NOTIFICATION_TYPES = (
-    ('ack', _('ack')),
-    ('ticket', _('ticket')),
+    ('ack', 'ack'),
+    ('comment', 'comment'),
+    ('ticket_new', 'ticket_new'),
 )
 
 USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
@@ -744,6 +745,13 @@ class Notification(models.Model):
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
     if not raw:
         instance.ticket.update_payment_status()
+
+@receiver(post_save, sender=Ticket)
+def notify_ticket(sender, instance, created, raw, **kwargs):
+    if created: 
+        for admin in instance.topic.admin.all():
+            if admin != instance.requested_by: Notification.objects.create(target_user=admin, ticket=instance, notification_type="ticket_new")
+
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):

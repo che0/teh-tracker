@@ -1,4 +1,13 @@
 {% autoescape off %}
+{% if ticket_new_notifs > 0 %}
+<h1>Seznam nových ticketů</h1>
+<ul>
+    {% for ticket_new_notif in ticket_new_notifs %}
+    <li><p>{{ticket_new_notif.ticket.created}}: <a href="{{ABSOLUTE_URL}}{{ticket_new_notif.ticket.get_absolute_url}}">Ticket #{{ticket_new_notif.ticket.id}}</a> ({{ticket_new_notif.ticket.summary}}) byl vytvořen uživatelem {{ticket_new_notif.ticket.requested_by}}</p></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if ack_notifs.count > 0 %}
 <h1>Seznam přidaných acků k sledovaným ticketům</h1>
 <ul>
