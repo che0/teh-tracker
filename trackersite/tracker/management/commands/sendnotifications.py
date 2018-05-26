@@ -22,5 +22,4 @@ class Command(NoArgsCommand):
                 c = Context(c_dict)
                 user.email_user(subject_text, body_template.render(c), html_message=html_template.render(c))
             for notification in Notification.objects.filter(target_user=user):
-                #notification.delete()
-                print 'sending'
+                notification.delete()
