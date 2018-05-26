@@ -503,7 +503,7 @@ def ticket_note_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
         obj.save()
-        Notification.objects.create(target_user=obj.requested_user, ticket=obj, comment=comment, notification_type="comment")
+        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, ticket=obj, comment=comment, notification_type="comment")
 
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
@@ -737,7 +737,7 @@ class Notification(models.Model):
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
     if not raw:
         instance.ticket.update_payment_status()
-    Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
+    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
 
 @receiver(post_delete, sender=TicketAck)
 def flush_ticket_after_ack_delete(sender, instance, **kwargs):
