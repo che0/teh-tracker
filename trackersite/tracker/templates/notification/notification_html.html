@@ -1,5 +1,5 @@
 {% autoescape off %}
-{% if ticket_new_notifs > 0 %}
+{% if ticket_new_notifs.count > 0 %}
 <h1>Seznam nových ticketů</h1>
 <ul>
     {% for ticket_new_notif in ticket_new_notifs %}
