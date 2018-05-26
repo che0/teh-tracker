@@ -738,6 +738,8 @@ class Notification(models.Model):
             return u'Ticket #%d %s by %s on %s' % (self.ack.ticket_id, self.ack.get_ack_type_display(), self.ack.added_by, self.ack.added)
         elif self.notification_type == "comment":
             return 'Ticket ' + unicode(self.ticket.id) + ': ' + unicode(self.comment)
+        elif self.notification_type == "ticket_new":
+            return 'Ticket #%d %s was created by %s on %s' % (self.ticket.id, self.ticket.summary, self.ticket.requested_by(), self.ticket.created)
         else:
             return ''
 

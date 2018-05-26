@@ -1,6 +1,12 @@
 {% autoescape off %}
 Dobrý den, 
 
+seznam nových ticketů následuje. 
+
+{% for ticket_new_notif in ticket_new_notifs %}
+* {{ticket_new_notif}}
+{% endfor %}
+
 seznam přidaných acků k Vámi sledovaným ticketům následuje. 
 
 {% for ack_notif in ack_notifs %}
