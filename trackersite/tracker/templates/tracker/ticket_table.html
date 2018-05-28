@@ -79,7 +79,8 @@
 		{% if show_expenses %}
 			<td class="money">{% if summary_item.expeditures.count > 0 %}{{summary_item.preexpeditures.amount|money}}{% endif %}</td>
 			<td class="money">{{summary_item.accepted_expeditures|money}}</td>
-			<td colspan="3"></td>
+			<td class="money">{{summary_item.paid_together|money}}</td>
+			<td colspan="2"></td>
 		{% else %}
 			<td colspan="4"></td>
 		{% endif %}
