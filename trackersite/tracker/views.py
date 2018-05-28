@@ -26,7 +26,7 @@ from users.models import UserWrapper
 
 class TicketListView(ListView):
     model = Ticket
-    paginate_by = 10000000000000000
+    paginate_by = None
 
     def get(self, request, *args, **kwargs):
         if kwargs.get('page', None) == '1':
