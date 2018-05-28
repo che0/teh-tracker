@@ -507,15 +507,6 @@ def ticket_note_comment(sender, comment, **kwargs):
     if type(obj) == Ticket:
         obj.save()
 
-@receiver(comment_was_posted)
-def notify_comment(sender, comment, **kwargs):
-    obj = comment.content_object
-    if type(obj) == Ticket:
-        text = u"K ticketu <a href='%s%s'>%s</a> byl přidán uživatelem <tt>%s</tt> komentář <tt>%s</tt>" % (settings.BASE_URL, obj.get_absolute_url(), obj, comment.user, comment.comment)
-        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
-        for admin in obj.topic.admin.all():
-            if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
-
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
     ticket = models.ForeignKey('tracker.Ticket', verbose_name=_('ticket'), help_text=_('Ticket this media info belongs to'))
@@ -728,6 +719,16 @@ class TicketAck(models.Model):
     class Meta:
         ordering = ['added']
 
+@receiver(post_save, sender=TicketAck)
+def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
+    if not raw:
+        instance.ticket.update_payment_status()
+
+
+@receiver(post_delete, sender=TicketAck)
+def flush_ticket_after_ack_delete(sender, instance, **kwargs):
+    instance.ticket.update_payment_status()
+
 class Notification(models.Model):
     """Notification that is supposed to be sent."""
     target_user = models.ForeignKey('auth.User', null=True, blank=True)
@@ -738,10 +739,14 @@ class Notification(models.Model):
     def __unicode__(self):
         return self.text
 
-@receiver(post_save, sender=TicketAck)
-def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
-    if not raw:
-        instance.ticket.update_payment_status()
+@receiver(comment_was_posted)
+def notify_comment(sender, comment, **kwargs):
+    obj = comment.content_object
+    if type(obj) == Ticket:
+        text = u"K ticketu <a href='%s%s'>%s</a> byl přidán uživatelem <tt>%s</tt> komentář <tt>%s</tt>" % (settings.BASE_URL, obj.get_absolute_url(), obj, comment.user, comment.comment)
+        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
+        for admin in obj.topic.admin.all():
+            if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
 
 @receiver(post_save, sender=Ticket)
 def notify_ticket(sender, instance, created, raw, **kwargs):
@@ -770,10 +775,6 @@ def notify_ack_remove(sender, instance, **kwargs):
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack_remove", text=text)
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
-
-@receiver(post_delete, sender=TicketAck)
-def flush_ticket_after_ack_delete(sender, instance, **kwargs):
-    instance.ticket.update_payment_status()
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
