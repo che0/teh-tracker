@@ -510,7 +510,7 @@ def ticket_note_comment(sender, comment, **kwargs):
 def notify_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
-        text = u"K ticketu %s byl přidán uživatelem %s komentář <tt>%s</tt>" % (obj, comment.user, comment.comment)
+        text = u"K ticketu <a href='%s%s'>%s</a> byl přidán uživatelem <tt>%s</tt> komentář <tt>%s</tt>" % (settings.BASE_URL, obj.get_absolute_url(), obj, comment.user, comment.comment)
         if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
         for admin in obj.topic.admin.all():
             if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
@@ -745,7 +745,7 @@ def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
 @receiver(post_save, sender=Ticket)
 def notify_ticket(sender, instance, created, raw, **kwargs):
     if created:
-        text = u'Ticket %s byl vytvořen uživatelem %s v tématu %s' % (instance, instance.requested_by_html(), instance.topic)
+        text = u'Ticket <a href="%s%s">%s</a> byl vytvořen uživatelem <tt>%s</tt> v tématu <tt>%s</tt>' % (settings.BASE_URL, instance.get_absolute_url(), instance, instance.requested_by_html(), instance.topic)
         for admin in instance.topic.admin.all():
             if admin != instance.requested_user: Notification.objects.create(target_user=admin, notification_type="ticket_new", text=text)
 
@@ -759,7 +759,7 @@ def notify_ack_add(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
-    text = u'U ticketu #%d došlo k odebrání stavu %s uživatelem %s' % (instance.ticket_id, instance.get_ack_type_display(), instance.added_by)
+    text = u'U ticketu <a href="%s%s">%s</a> došlo k odebrání stavu <tt>%s</tt> uživatelem <tt>%s</tt>' % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack_remove", text=text)
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
