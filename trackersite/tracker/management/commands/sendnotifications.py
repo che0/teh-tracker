@@ -4,11 +4,13 @@ from django.contrib.auth.models import User
 from django.template.loader import get_template
 from django.template import Context
 from django.conf import settings
+from django.utils import translation
 
 class Command(NoArgsCommand):
     help = 'Process pending notifications'
     
     def handle_noargs(self, **options):
+        translation.activate('cs_CZ')
         subject_text = get_template('notification/notification_subject.txt').render()
         body_template = get_template('notification/notification_text.txt')
         html_template = get_template('notification/notification_html.html')
