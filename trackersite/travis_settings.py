@@ -28,6 +28,7 @@ STATIC_URL = '/static/'
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
 SENDFILE_BACKEND = 'sendfile.backends.development'
+BASE_URL = 'https://example.com'
 
 import common_settings as _common
 for item in dir(_common):
