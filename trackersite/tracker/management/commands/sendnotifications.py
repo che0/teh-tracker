@@ -16,6 +16,7 @@ class Command(NoArgsCommand):
         html_template = get_template('notification/notification_html.html')
         for user in User.objects.all():
             ack_notifs = Notification.objects.filter(target_user=user, notification_type="ack")
+            ack_remove_notifs = Notification.objects.filter(target_user=user, notification_type="ack_remove")
             ticket_new_notifs = Notification.objects.filter(target_user=user, notification_type="ticket_new")
             comment_notifs = Notification.objects.filter(target_user=user, notification_type="comment")
 

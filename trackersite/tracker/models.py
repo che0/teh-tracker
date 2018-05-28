@@ -42,6 +42,7 @@ ACK_TYPES = (
 
 NOTIFICATION_TYPES = (
     ('ack', 'ack'),
+    ('ack_remove', 'ack_remove'),
     ('comment', 'comment'),
     ('ticket_new', 'ticket_new'),
 )
@@ -730,6 +731,7 @@ class Notification(models.Model):
     target_user = models.ForeignKey('auth.User', null=True, blank=True)
     ticket = models.ForeignKey('tracker.Ticket', null=True)
     ack = models.ForeignKey('tracker.TicketAck', null=True)
+    ack_deleted = models.CharField(max_length=1000, null=True, blank=True)
     comment = models.ForeignKey('django_comments.Comment', null=True)
     notification_type = models.CharField(_('type'), max_length=20, choices=NOTIFICATION_TYPES, null=True)
 
@@ -760,6 +762,13 @@ def notify_ack_add(sender, instance, created, **kwargs):
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, ticket=instance.ticket, ack=instance, notification_type="ack")
+
+@receiver(post_delete, sender=TicketAck)
+def notify_ack_remove(sender, instance, **kwargs):
+    text_ack = u'U ticketu #%d došlo k odebrání stavu %s uživatelem %s v %s' % (instance.ticket_id, instance.get_ack_type_display(), instance.added_by, instance.added)
+    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, notification_type="ack_remove", ack_deleted=text_ack)
+    for admin in instance.ticket.topic.admin.all():
+        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, notification_type="ack_remove", ack_deleted=text_ack)
 
 @receiver(post_delete, sender=TicketAck)
 def flush_ticket_after_ack_delete(sender, instance, **kwargs):
