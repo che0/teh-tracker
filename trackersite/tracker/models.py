@@ -735,7 +735,7 @@ class Notification(models.Model):
     notification_type = models.CharField('notification_type', max_length=50, choices=NOTIFICATION_TYPES, null=True)
 
     def __unicode__(self):
-        return '%s: %s' % (self.fired, self.text)
+        return self.text
 
 @receiver(post_save, sender=TicketAck)
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):

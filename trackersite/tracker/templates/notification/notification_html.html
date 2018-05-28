@@ -4,7 +4,7 @@
 <h1>Seznam nových ticketů</h1>
 <ul>
     {% for notif in ticket_new_notifs %}
-    <li>{{notif}}</li>
+    <li>{{notif.fired}}: {{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -13,7 +13,7 @@
 <h1>Změna stavu sledovaných tiketů</h1>
 <ul>
     {% for notif in ack_notifs %}
-    <li>{{notif}}</li>
+    <li>{{notif.fired}}: {{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -22,7 +22,7 @@
 <h1>Seznam přidaných komentářů k sledovaným ticketům</h1>
 <ul>
     {% for notif in comment_notifs %}
-    <li>{{notif}}</li>
+    <li>{{notif.fired}}: {{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
