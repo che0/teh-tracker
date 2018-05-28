@@ -103,6 +103,8 @@ LOGGING = {
     }
 }
 
+BASE_URL = 'https://example.com'
+
 # this imports almost everything from common settings
 # something like "from common_settings import FOO, BAR, BAZ, ..."
 import common_settings as _common
