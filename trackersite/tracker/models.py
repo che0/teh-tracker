@@ -757,10 +757,11 @@ def notify_ticket(sender, instance, created, raw, **kwargs):
 
 @receiver(pre_save, sender=Ticket)
 def notify_supervizor_notes(sender, instance, **kwargs):
-    old = Ticket.objects.get(id=instance.id)
-    if old.supervisor_notes != instance.supervisor_notes:
-        text = u'U ticketu <a href="%s%s">%s</a> došlo ke změně poznámek schvalovatele.' % (settings.BASE_URL, instance.get_absolute_url(), instance)
-        Notification.objects.create(target_user=instance.requested_user, notification_type="supervisor_notes", text=text)
+    if instance.id is not None:
+        old = Ticket.objects.get(id=instance.id)
+        if old.supervisor_notes != instance.supervisor_notes:
+            text = u'U ticketu <a href="%s%s">%s</a> došlo ke změně poznámek schvalovatele.' % (settings.BASE_URL, instance.get_absolute_url(), instance)
+            Notification.objects.create(target_user=instance.requested_user, notification_type="supervisor_notes", text=text)
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
