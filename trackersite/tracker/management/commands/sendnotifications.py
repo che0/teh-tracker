@@ -15,13 +15,12 @@ class Command(NoArgsCommand):
         body_template = get_template('notification/notification_text.txt')
         html_template = get_template('notification/notification_html.html')
         for user in User.objects.all():
-            ack_notifs = Notification.objects.filter(target_user=user, notification_type="ack")
-            ack_remove_notifs = Notification.objects.filter(target_user=user, notification_type="ack_remove")
-            ticket_new_notifs = Notification.objects.filter(target_user=user, notification_type="ticket_new")
-            comment_notifs = Notification.objects.filter(target_user=user, notification_type="comment")
-
-            if len(ack_notifs) > 0 or len(ticket_new_notifs) > 0 or len(comment_notifs) > 0:
-                c_dict = {u"ack_notifs": ack_notifs, u"ticket_new_notifs": ticket_new_notifs, u"comment_notifs": comment_notifs, u"ABSOLUTE_URL": settings.ABSOLUTE_URL}
+            if len(Notification.objects.filter(target_user=user)) > 0:
+                c_dict = {
+                    "ack_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ack", "ack_remove"]),
+                    "ticket_new_notifs": Notification.objects.filter(target_user=user, notification_type="ticket_new"),
+                    "comment_notifs": Notification.objects.filter(target_user=user, notification_type="comment")
+                }
                 c = Context(c_dict)
                 user.email_user(subject_text, body_template.render(c), html_message=html_template.render(c))
             for notification in Notification.objects.filter(target_user=user):

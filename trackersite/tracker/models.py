@@ -510,9 +510,10 @@ def ticket_note_comment(sender, comment, **kwargs):
 def notify_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
-        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, ticket=obj, comment=comment, notification_type="comment")
+        text = u"K ticketu %s byl přidán uživatelem %s komentář <tt>%s</tt>" % (obj, comment.user, comment.comment)
+        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
         for admin in obj.topic.admin.all():
-            if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, ticket=obj, comment=comment, notification_type="comment")
+            if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
 
 class MediaInfo(models.Model):
     """ Media related to particular tickets. """
@@ -729,21 +730,12 @@ class TicketAck(models.Model):
 class Notification(models.Model):
     """Notification that is supposed to be sent."""
     target_user = models.ForeignKey('auth.User', null=True, blank=True)
-    ticket = models.ForeignKey('tracker.Ticket', null=True)
-    ack = models.ForeignKey('tracker.TicketAck', null=True)
-    ack_deleted = models.CharField(max_length=1000, null=True, blank=True)
-    comment = models.ForeignKey('django_comments.Comment', null=True)
-    notification_type = models.CharField(_('type'), max_length=20, choices=NOTIFICATION_TYPES, null=True)
+    fired = models.DateTimeField('fired', auto_now_add=True)
+    text = models.TextField('text', default="")
+    notification_type = models.CharField('notification_type', max_length=50, choices=NOTIFICATION_TYPES, null=True)
 
     def __unicode__(self):
-        if self.notification_type == "ack":
-            return u'Ticket #%d %s by %s on %s' % (self.ack.ticket_id, self.ack.get_ack_type_display(), self.ack.added_by, self.ack.added)
-        elif self.notification_type == "comment":
-            return 'Ticket ' + unicode(self.ticket.id) + ': ' + unicode(self.comment)
-        elif self.notification_type == "ticket_new":
-            return 'Ticket #%d %s was created by %s on %s' % (self.ticket.id, self.ticket.summary, self.ticket.requested_by(), self.ticket.created)
-        else:
-            return ''
+        return '%s: %s' % (self.fired, self.text)
 
 @receiver(post_save, sender=TicketAck)
 def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
@@ -752,23 +744,25 @@ def flush_ticket_after_ack_save(sender, instance, created, raw, **kwargs):
 
 @receiver(post_save, sender=Ticket)
 def notify_ticket(sender, instance, created, raw, **kwargs):
-    if created: 
+    if created:
+        text = u'Ticket %s byl vytvořen uživatelem %s v tématu %s' % (instance, instance.requested_by_html(), instance.topic)
         for admin in instance.topic.admin.all():
-            if admin != instance.requested_user: Notification.objects.create(target_user=admin, ticket=instance, notification_type="ticket_new")
+            if admin != instance.requested_user: Notification.objects.create(target_user=admin, notification_type="ticket_new", text=text)
 
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
-    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, ack=instance, notification_type="ack")
+    text = u"Ticketu <a href='%s%s'>%s</a> byl přidán stav <tt>%s</tt> uživatelem <tt>%s</tt>" % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
+    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack", text=text)
     for admin in instance.ticket.topic.admin.all():
-        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, ticket=instance.ticket, ack=instance, notification_type="ack")
+        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack", text=text)
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
-    text_ack = u'U ticketu #%d došlo k odebrání stavu %s uživatelem %s v %s' % (instance.ticket_id, instance.get_ack_type_display(), instance.added_by, instance.added)
-    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, notification_type="ack_remove", ack_deleted=text_ack)
+    text = u'U ticketu #%d došlo k odebrání stavu %s uživatelem %s' % (instance.ticket_id, instance.get_ack_type_display(), instance.added_by)
+    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack_remove", text=text)
     for admin in instance.ticket.topic.admin.all():
-        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=instance.ticket.requested_user, ticket=instance.ticket, notification_type="ack_remove", ack_deleted=text_ack)
+        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
 
 @receiver(post_delete, sender=TicketAck)
 def flush_ticket_after_ack_delete(sender, instance, **kwargs):

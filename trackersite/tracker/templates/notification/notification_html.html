@@ -3,8 +3,8 @@
 {% if ticket_new_notifs.count > 0 %}
 <h1>Seznam nových ticketů</h1>
 <ul>
-    {% for ticket_new_notif in ticket_new_notifs %}
-    <li><p>{{ticket_new_notif.ticket.created}}: <a href="{{ABSOLUTE_URL}}{{ticket_new_notif.ticket.get_absolute_url}}">Ticket #{{ticket_new_notif.ticket.id}}</a> ({{ticket_new_notif.ticket.summary}}) byl vytvořen uživatelem <tt>{{ticket_new_notif.ticket.requested_by}}</tt></p></li>
+    {% for notif in ticket_new_notifs %}
+    <li>{{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -12,8 +12,8 @@
 {% if ack_notifs.count > 0 %}
 <h1>Změna stavu sledovaných tiketů</h1>
 <ul>
-    {% for ack_notif in ack_notifs %}
-    <li><p>{{ack_notif.ack.added}}: <a href="{{ABSOLUTE_URL}}{{ack_notif.ack.ticket.get_absolute_url}}">Ticketu #{{ack_notif.ack.ticket.id}}</a> byl přidán stav <tt>{{ack_notif.ack.get_ack_type_display}}</tt> uživatelem <tt>{{ack_notif.ack.added_by}}</tt></p></li>
+    {% for notif in ack_notifs %}
+    <li>{{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -21,12 +21,12 @@
 {% if comment_notifs.count > 0 %}
 <h1>Seznam přidaných komentářů k sledovaným ticketům</h1>
 <ul>
-    {% for comment_notif in comment_notifs %}
-    <li><p>{{comment_notif.comment.submit_date}}: <a href="{{ABSOLUTE_URL}}{{comment_notif.get_absolute_url}}">Ticketu #{{comment_notif.comment.object_pk}}</a> byl přidán uživatelem <tt>{{comment_notif.comment.user}}</tt> komentář <tt>{{comment_notif.comment.comment}}</tt></p></li>
+    {% for notif in comment_notifs %}
+    <li>{{notif}}</li>
     {% endfor %}
 </ul>
 {% endif %}
 
--- 
+-- <br>
 <a href="{{ABSOLUTE_URL}}">Tracker notifikace</a>
 {% endautoescape %}
