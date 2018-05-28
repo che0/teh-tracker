@@ -10,10 +10,10 @@
 {% endif %}
 
 {% if ack_notifs.count > 0 %}
-<h1>Seznam přidaných acků k sledovaným ticketům</h1>
+<h1>Změna stavu sledovaných tiketů</h1>
 <ul>
     {% for ack_notif in ack_notifs %}
-    <li><p>{{ack_notif.ack.added}}: <a href="{{ABSOLUTE_URL}}{{ack_notif.ack.ticket.get_absolute_url}}">Ticketu #{{ack_notif.ack.ticket.id}}</a> byl přidán ack <tt>{{ack_notif.ack.get_ack_type_display}}</tt> uživatelem <tt>{{ack_notif.ack.added_by}}</tt></p></li>
+    <li><p>{{ack_notif.ack.added}}: <a href="{{ABSOLUTE_URL}}{{ack_notif.ack.ticket.get_absolute_url}}">Ticketu #{{ack_notif.ack.ticket.id}}</a> byl přidán stav <tt>{{ack_notif.ack.get_ack_type_display}}</tt> uživatelem <tt>{{ack_notif.ack.added_by}}</tt></p></li>
     {% endfor %}
 </ul>
 {% endif %}
