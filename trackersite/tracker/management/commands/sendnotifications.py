@@ -19,7 +19,8 @@ class Command(NoArgsCommand):
                 c_dict = {
                     "ack_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ack", "ack_remove"]),
                     "ticket_new_notifs": Notification.objects.filter(target_user=user, notification_type="ticket_new"),
-                    "comment_notifs": Notification.objects.filter(target_user=user, notification_type="comment")
+                    "comment_notifs": Notification.objects.filter(target_user=user, notification_type="comment"),
+                    "supervisor_notes_notifs": Notification.objects.filter(target_user=user, notification_type="supervisor_notes"),
                 }
                 c = Context(c_dict)
                 user.email_user(subject_text, strip_tags(html_template.render(c)), html_message=html_template.render(c))

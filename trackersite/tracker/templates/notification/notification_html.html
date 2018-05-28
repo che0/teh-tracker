@@ -18,6 +18,15 @@
 </ul>
 {% endif %}
 
+{% if supervisor_notes_notifs.count > 0 %}
+<h1>Změna poznámek schvalovatele u sledovaných ticketů</h1>
+<ul>
+    {% for notif in supervisor_notes_notifs %}
+    <li>{{notif.fired}}: {{notif}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 {% if comment_notifs.count > 0 %}
 <h1>Seznam přidaných komentářů k sledovaným ticketům</h1>
 <ul>

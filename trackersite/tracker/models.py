@@ -3,7 +3,7 @@ import datetime
 import decimal
 
 from django_comments.signals import comment_was_posted
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db import models
@@ -44,6 +44,7 @@ NOTIFICATION_TYPES = (
     ('ack', 'ack'),
     ('ack_remove', 'ack_remove'),
     ('comment', 'comment'),
+    ('supervisor_notes', 'supervisor_notes'),
     ('ticket_new', 'ticket_new'),
 )
 
@@ -749,6 +750,12 @@ def notify_ticket(sender, instance, created, raw, **kwargs):
         for admin in instance.topic.admin.all():
             if admin != instance.requested_user: Notification.objects.create(target_user=admin, notification_type="ticket_new", text=text)
 
+@receiver(pre_save, sender=Ticket)
+def notify_supervizor_notes(sender, instance, **kwargs):
+    old = Ticket.objects.get(id=instance.id)
+    if old.supervisor_notes != instance.supervisor_notes:
+        text = u'U ticketu <a href="%s%s">%s</a> došlo ke změně poznámek schvalovatele.' % (settings.BASE_URL, instance.get_absolute_url(), instance)
+        Notification.objects.create(target_user=instance.requested_user, notification_type="supervisor_notes", text=text)
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
