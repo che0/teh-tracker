@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% load i18n trackertags %}
+{% block title %}{% trans "Ticket list" %}{% endblock %}
+
+
 {% block content %}
+<p class="nav">{% trans "index" %} | <a href="{% url "topic_list" %}">{% trans "topics" %}</a> | <a href="{% url "transaction_list" %}">{% trans "transactions" %}</a> | <a href="{% url "user_list" %}">{% trans "users" %}</a></p>
+{% if user.is_authenticated %}<p class="tools screenonly"><a href="{% url "create_ticket" %}" class="btn btn-primary">{% trans "Create new ticket" %}</a></p>{% endif %}
+{% include "tracker/paginator.html" with url_name="ticket_list" extra_class="top" %}
+<h1>{% trans "Ticket list" %}</h1>
 <div class="hidden" id="disabledatatables">yes</div>
 <table>
     <thead>
