@@ -40,9 +40,8 @@ class SimpleTicketTest(TestCase):
         self.assertTrue(self.ticket1.updated > old_updated)
 
     def test_ticket_list(self):
-        response = Client().get(reverse('ticket_json'))
+        response = Client().get(reverse('ticket_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.parse(force_text(response.content))), 2)
 
     def test_ticket_detail(self):
         response = Client().get(reverse('ticket_detail', kwargs={'pk':self.ticket1.id}))
