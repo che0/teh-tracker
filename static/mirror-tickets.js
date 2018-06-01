@@ -36,7 +36,7 @@ async function checkAndDownloadTickets() {
 function displayTickets()
 {
     var timeout = 0;
-    if(localStorage.length == 0) timeout = 100;
+    if(localStorage.length == 0) timeout = 400;
     setTimeout(function() {
         var data = [];
         for(var id = Number(localStorage.ticket_highest); id > 0; id--)
