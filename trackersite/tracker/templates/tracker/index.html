@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n trackertags %}
+{% block content %}
+<div class="hidden" id="disabledatatables">yes</div>
+<table>
+    <thead>
+        <tr><th>{% trans "ID" %} <i class="fa "></i></th><th>{% trans "Event date" %}</th><th>{% trans "Summary" %} <i class="fa "></i></th>
+            <th><abbr title="{% trans "Grant" %}">{% filter slice:":2" %}{% trans "Grant" %}{% endfilter %}<abbr></th>
+            <th>{% trans "Topic" %} <i class="fa "></i></th>
+            <th>{% trans "Requested by" %}</th>
+            <th>{% trans "Requested expeditures" %}</th>
+            <th>{% trans "Accepted expeditures" %}</th>
+            <th>{% trans "Paid expeditures" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Last changed" %} <i class="fa "></i></th></tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<script>
+    deleteDeletedTickets();
+    displayTickets();
+</script>
+{% endblock %}

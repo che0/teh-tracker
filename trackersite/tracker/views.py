@@ -14,6 +14,9 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.utils.functional import curry, lazy
 from django.utils.translation import ugettext as _, ugettext_lazy
+from django.core import serializers
+from django.http import JsonResponse
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.views.generic import ListView, DetailView, FormView, DeleteView
 from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
@@ -24,25 +27,35 @@ import csv
 from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
 from users.models import UserWrapper
 
-class TicketListView(ListView):
-    model = Ticket
-    paginate_by = None
+def ticket_list(request, page):
+    return render(request, 'tracker/index.html')
 
-    def get(self, request, *args, **kwargs):
-        if kwargs.get('page', None) == '1':
-            return HttpResponseRedirect(reverse('ticket_list'))
-        else:
-            return super(TicketListView, self).get(request, *args, **kwargs)
+def ticket_json(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    resp = {
+        "pk": '<a href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.pk),
+        "event_date": ticket.event_date,
+        "summary": '<a class="ticket-summary" href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.summary),
+        "grant": '<a href="%s">%s</a>' % (ticket.topic.grant.get_absolute_url(), ticket.topic.grant),
+        "topic": '<a href="%s">%s</a>' % (ticket.topic.get_absolute_url(), ticket.topic),
+        "requested_by": ticket.requested_by_html(),
+        "requested_expeditures": "%s %s" % (ticket.preexpeditures()['amount'] or 0, settings.TRACKER_CURRENCY),
+        "accepted_expeditures": "%s %s" % (ticket.accepted_expeditures(), settings.TRACKER_CURRENCY),
+        "paid_expeditures": "%s %s" % (ticket.paid_expeditures(), settings.TRACKER_CURRENCY),
+        "state": unicode(ticket.state_str()),
+        "changed": ticket.updated,
+    }
+    return JsonResponse(resp)
 
-    def get_queryset(self):
-        orderget = self.request.GET.get('order', 'id')
-        descasc = self.request.GET.get('descasc', 'desc')
-        if descasc == 'asc':
-            finalorder = orderget
-        else:
-            finalorder = '-' + orderget
-        return super(TicketListView, self).get_queryset().select_related().order_by(finalorder)
-ticket_list = TicketListView.as_view()
+def ticket_highest(request):
+    return HttpResponse('{"id": %s}' % str(Ticket.objects.order_by('-id')[0].id), content_type="application/json")
+
+def ticket_deleted(request, pk):
+    resp = {
+        "pk": pk,
+        "deleted": len(Ticket.objects.filter(id=pk)) == 0
+    }
+    return JsonResponse(resp)
 
 class CommentPostedCatcher(object):
     """
