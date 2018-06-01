@@ -30,33 +30,6 @@ from users.models import UserWrapper
 def ticket_list(request, page):
     return render(request, 'tracker/index.html')
 
-def ticket_json(request, pk):
-    ticket = get_object_or_404(Ticket, id=pk)
-    resp = {
-        "pk": '<a href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.pk),
-        "event_date": ticket.event_date,
-        "summary": '<a class="ticket-summary" href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.summary),
-        "grant": '<a href="%s">%s</a>' % (ticket.topic.grant.get_absolute_url(), ticket.topic.grant),
-        "topic": '<a href="%s">%s</a>' % (ticket.topic.get_absolute_url(), ticket.topic),
-        "requested_by": ticket.requested_by_html(),
-        "requested_expeditures": "%s %s" % (ticket.preexpeditures()['amount'] or 0, settings.TRACKER_CURRENCY),
-        "accepted_expeditures": "%s %s" % (ticket.accepted_expeditures(), settings.TRACKER_CURRENCY),
-        "paid_expeditures": "%s %s" % (ticket.paid_expeditures(), settings.TRACKER_CURRENCY),
-        "state": unicode(ticket.state_str()),
-        "changed": ticket.updated,
-    }
-    return JsonResponse(resp)
-
-def ticket_highest(request):
-    return HttpResponse('{"id": %s}' % str(Ticket.objects.order_by('-id')[0].id), content_type="application/json")
-
-def ticket_deleted(request, pk):
-    resp = {
-        "pk": pk,
-        "deleted": len(Ticket.objects.filter(id=pk)) == 0
-    }
-    return JsonResponse(resp)
-
 class CommentPostedCatcher(object):
     """
     View mixin that catches 'c' GET argument from comment framework
