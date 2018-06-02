@@ -39,4 +39,5 @@ urlpatterns = patterns('',
     url(r'^admin/users/$', 'tracker.views.admin_user_list', name='admin_user_list'),
     url(r'^export/$', 'tracker.views.export', name='export'),
     url(r'^import/$', 'tracker.views.importcsv', name='importcsv'),
+    url(r'tickets.json$', 'tracker.views.tickets', name='tickets'),
 )
