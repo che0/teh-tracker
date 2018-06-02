@@ -180,6 +180,9 @@ class Ticket(CachedModel):
                 result.append(ticket)
         return result
 
+    def admin_topic(self):
+        return '%s (%s)' % (self.topic, self.topic.grant)
+
     def is_concept(self):
         return len(self.ack_set()) == 0
 
@@ -407,7 +410,7 @@ class Topic(CachedModel):
     admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), blank=True, help_text=_('Selected users will have administration access to this topic.'))
 
     def __unicode__(self):
-        return '%s (%s)' % (self.name, self.grant)
+        return self.name
 
     def get_absolute_url(self):
         return reverse('topic_detail', kwargs={'pk':self.id})
@@ -748,7 +751,7 @@ def notify_comment(sender, comment, **kwargs):
         if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
         for admin in obj.topic.admin.all():
             if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
-        usersmentioned = re.findall(r'@([a-zA-Z0-9_-.]+)', comment.comment)
+        usersmentioned = re.findall(r'@([-a-zA-Z0-9_.]+)', comment.comment)
         for user_name in usersmentioned:
             users = User.objects.filter(username=user_name)
             if len(users) == 1: user = users[0]
