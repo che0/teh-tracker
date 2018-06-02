@@ -11,6 +11,8 @@ from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.conf import settings
+import json
+from django.utils.encoding import force_text
 import StringIO
 import csv
 
@@ -40,7 +42,6 @@ class SimpleTicketTest(TestCase):
     def test_ticket_list(self):
         response = Client().get(reverse('ticket_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['ticket_list']), 2)
 
     def test_ticket_detail(self):
         response = Client().get(reverse('ticket_detail', kwargs={'pk':self.ticket1.id}))

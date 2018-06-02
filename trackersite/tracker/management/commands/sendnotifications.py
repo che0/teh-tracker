@@ -6,13 +6,15 @@ from django.template import Context
 from django.conf import settings
 from django.utils import translation
 from django.utils.html import strip_tags
+from datetime import date
 
 class Command(NoArgsCommand):
     help = 'Process pending notifications'
     
     def handle_noargs(self, **options):
         translation.activate('cs_CZ')
-        subject_text = get_template('notification/notification_subject.txt').render()
+	subject_c = Context({"date":date.today()})
+        subject_text = get_template('notification/notification_subject.txt').render(subject_c)
         html_template = get_template('notification/notification_html.html')
         for user in User.objects.all():
             if len(Notification.objects.filter(target_user=user)) > 0:
