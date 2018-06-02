@@ -180,6 +180,9 @@ class Ticket(CachedModel):
                 result.append(ticket)
         return result
 
+    def admin_topic(self):
+        return '%s (%s)' % (self.topic, self.topic.grant)
+
     def is_concept(self):
         return len(self.ack_set()) == 0
 
