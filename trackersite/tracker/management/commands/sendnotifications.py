@@ -13,7 +13,7 @@ class Command(NoArgsCommand):
     
     def handle_noargs(self, **options):
         translation.activate('cs_CZ')
-	subject_c = Context({"date":date.today()})
+        subject_c = Context({"date":date.today()})
         subject_text = get_template('notification/notification_subject.txt').render(subject_c)
         html_template = get_template('notification/notification_html.html')
         for user in User.objects.all():
