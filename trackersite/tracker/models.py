@@ -281,6 +281,10 @@ class Ticket(CachedModel):
             total = sum([x.amount for x in self.expediture_set.filter(paid=True)], decimal.Decimal(0))
             reduced = total * self.rating_percentage / 100
             return reduced.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP)
+    
+    def watches(self, user):
+        """Watches given user this ticket?"""
+        return len(TicketWatcher.objects.filter(ticket=self, user=user)) > 0
 
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """

@@ -74,6 +74,7 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_edit_documents'] = ticket.can_edit_documents(user)
         context['user_can_see_documents'] = ticket.can_see_documents(user)
         context['user_can_copy_preexpeditures'] = ticket.can_copy_preexpeditures(user)
+        context['watches'] = ticket.watches(user)
         return context
 ticket_detail = TicketDetailView.as_view()
 
