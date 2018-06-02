@@ -6,7 +6,7 @@
 {% trans "Last changed" %}: {{ ticket.updated }}<br />
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {% if active_links %}{{ticket.requested_by_html}}{% else %}{{ticket.requested_by}}{% endif %}<br />
-{% trans "Topic" %}: {{ ticket.topic }} ({{ticket.topic.grant.short_name}})<br />
+{% trans "Topic" %}: {{ ticket.topic }}<br />
 {% trans "State" %}: {{ ticket.state_str }}<br />
 {% if ticket.is_concept == False %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
 {% trans "Report URL" %}: {% if ticket.report_url == "" %}{% trans "No report filled" %}{% else %}<a href="{{ticket.report_url}}">{{ticket.report_url}}</a>{% endif %}<br>

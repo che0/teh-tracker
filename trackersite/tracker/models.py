@@ -407,7 +407,7 @@ class Topic(CachedModel):
     admin = models.ManyToManyField('auth.User', verbose_name=_('topic administrator'), blank=True, help_text=_('Selected users will have administration access to this topic.'))
 
     def __unicode__(self):
-        return self.name
+        return '%s (%s)' % (self.name, self.grant)
 
     def get_absolute_url(self):
         return reverse('topic_detail', kwargs={'pk':self.id})
