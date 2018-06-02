@@ -22,40 +22,32 @@ from django.contrib.admin import widgets as adminwidgets
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
+from django.utils.translation import get_language
 import csv
 
 from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
 from users.models import UserWrapper
 
 def ticket_list(request, page):
-    return render(request, 'tracker/index.html')
+    return render(request, 'tracker/index.html', {"LANGUAGE": get_language()})
 
-def ticket_json(request, pk):
-    ticket = get_object_or_404(Ticket, id=pk)
-    resp = {
-        "pk": '<a href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.pk),
-        "event_date": ticket.event_date,
-        "summary": '<a class="ticket-summary" href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.summary),
-        "grant": '<a href="%s">%s</a>' % (ticket.topic.grant.get_absolute_url(), ticket.topic.grant),
-        "topic": '<a href="%s">%s</a>' % (ticket.topic.get_absolute_url(), ticket.topic),
-        "requested_by": ticket.requested_by_html(),
-        "requested_expeditures": "%s %s" % (ticket.preexpeditures()['amount'] or 0, settings.TRACKER_CURRENCY),
-        "accepted_expeditures": "%s %s" % (ticket.accepted_expeditures(), settings.TRACKER_CURRENCY),
-        "paid_expeditures": "%s %s" % (ticket.paid_expeditures(), settings.TRACKER_CURRENCY),
-        "state": unicode(ticket.state_str()),
-        "changed": ticket.updated,
-    }
-    return JsonResponse(resp)
-
-def ticket_highest(request):
-    return HttpResponse('{"id": %s}' % str(Ticket.objects.order_by('-id')[0].id), content_type="application/json")
-
-def ticket_deleted(request, pk):
-    resp = {
-        "pk": pk,
-        "deleted": len(Ticket.objects.filter(id=pk)) == 0
-    }
-    return JsonResponse(resp)
+def tickets(request, lang):
+    tickets = []
+    for ticket in Ticket.objects.order_by('-id'):
+        tickets.append([
+            '<a href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.pk),
+            unicode(ticket.event_date),
+            '<a class="ticket-summary" href="%s">%s</a>' % (ticket.get_absolute_url(), ticket.summary),
+            '<a href="%s">%s</a>' % (ticket.topic.grant.get_absolute_url(), ticket.topic.grant),
+            '<a href="%s">%s</a>' % (ticket.topic.get_absolute_url(), ticket.topic),
+            ticket.requested_by_html(),
+            "%s %s" % (ticket.preexpeditures()['amount'] or 0, settings.TRACKER_CURRENCY),
+            "%s %s" % (ticket.accepted_expeditures(), settings.TRACKER_CURRENCY),
+            "%s %s" % (ticket.paid_expeditures(), settings.TRACKER_CURRENCY),
+            unicode(ticket.state_str()),
+            unicode(ticket.updated),
+        ])
+    return JsonResponse({"data": tickets})
 
 class CommentPostedCatcher(object):
     """

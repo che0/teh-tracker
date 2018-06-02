@@ -7,9 +7,6 @@ from tracker import feeds
 
 urlpatterns = patterns('',
     url(r'^tickets/(?:page/(?P<page>\d+)/)?$', 'tracker.views.ticket_list', name='ticket_list'),
-    url(r'ticket/json/(?P<pk>\d+)/?$', 'tracker.views.ticket_json', name='ticket_json'),
-    url(r'ticket/json/deleted/(?P<pk>\d+)/?$', 'tracker.views.ticket_deleted', name='ticket_deleted'),
-    url(r'tickets/json/highest/?$', 'tracker.views.ticket_highest', name='ticket_highest'),
     url(r'^tickets/feed/$', feeds.LatestTicketsFeed(), name='ticket_list_feed'),
     url(r'^tickets/feed/submitted/$', feeds.SubmittedTicketsFeed(), name='ticket_submitted_feed'),
     url(r'^ticket/(?P<pk>\d+)/$', 'tracker.views.ticket_detail', name='ticket_detail'),
@@ -42,4 +39,5 @@ urlpatterns = patterns('',
     url(r'^admin/users/$', 'tracker.views.admin_user_list', name='admin_user_list'),
     url(r'^export/$', 'tracker.views.export', name='export'),
     url(r'^import/$', 'tracker.views.importcsv', name='importcsv'),
+    url(r'tickets_(?P<lang>.+).json$', 'tracker.views.tickets', name='tickets'),
 )
