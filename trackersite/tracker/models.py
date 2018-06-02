@@ -18,6 +18,7 @@ from django.core.urlresolvers import NoReverseMatch
 from django.core.cache import cache
 from django import template
 from django.template.loader import get_template
+import re
 
 from users.models import UserWrapper
 
@@ -747,6 +748,13 @@ def notify_comment(sender, comment, **kwargs):
         if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
         for admin in obj.topic.admin.all():
             if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
+        usersmentioned = re.findall(r'@([a-zA-Z0-9_-]+)', comment.comment)
+        for user_name in usersmentioned:
+            users = User.objects.filter(username=user_name)
+            if len(users) == 1: user = users[0]
+            else: continue
+            if user != comment.user and user != obj.requested_user and user not in obj.topic.admin.all(): Notification.objects.create(target_user=user, notification_type="comment", text=text)
+
 
 @receiver(post_save, sender=Ticket)
 def notify_ticket(sender, instance, created, raw, **kwargs):
