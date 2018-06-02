@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from sendfile import sendfile
 from django.utils.translation import get_language
+from django.views.decorators.cache import cache_page
 import csv
 
 from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
@@ -31,6 +32,7 @@ from users.models import UserWrapper
 def ticket_list(request, page):
     return render(request, 'tracker/index.html', {"LANGUAGE": get_language()})
 
+cache_page(60 * 2)
 def tickets(request, lang):
     tickets = []
     for ticket in Ticket.objects.order_by('-id'):
