@@ -26,4 +26,4 @@ class Command(NoArgsCommand):
                         unicode(ticket.state_str()),
                         unicode(ticket.updated),
                     ])
-                open(os.path.join(settings.TRACKER_PUBLIC_DEPLOY_ROOT, 'tickets_%s.json' % langcode), 'w').write(json.dumps({"data": tickets}))
+                open(os.path.join(settings.TRACKER_PUBLIC_DEPLOY_ROOT, 'tickets', '%s.json' % langcode), 'w').write(json.dumps({"data": tickets}))
