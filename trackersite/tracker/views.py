@@ -24,7 +24,8 @@ from django.core.urlresolvers import reverse
 from sendfile import sendfile
 import csv
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher
+from tracker.models import NOTIFICATION_TYPES
 from users.models import UserWrapper
 
 def ticket_list(request, page):
@@ -265,6 +266,27 @@ expeditureformset_factory = curry(inlineformset_factory, Ticket, Expediture,
 PREEXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpediture,
     formset=ExtraItemFormSet, fields=PREEXPEDITURE_FIELDS)
+
+@login_required
+def watch_ticket(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    for notification_type in NOTIFICATION_TYPES:
+        TicketWatcher.objects.create(ticket=ticket, user=request.user, notification_type=notification_type)
+    messages.success(request, _('Ticket %s watched.') % ticket)
+    return HttpResponseRedirect(ticket.get_absolute_url())
+
+@login_required
+def unwatch_ticket(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    watchers = TicketWatcher.objects.filter(ticket=ticket, user=request.user)
+    if len(watchers) == 0:
+        messages.error(request, _('Ticket %s is not watched by you, so it cannot be unwatched.') % ticket)
+        return HttpResponseRedirect(ticket.get_absolute_url())
+    for watcher in watchers:
+        watcher.delete()
+    messages.success(request, _('Ticket %s unwatched.') % ticket)
+    return HttpResponseRedirect(ticket.get_absolute_url())
+
 
 @login_required
 def create_ticket(request):

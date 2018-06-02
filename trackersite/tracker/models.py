@@ -743,6 +743,16 @@ class Notification(models.Model):
     def __unicode__(self):
         return self.text
 
+class TicketWatcher(models.Model):
+    """User that watch given ticket"""
+    ticket = models.ForeignKey('Ticket')
+    user = models.ForeignKey('auth.User')
+    notification_type = models.CharField('notification_type', max_length=50, choices=NOTIFICATION_TYPES)
+
+    def __unicode__(self):
+        return 'User %s is watching event %s on ticket %s' % (self.user, self.notification_type, self.ticket)
+
+
 @receiver(comment_was_posted)
 def notify_comment(sender, comment, **kwargs):
     obj = comment.content_object
@@ -757,7 +767,15 @@ def notify_comment(sender, comment, **kwargs):
             if len(users) == 1: user = users[0]
             else: continue
             if user != comment.user and user != obj.requested_user and user not in obj.topic.admin.all(): Notification.objects.create(target_user=user, notification_type="comment", text=text)
+        watchers = TicketWatcher.objects.filter(ticket=obj, notification_type="comment")
+        for watcher in watchers:
+            if watcher.user != comment.user and watcher.user != obj.requested_user and watcher.user not in obj.topic.admin.all() and watcher.user.username not in usersmentioned: Notification.objects.create(target_user=watcher.user, notification_type="comment", text=text)
 
+@receiver(comment_was_posted)
+def add_commenting_user_to_watchers(sender, comment, **kwargs):
+    obj = comment.content_object
+    if type(obj) == Ticket and comment.user is not None:
+        if comment.user != obj.requested_user and comment.user not in obj.topic.admin.all(): TicketWatcher.objects.create(ticket=obj, user=comment.user, notification_type="comment")
 
 @receiver(post_save, sender=Ticket)
 def notify_ticket(sender, instance, created, raw, **kwargs):
@@ -773,6 +791,9 @@ def notify_supervizor_notes(sender, instance, **kwargs):
         if old.supervisor_notes != instance.supervisor_notes:
             text = u'U ticketu <a href="%s%s">%s</a> došlo ke změně poznámek schvalovatele.' % (settings.BASE_URL, instance.get_absolute_url(), instance)
             Notification.objects.create(target_user=instance.requested_user, notification_type="supervisor_notes", text=text)
+            watchers = TicketWatcher.objects.filter(ticket=instance, notification_type="supervisor_notes")
+            for watcher in watchers:
+                if watcher.user != instance.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="supervisor_notes", text=text)
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
@@ -780,6 +801,8 @@ def notify_ack_add(sender, instance, created, **kwargs):
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack", text=text)
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack", text=text)
+    for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack"):
+        if watcher.user != instance.added_by and wathcer.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
@@ -787,6 +810,8 @@ def notify_ack_remove(sender, instance, **kwargs):
     if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack_remove", text=text)
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
+    for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack_remove"):
+        if watcher.user != instance.added_by and wathcer.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
