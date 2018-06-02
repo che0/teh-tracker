@@ -1,1 +1,1 @@
-[WMCZ Tracker] Daily digest
+[WMCZ Tracker] Přehled změn ve vámi sledovaných tiketech - {{date}}
