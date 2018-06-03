@@ -275,6 +275,7 @@ def watch_ticket(request, pk):
         notification_types = []
         ticket = get_object_or_404(Ticket, id=pk)
         for notification_type in NOTIFICATION_TYPES:
+            if notification_type[0] == 'ticket_new': continue # Watching ticket created event on particular ticket doesn't make sense
             notification_types.append((
                 notification_type[0],
                 notification_type[1],
