@@ -290,7 +290,7 @@ def watch_ticket(request, pk):
                 ticket.watches(request.user, notification_type[0])
             ))
         return render(request, 'tracker/watch.html',{
-            "topic": get_object_or_404(Ticket, id=pk),
+            "object": get_object_or_404(Ticket, id=pk),
             "objecttype": _("ticket"),
             "notification_types": notification_types,
         })
