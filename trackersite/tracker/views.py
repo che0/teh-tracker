@@ -75,7 +75,6 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_see_documents'] = ticket.can_see_documents(user)
         context['user_can_copy_preexpeditures'] = ticket.can_copy_preexpeditures(user)
         context['user_admin_of_topic'] = user in ticket.topic.admin.all()
-        context['watches'] = ticket.watches(user)
         return context
 ticket_detail = TicketDetailView.as_view()
 
@@ -271,8 +270,7 @@ def watch_ticket(request, pk):
         messages.warning(request, _('You cannot watch ticket in topic you are an admin of explicitely. You are already subscribed to all notifications.'))
         return HttpResponseRedirect(ticket.get_absolute_url())
     if request.method == 'POST':
-        if ticket.watches(request.user):
-            for watcher in TicketWatcher.objects.filter(ticket=ticket, user=request.user): watcher.delete()
+        for watcher in TicketWatcher.objects.filter(ticket=ticket, user=request.user): watcher.delete()
         for notification_type in NOTIFICATION_TYPES:
             if notification_type[0] in request.POST: TicketWatcher.objects.create(ticket=ticket, user=request.user, notification_type=notification_type[0])
         messages.success(request, _("Ticket's %s watching settings are changed.") % ticket)

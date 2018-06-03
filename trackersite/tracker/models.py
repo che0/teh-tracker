@@ -282,14 +282,9 @@ class Ticket(CachedModel):
             reduced = total * self.rating_percentage / 100
             return reduced.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP)
     
-    def watches(self, user, event=None):
+    def watches(self, user, event):
         """Watches given user this ticket?"""
-        if user.is_authenticated():
-            if event:
-                return len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0
-            return len(TicketWatcher.objects.filter(ticket=self, user=user)) > 0
-        else:
-            return False
+        return user.is_authenticated() and len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0
 
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
