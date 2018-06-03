@@ -809,7 +809,7 @@ def notify_ack_add(sender, instance, created, **kwargs):
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack", text=text)
     for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack"):
-        if watcher.user != instance.added_by and wathcer.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
+        if watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
@@ -818,7 +818,7 @@ def notify_ack_remove(sender, instance, **kwargs):
     for admin in instance.ticket.topic.admin.all():
         if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
     for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack_remove"):
-        if watcher.user != instance.added_by and wathcer.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
+        if watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
