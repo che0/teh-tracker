@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Watch ticket" %}: {{ticket}}{% endblock %}
+{% block title %}{% trans "Watch" %} {{objecttype}}: {{object}}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Watch ticket" %}: {{ticket}}</h1>
+<h1>{% trans "Watch" %} {{objecttype}}: {{object}}</h1>
 <div class="container">
     <form enctype="multipart/form-data" class="form-horizontal" method="POST">
         {% csrf_token %}

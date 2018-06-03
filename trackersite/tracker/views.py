@@ -25,7 +25,7 @@ from sendfile import sendfile
 from django.utils.translation import get_language
 import csv
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher
+from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher, TopicWatcher
 from tracker.models import NOTIFICATION_TYPES
 from users.models import UserWrapper
 
@@ -147,6 +147,11 @@ def topic_list(request):
 
 class TopicDetailView(CommentPostedCatcher, DetailView):
     model = Topic
+
+    def get_context_data(self, **kwargs):
+        context = super(TopicDetailView, self).get_context_data(**kwargs)
+        context['user_admin_of_topic'] = self.request.user in self.object.admin.all()
+        return context
 topic_detail = TopicDetailView.as_view()
 
 def topics_js(request):
@@ -284,9 +289,38 @@ def watch_ticket(request, pk):
                 notification_type[1],
                 ticket.watches(request.user, notification_type[0])
             ))
-        return render(request, 'tracker/ticket_watch.html',{
-            "ticket": get_object_or_404(Ticket, id=pk),
+        return render(request, 'tracker/watch.html',{
+            "topic": get_object_or_404(Ticket, id=pk),
+            "objecttype": _("ticket"),
             "notification_types": notification_types,
+        })
+
+@login_required
+def watch_topic(request, pk):
+    topic = get_object_or_404(Topic, id=pk)
+    if request.user in topic.admin.all():
+        messages.warning(request, _('You cannot watch topic you are an admin of explicitely. You are already subscribed to all notifications.'))
+        return HttpResponseRedirect(topic.get_absolute_url())
+    if request.method == 'POST':
+        for watcher in TopicWatcher.objects.filter(topic=topic, user=request.user): watcher.delete()
+        for notification_type in NOTIFICATION_TYPES:
+            print request.POST
+            print notification_type[0]
+            if notification_type[0] in request.POST: TopicWatcher.objects.create(topic=topic, user=request.user, notification_type=notification_type[0])
+        messages.success(request, _("Topic's %s watching settings are changed.") % topic)
+        return HttpResponseRedirect(topic.get_absolute_url())
+    else:
+        notification_types = []
+        for notification_type in NOTIFICATION_TYPES:
+            notification_types.append((
+                notification_type[0],
+                notification_type[1],
+                topic.watches(request.user, notification_type[0])
+            ))
+        return render(request, 'tracker/watch.html', {
+            "object": topic,
+            "objecttype": _("topic"),
+            "notification_types": notification_types
         })
 
 
