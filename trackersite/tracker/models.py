@@ -288,6 +288,8 @@ class Ticket(CachedModel):
             if event:
                 return len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0
             return len(TicketWatcher.objects.filter(ticket=self, user=user)) > 0
+        else:
+            return False
 
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
