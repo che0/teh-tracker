@@ -282,7 +282,7 @@ def watch_ticket(request, pk):
             ))
         return render(request, 'tracker/ticket_watch.html',{
             "ticket": get_object_or_404(Ticket, id=pk),
-            "notification_types": NOTIFICATION_TYPES
+            "notification_types": notification_types,
         })
 
 

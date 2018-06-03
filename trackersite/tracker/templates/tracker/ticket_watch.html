@@ -9,7 +9,7 @@
     {% trans "What events you want to watch?" %}
     <div class="form-groups">
         {% for notification_type in notification_types %}
-        <input type="checkbox" name="{{notification_type.0}}" id="{{notification_type.0}}">
+        <input type="checkbox" name="{{notification_type.0}}" id="{{notification_type.0}}" {% if notification_type.2 %}checked{% endif %}>
         <label for="{{notification_type.0}}">{{notification_type.1}}</label>
         {% endfor %}
     </div>
