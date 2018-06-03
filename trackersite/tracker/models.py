@@ -284,7 +284,7 @@ class Ticket(CachedModel):
     
     def watches(self, user):
         """Watches given user this ticket?"""
-        if user:
+        if user.is_authenticated():
             return len(TicketWatcher.objects.filter(ticket=self, user=user)) > 0
         else:
             return False
