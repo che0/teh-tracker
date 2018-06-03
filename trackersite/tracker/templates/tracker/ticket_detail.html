@@ -18,7 +18,7 @@
 	{% if user_can_edit_ticket_in_admin %}<a href="{% url "admin:tracker_ticket_change" ticket.id %}"><button class="btn btn-primary">{% trans "edit in admin" %}</button></a>{% endif %}
 	{% if user_can_edit_documents %}<a href="{% url "edit_ticket_docs" ticket.id %}"><button class="btn btn-primary">{% trans "edit ticket documents" %}</button></a>{% endif %}
 	{% if user.is_authenticated %}<a href="{% url "create_ticket"%}?ticket={{ticket.id}}"><button class="btn btn-primary">{% trans "duplicate" %}</button></a>{% endif %}
-	{% if user.is_authenticated %}<a href="{% url "watch_ticket" ticket.id %}"><button class="btn btn-primary">{% trans "watch" %}</button></a>{% endif %}
+	{% if user.is_authenticated %}<a href="{% url "watch_ticket" ticket.id %}"><button class="btn btn-primary">{% trans "watch settings" %}</button></a>{% endif %}
 </p>{% endif %}
 
 {% include "tracker/ticket_common_detail.html" with active_links=True %}
