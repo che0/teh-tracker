@@ -264,7 +264,6 @@ preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpeditur
 def watch_ticket(request, pk):
     if request.method == 'POST':
         ticket = get_object_or_404(Ticket, id=pk)
-        print request.POST
         if ticket.watches(request.user):
             for watcher in TicketWatcher.objects.filter(ticket=ticket, user=request.user): watcher.delete()
         for notification_type in NOTIFICATION_TYPES:
