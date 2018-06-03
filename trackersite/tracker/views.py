@@ -74,6 +74,7 @@ class TicketDetailView(CommentPostedCatcher, DetailView):
         context['user_can_edit_documents'] = ticket.can_edit_documents(user)
         context['user_can_see_documents'] = ticket.can_see_documents(user)
         context['user_can_copy_preexpeditures'] = ticket.can_copy_preexpeditures(user)
+        context['user_admin_of_topic'] = user in ticket.topic.admin.all()
         context['watches'] = ticket.watches(user)
         return context
 ticket_detail = TicketDetailView.as_view()
@@ -262,8 +263,14 @@ preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpeditur
 
 @login_required
 def watch_ticket(request, pk):
+    ticket = get_object_or_404(Ticket, id=pk)
+    if ticket.requested_user == request.user:
+        messages.warning(request, _('You cannot watch tickets you own explictely. You are already subscribed to all notifications.'))
+        return HttpResponseRedirect(ticket.get_absolute_url())
+    if request.user in ticket.topic.admin.all():
+        messages.warning(request, _('You cannot watch ticket in topic you are an admin of explicitely. You are already subscribed to all notifications.'))
+        return HttpResponseRedirect(ticket.get_absolute_url())
     if request.method == 'POST':
-        ticket = get_object_or_404(Ticket, id=pk)
         if ticket.watches(request.user):
             for watcher in TicketWatcher.objects.filter(ticket=ticket, user=request.user): watcher.delete()
         for notification_type in NOTIFICATION_TYPES:
@@ -272,7 +279,6 @@ def watch_ticket(request, pk):
         return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         notification_types = []
-        ticket = get_object_or_404(Ticket, id=pk)
         for notification_type in NOTIFICATION_TYPES:
             if notification_type[0] == 'ticket_new': continue # Watching ticket created event on particular ticket doesn't make sense
             notification_types.append((
