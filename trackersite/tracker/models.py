@@ -42,11 +42,11 @@ ACK_TYPES = (
 )
 
 NOTIFICATION_TYPES = (
-    ('ack', 'ack'),
-    ('ack_remove', 'ack_remove'),
-    ('comment', 'comment'),
-    ('supervisor_notes', 'supervisor_notes'),
-    ('ticket_new', 'ticket_new'),
+    ('ack', _('Ack added')),
+    ('ack_remove', _('Ack removed')),
+    ('comment', _('Comment added')),
+    ('supervisor_notes', _('Supervisor notes changed')),
+    ('ticket_new', _('New ticket was created')),
 )
 
 USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
@@ -282,8 +282,10 @@ class Ticket(CachedModel):
             reduced = total * self.rating_percentage / 100
             return reduced.quantize(decimal.Decimal('0.01'), rounding=decimal.ROUND_HALF_UP)
     
-    def watches(self, user):
+    def watches(self, user, event=None):
         """Watches given user this ticket?"""
+        if event:
+            return len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0
         return len(TicketWatcher.objects.filter(ticket=self, user=user)) > 0
 
     def can_edit(self, user):

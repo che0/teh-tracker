@@ -262,23 +262,28 @@ preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpeditur
 
 @login_required
 def watch_ticket(request, pk):
-    ticket = get_object_or_404(Ticket, id=pk)
-    for notification_type in NOTIFICATION_TYPES:
-        TicketWatcher.objects.create(ticket=ticket, user=request.user, notification_type=notification_type)
-    messages.success(request, _('Ticket %s watched.') % ticket)
-    return HttpResponseRedirect(ticket.get_absolute_url())
-
-@login_required
-def unwatch_ticket(request, pk):
-    ticket = get_object_or_404(Ticket, id=pk)
-    watchers = TicketWatcher.objects.filter(ticket=ticket, user=request.user)
-    if len(watchers) == 0:
-        messages.error(request, _('Ticket %s is not watched by you, so it cannot be unwatched.') % ticket)
+    if request.method == 'POST':
+        ticket = get_object_or_404(Ticket, id=pk)
+        print request.POST
+        if ticket.watches(request.user):
+            for watcher in TicketWatcher.objects.filter(ticket=ticket, user=request.user): watcher.delete()
+        for notification_type in NOTIFICATION_TYPES:
+            if notification_type[0] in request.POST: TicketWatcher.objects.create(ticket=ticket, user=request.user, notification_type=notification_type[0])
+        messages.success(request, _("Ticket's %s watching settings are changed.") % ticket)
         return HttpResponseRedirect(ticket.get_absolute_url())
-    for watcher in watchers:
-        watcher.delete()
-    messages.success(request, _('Ticket %s unwatched.') % ticket)
-    return HttpResponseRedirect(ticket.get_absolute_url())
+    else:
+        notification_types = []
+        ticket = get_object_or_404(Ticket, id=pk)
+        for notification_type in NOTIFICATION_TYPES:
+            notification_types.append((
+                notification_type[0],
+                notification_type[1],
+                ticket.watches(request.user, notification_type[0])
+            ))
+        return render(request, 'tracker/ticket_watch.html',{
+            "ticket": get_object_or_404(Ticket, id=pk),
+            "notification_types": NOTIFICATION_TYPES
+        })
 
 
 @login_required

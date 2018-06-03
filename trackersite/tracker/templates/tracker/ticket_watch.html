@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Watch ticket" %} - {{ticket}}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Watch ticket" %} {{ticket}}</h1>
+<form enctype="multipart/form-data" class="form-horizontal" method="POST">
+    {% csrf_token %}
+    {% trans "What events you want to watch?" %}
+    <div class="form-groups">
+        {% for notification_type in notification_types %}
+        <input type="checkbox" name="{{notification_type.0}}" id="{{notification_type.0}}">
+        <label for="{{notification_type.0}}">{{notification_type.1}}</label>
+        {% endfor %}
+    </div>
+    <input type="submit" value="{% trans "Submit" %}">
+</form>
+{% endblock %}

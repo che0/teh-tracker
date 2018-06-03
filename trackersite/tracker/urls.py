@@ -8,7 +8,6 @@ from tracker import feeds
 urlpatterns = patterns('',
     url(r'^tickets/(?:page/(?P<page>\d+)/)?$', 'tracker.views.ticket_list', name='ticket_list'),
     url(r'ticket/watch/(?P<pk>\d+)/?$', 'tracker.views.watch_ticket', name='watch_ticket'),
-    url(r'ticket/unwatch/(?P<pk>\d+)/?$', 'tracker.views.unwatch_ticket', name='unwatch_ticket'),
     url(r'^tickets/feed/$', feeds.LatestTicketsFeed(), name='ticket_list_feed'),
     url(r'^tickets/feed/submitted/$', feeds.SubmittedTicketsFeed(), name='ticket_submitted_feed'),
     url(r'^ticket/(?P<pk>\d+)/$', 'tracker.views.ticket_detail', name='ticket_detail'),
