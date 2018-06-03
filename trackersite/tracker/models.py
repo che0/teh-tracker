@@ -284,7 +284,7 @@ class Ticket(CachedModel):
     
     def watches(self, user, event):
         """Watches given user this ticket?"""
-        return user.is_authenticated() and len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0
+        return self.topic.watches(user, event) or (user.is_authenticated() and len(TicketWatcher.objects.filter(ticket=self, user=user, notification_type=event)) > 0)
 
     def can_edit(self, user):
         """ Can given user edit this ticket through a non-admin interface? """
