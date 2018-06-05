@@ -788,7 +788,7 @@ def notify_comment(sender, comment, **kwargs):
         for watcher in watchers:
             if watcher.user != comment.user and watcher.user != obj.requested_user and watcher.user not in obj.topic.admin.all() and watcher.user.username not in usersmentioned: Notification.objects.create(target_user=watcher.user, notification_type="comment", text=text)
         watchers =  TopicWatcher.objects.filter(topic=obj.topic, notification_type="comment")
-        for watcher in warchers:
+        for watcher in watchers:
             if len(TicketWatcher.objects.filter(user=watcher.user, ticket=obj, notification_type="comment")) == 0 and watcher.user not in obj.topic.admin.all() and watcher.user.username not in usersmentioned: Notification.objects.create(target_user=watcher.user, notification_type="comment", text=text)
 
 @receiver(comment_was_posted)
