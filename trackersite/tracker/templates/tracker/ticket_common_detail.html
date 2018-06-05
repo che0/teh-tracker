@@ -18,11 +18,13 @@
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
 {% if user_can_edit_ticket %}{% with acks_to_add=ticket.possible_user_acks %}{% if acks_to_add %}
-<div class="screenonly">{% trans "Confirm" %}:<ul>{% for possible_ack in acks_to_add %}
+<div class="screenonly"><h2>{% trans "Confirm" %}</h2>
+<ul>{% for possible_ack in acks_to_add %}
 	<li><a href="{% url "ticket_ack_add" ticket.id possible_ack.ack_type %}">{{possible_ack.display}}</a></li>
 {% endfor %}</ul></div>{% endif %}{% endwith %}{% endif %}
 
-{% if ticket.description %}<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
+{% if ticket.description %}<h2>{% trans "Description" %}</h2>
+<div>{{ ticket.description|safe|linebreaks }}</div>{% endif %}
 
 {% if ticket.supervisor_notes %}<h2>{% trans "Supervisor notes" %}</h2><div>{{ ticket.supervisor_notes|safe|linebreaks }}</div>{% endif %}
 
