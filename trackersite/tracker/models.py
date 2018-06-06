@@ -19,6 +19,7 @@ from django.core.cache import cache
 from django import template
 from django.template.loader import get_template
 import re
+import json
 
 from users.models import UserWrapper
 
@@ -41,13 +42,15 @@ ACK_TYPES = (
     ('close', _('closed')),
 )
 
-NOTIFICATION_TYPES = (
-    ('ack', _('Ack added')),
-    ('ack_remove', _('Ack removed')),
+NOTIFICATION_TYPES = [
     ('comment', _('Comment added')),
     ('supervisor_notes', _('Supervisor notes changed')),
     ('ticket_new', _('New ticket was created')),
-)
+]
+
+for ack in ACK_TYPES:
+    NOTIFICATION_TYPES.append(('ack_add_%s' % ack[0], _('Ack %s added') % ack[1]))
+    NOTIFICATION_TYPES.append(('ack_remove_%s' % ack[0], _('Ack %s removed') % ack[1]))
 
 USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
 
@@ -610,6 +613,7 @@ class TrackerProfile(models.Model):
     bank_account = models.CharField(_('Bank account'), max_length=120, blank=True, help_text=_('Bank account information for money transfers'))
     other_contact = models.CharField(_('Other contact'), max_length=120, blank=True, help_text=_('Other contact such as wiki account; can be useful in case of topic administrators need to clarify some information'))
     other_identification = models.CharField(_('Other identification'), max_length=120, blank=True, help_text=_('Address, or other identification information, so we know who are we sending money to'))
+    muted_notifications = models.CharField('Muted notifications', max_length=300, blank=True)
 
     def get_absolute_url(self):
         return reverse('user_detail', kwargs={'username':self.user.username})
@@ -632,6 +636,12 @@ class TrackerProfile(models.Model):
 
     def transactions(self):
         return Transaction.objects.filter(other=self.user).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+    
+    def get_muted_notifications(self):
+        if self.muted_notifications == '': return []
+        res = []
+        for muted_notification in json.loads(self.muted_notifications): res.append(muted_notification)
+        return res
 
     def __unicode__(self):
         return unicode(self.user)
@@ -751,23 +761,52 @@ class Notification(models.Model):
     def __unicode__(self):
         return self.text
 
+    @staticmethod
+    def fire_notification(ticket, text, notification_type, sender, additional=set()):
+        initial_user = [ticket.requested_user]
+        if initial_user is None: initial_user = []
+        if notification_type == "ticket_new": initial_user = []
+        users = set(initial_user)
+        admins = set(ticket.topic.admin.all())
+        users = users.union(admins) - set([sender])
+        for user in users:
+            if notification_type in user.trackerprofile.get_muted_notifications(): continue
+            Notification.objects.create(text=text, notification_type=notification_type, target_user=user)
+
+
 class TicketWatcher(models.Model):
     """User that watch given ticket"""
     ticket = models.ForeignKey('Ticket')
     user = models.ForeignKey('auth.User')
     notification_type = models.CharField('notification_type', max_length=50, choices=NOTIFICATION_TYPES)
+    ack_type = models.CharField('ack_type', max_length=50, null=True, choices=ACK_TYPES)
 
     def __unicode__(self):
         return 'User %s is watching event %s on ticket %s' % (self.user, self.notification_type, self.ticket)
+    
+    @staticmethod
+    def get_users(ticket, notification_type):
+        res = set()
+        for tw in TicketWatcher.objects.filter(ticket=ticket, notification_type=notification_type):
+            res.add(tw.user)
+        return res
 
 class TopicWatcher(models.Model):
     """User that watch given topic"""
     topic = models.ForeignKey('Topic')
     user = models.ForeignKey('auth.User')
     notification_type = models.CharField('notification_type', max_length=50, choices=NOTIFICATION_TYPES)
+    ack_type = models.CharField('ack_type', max_length=50, null=True, choices=ACK_TYPES)
 
     def __unicode__(self):
         return 'User %s is watching event %s on topic %s' % (self.user, self.notification_type, self.topic)
+    
+    @staticmethod
+    def get_users(topic, notification_type):
+        res = set()
+        for tw in TopicWatcher.objects.filter(topic=topic, notification_type=notification_type):
+            res.add(tw.user)
+        return res
 
 
 @receiver(comment_was_posted)
@@ -775,21 +814,13 @@ def notify_comment(sender, comment, **kwargs):
     obj = comment.content_object
     if type(obj) == Ticket:
         text = u"K ticketu <a href='%s%s'>%s</a> byl přidán uživatelem <tt>%s</tt> komentář <tt>%s</tt>" % (settings.BASE_URL, obj.get_absolute_url(), obj, comment.user, comment.comment)
-        if comment.user != obj.requested_user: Notification.objects.create(target_user=obj.requested_user, notification_type="comment", text=text)
-        for admin in obj.topic.admin.all():
-            if admin != comment.user and admin != obj.requested_user: Notification.objects.create(target_user=admin, notification_type="comment", text=text)
         usersmentioned = re.findall(r'@([-a-zA-Z0-9_.]+)', comment.comment)
+        additional = set()
         for user_name in usersmentioned:
             users = User.objects.filter(username=user_name)
-            if len(users) == 1: user = users[0]
+            if len(users) == 1: additional.add(users[0])
             else: continue
-            if user != comment.user and user != obj.requested_user and user not in obj.topic.admin.all(): Notification.objects.create(target_user=user, notification_type="comment", text=text)
-        watchers = TicketWatcher.objects.filter(ticket=obj, notification_type="comment")
-        for watcher in watchers:
-            if watcher.user != comment.user and watcher.user != obj.requested_user and watcher.user not in obj.topic.admin.all() and watcher.user.username not in usersmentioned: Notification.objects.create(target_user=watcher.user, notification_type="comment", text=text)
-        watchers =  TopicWatcher.objects.filter(topic=obj.topic, notification_type="comment")
-        for watcher in watchers:
-            if len(TicketWatcher.objects.filter(user=watcher.user, ticket=obj, notification_type="comment")) == 0 and watcher.user not in obj.topic.admin.all() and watcher.user.username not in usersmentioned: Notification.objects.create(target_user=watcher.user, notification_type="comment", text=text)
+        Notification.fire_notification(obj, text, "comment", comment.user, additional=additional)
 
 @receiver(comment_was_posted)
 def add_commenting_user_to_watchers(sender, comment, **kwargs):
@@ -801,10 +832,7 @@ def add_commenting_user_to_watchers(sender, comment, **kwargs):
 def notify_ticket(sender, instance, created, raw, **kwargs):
     if created:
         text = u'Ticket <a href="%s%s">%s</a> byl vytvořen uživatelem <tt>%s</tt> v tématu <tt>%s</tt>' % (settings.BASE_URL, instance.get_absolute_url(), instance, instance.requested_by_html(), instance.topic)
-        for admin in instance.topic.admin.all():
-            if admin != instance.requested_user: Notification.objects.create(target_user=admin, notification_type="ticket_new", text=text)
-        for watcher in TopicWatcher.objects.filter(topic=instance.topic, notification_type="ticket_new"):
-            if watcher.user not in instance.topic.admin.all(): Notification.objects.create(target_user=watcher.user, notification_type="ticket_new", text=text)
+        Notification.fire_notification(instance, text, "ticket_new", instance.requested_user)
 
 @receiver(pre_save, sender=Ticket)
 def notify_supervizor_notes(sender, instance, **kwargs):
@@ -812,33 +840,17 @@ def notify_supervizor_notes(sender, instance, **kwargs):
         old = Ticket.objects.get(id=instance.id)
         if old.supervisor_notes != instance.supervisor_notes:
             text = u'U ticketu <a href="%s%s">%s</a> došlo ke změně poznámek schvalovatele.' % (settings.BASE_URL, instance.get_absolute_url(), instance)
-            Notification.objects.create(target_user=instance.requested_user, notification_type="supervisor_notes", text=text)
-            for watcher in TicketWatcher.objects.filter(ticket=instance, notification_type="supervisor_notes"):
-                if watcher.user != instance.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="supervisor_notes", text=text)
-            for watcher in TopicWatcher.objects.filter(topic=instance.topic, notification_type="supervisor_notes"):
-                if len(TicketWatcher.objects.filter(user=watcher.user, ticket=instance, notification_type="supervisor_notes")) == 0 and watcher.user != instance.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="supervisor_notes", text=text)
+            Notification.fire_notification(instance, text, "supervisor_notes", None)
 
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
     text = u"Ticketu <a href='%s%s'>%s</a> byl přidán stav <tt>%s</tt> uživatelem <tt>%s</tt>" % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
-    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack", text=text)
-    for admin in instance.ticket.topic.admin.all():
-        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack", text=text)
-    for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack"):
-        if watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
-    for watcher in TopicWatcher.objects.filter(topic=instance.ticket.topic, notification_type="ack"):
-        if len(TicketWatcher.objects.filter(user=watcher.user, ticket=instance.ticket, notification_type="ack")) == 0 and watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
+    Notification.fire_notification(instance.ticket, text, "ack_add_%s" % instance.ack_type, instance.added_by)
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
     text = u'U ticketu <a href="%s%s">%s</a> došlo k odebrání stavu <tt>%s</tt> uživatelem <tt>%s</tt>' % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
-    if instance.ticket.requested_user != instance.added_by: Notification.objects.create(target_user=instance.ticket.requested_user, notification_type="ack_remove", text=text)
-    for admin in instance.ticket.topic.admin.all():
-        if admin != instance.added_by and admin != instance.ticket.requested_user: Notification.objects.create(target_user=admin, notification_type="ack_remove", text=text)
-    for watcher in TicketWatcher.objects.filter(ticket=instance.ticket, notification_type="ack_remove"):
-        if watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack", text=text)
-    for watcher in TopicWatcher.objects.filter(topic=instance.ticket.topic, notification_type="ack_remove"):
-        if len(TicketWatcher.objects.filter(user=watcher.user, ticket=instance.ticket, notification_type="ack_remove")) == 0 and watcher.user != instance.added_by and watcher.user != instance.ticket.requested_user: Notification.objects.create(target_user=watcher.user, notification_type="ack_remove", text=text)
+    Notification.fire_notification(instance.ticket, text, "ack_remove_%s" % instance.ack_type, None)
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
