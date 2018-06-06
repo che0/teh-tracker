@@ -304,8 +304,6 @@ def watch_topic(request, pk):
     if request.method == 'POST':
         for watcher in TopicWatcher.objects.filter(topic=topic, user=request.user): watcher.delete()
         for notification_type in NOTIFICATION_TYPES:
-            print request.POST
-            print notification_type[0]
             if notification_type[0] in request.POST: TopicWatcher.objects.create(topic=topic, user=request.user, notification_type=notification_type[0])
         messages.success(request, _("Topic's %s watching settings are changed.") % topic)
         return HttpResponseRedirect(topic.get_absolute_url())
