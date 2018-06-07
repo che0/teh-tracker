@@ -18,6 +18,7 @@ var dataTablesInit = function() {
             ordering = JSON.parse(ordering)
         }
         $('table').DataTable({
+            "pageLength": 25,
             "order": ordering,
             "language": {
                 "url": url,
