@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Watch" %} {{objecttype}}: {{object}}{% endblock %}
+{% block title %}
+{% if mute %}
+{% trans "Mute notifications" %}
+{% else %}
+{% trans "Watch" %} {{objecttype}}: {{object}}
+{% endif %}
+{% endblock %}
 
 {% block content %}
-<h1>{% trans "Watch" %} {{objecttype}}: {{object}}</h1>
+<h1>
+    {% if mute %}
+    {% trans "Mute notifications" %}
+    {% else %}
+    {% trans "Watch" %} {{objecttype}}: {{object}}
+    {% endif %}
+</h1>
 <div class="container">
     <form enctype="multipart/form-data" class="form-horizontal" method="POST">
         {% csrf_token %}
+        {% if mute %}
+        {% trans "What events you want to mute?" %}
+        {% else %}
         {% trans "What events you want to watch?" %}
+        {% endif %}
         <div class="form-groups">
             {% for notification_type in notification_types %}
             <div class="row">

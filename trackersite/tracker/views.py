@@ -265,6 +265,31 @@ PREEXPEDITURE_FIELDS = ('description', 'amount', 'wage')
 preexpeditureformset_factory = curry(inlineformset_factory, Ticket, Preexpediture,
     formset=ExtraItemFormSet, fields=PREEXPEDITURE_FIELDS)
 
+
+@login_required
+def mute_notifications(request):
+    if request.method == 'POST':
+        muted = []
+        for notification_type in NOTIFICATION_TYPES:
+            if notification_type[0] in request.POST: muted.append(notification_type[0])
+        request.user.trackerprofile.muted_notifications = json.dumps(muted)
+        request.user.trackerprofile.save()
+        messages.success(request, _('We muted notifications you do not want to hear.'))
+        return HttpResponseRedirect(request.path)
+    else:
+        notification_types = []
+        muted = request.user.trackerprofile.get_muted_notifications()
+        for notification_type in NOTIFICATION_TYPES:
+            notification_types.append((
+                notification_type[0],
+                notification_type[1],
+                notification_type[0] in muted,
+            ))
+        return render(request, 'tracker/watch.html', {
+            "mute": True,
+            "notification_types": notification_types,
+        })
+
 @login_required
 def watch_ticket(request, pk):
     ticket = get_object_or_404(Ticket, id=pk)
@@ -685,11 +710,11 @@ def user_detail(request, username):
 class UserDetailsChange(FormView):
     template_name = 'tracker/user_details_change.html'
     user_fields = ('first_name', 'last_name', 'email')
-    profile_fields = [f.name for f in TrackerProfile._meta.fields if f.name not in ('id', 'user')]
+    profile_fields = [f.name for f in TrackerProfile._meta.fields if f.name not in ('id', 'user', 'muted_notifications')]
 
     def make_user_details_form(self):
         fields = fields_for_model(User, fields=self.user_fields)
-        fields.update(fields_for_model(TrackerProfile, exclude=('user', )))
+        fields.update(fields_for_model(TrackerProfile, exclude=('user', 'muted_notifications')))
         return type('UserDetailsForm', (forms.BaseForm,), { 'base_fields': fields })
 
     def get_form_class(self):
