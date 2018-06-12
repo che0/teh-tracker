@@ -49,7 +49,7 @@ NOTIFICATION_TYPES = (
     ('ticket_new', _('New ticket was created')),
 )
 
-USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
+USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_content', 'user_docs')
 
 def uber_ack(ack_type):
     """ Return 'super-ack' for given user-editable ack. """
