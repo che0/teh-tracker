@@ -46,11 +46,9 @@ NOTIFICATION_TYPES = [
     ('comment', _('Comment added')),
     ('supervisor_notes', _('Supervisor notes changed')),
     ('ticket_new', _('New ticket was created')),
+    ('ack_add', _('Ack added')),
+    ('ack_remove', _('Ack removed')),
 ]
-
-for ack in ACK_TYPES:
-    NOTIFICATION_TYPES.append(('ack_add_%s' % ack[0], _('Ack %s added') % ack[1]))
-    NOTIFICATION_TYPES.append(('ack_remove_%s' % ack[0], _('Ack %s removed') % ack[1]))
 
 USER_EDITABLE_ACK_TYPES = ('user_precontent', 'user_docs', 'user_content')
 
@@ -845,12 +843,12 @@ def notify_supervizor_notes(sender, instance, **kwargs):
 @receiver(post_save, sender=TicketAck)
 def notify_ack_add(sender, instance, created, **kwargs):
     text = u"Ticketu <a href='%s%s'>%s</a> byl přidán stav <tt>%s</tt> uživatelem <tt>%s</tt>" % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
-    Notification.fire_notification(instance.ticket, text, "ack_add_%s" % instance.ack_type, instance.added_by)
+    Notification.fire_notification(instance.ticket, text, "ack_add", instance.added_by)
 
 @receiver(post_delete, sender=TicketAck)
 def notify_ack_remove(sender, instance, **kwargs):
-    text = u'U ticketu <a href="%s%s">%s</a> došlo k odebrání stavu <tt>%s</tt> uživatelem <tt>%s</tt>' % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display(), instance.added_by)
-    Notification.fire_notification(instance.ticket, text, "ack_remove_%s" % instance.ack_type, None)
+    text = u'U ticketu <a href="%s%s">%s</a> došlo k odebrání stavu <tt>%s</tt>' % (settings.BASE_URL, instance.ticket.get_absolute_url(), instance.ticket, instance.get_ack_type_display())
+    Notification.fire_notification(instance.ticket, text, "ack_remove", None)
 
 class PossibleAck(object):
     """ Python representation of possible ack that can be added by user to a ticket. """
