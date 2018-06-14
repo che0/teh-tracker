@@ -7,7 +7,7 @@ function refresh_description()
 		$('#mediainfo-group').hide();
 		$('#expediture-group').hide();
 		$('#preexpediture-group').hide();
-		$('#tags').html("");
+		$('#id_tags').html("");
 		return;
 	}
 
@@ -22,7 +22,7 @@ function refresh_description()
 		var tag = topic.tag_set[i];
 		tagsHtml += '<option value="' + tag.id + '">' + tag.display_name + '</option>';
 	}
-	$('#tags').html(tagsHtml);
+	$('#id_tags').html(tagsHtml);
 }
 
 $(document).ready(function() {
