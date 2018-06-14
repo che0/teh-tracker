@@ -25,7 +25,7 @@ from sendfile import sendfile
 from django.utils.translation import get_language
 import csv
 
-from tracker.models import Ticket, Topic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher, TopicWatcher
+from tracker.models import Ticket, Topic, Tag, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher, TopicWatcher
 from tracker.models import NOTIFICATION_TYPES
 from users.models import UserWrapper
 
