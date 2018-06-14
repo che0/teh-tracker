@@ -404,13 +404,59 @@ class FinanceStatus(object):
     def as_dict(self):
         return {'fuzzy':self.fuzzy, 'unpaid':self.unpaid, 'paid':self.paid, 'overpaid':self.overpaid}
 
-class Tag(models.Model):
+class Tag(CachedModel):
     name = models.CharField(_('name'), max_length=80)
     description = models.TextField(_('description'), blank=True, help_text=_('Description shown to users who enter tickets for this tag'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Topic where this tag belongs'))
 
     def __unicode__(self):
         return self.name
+
+    @cached_getter
+    def media_count(self):
+        return MediaInfo.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+
+    @cached_getter
+    def expeditures(self):
+        return Expediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def preexpeditures(self):
+        return Preexpediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+
+    @cached_getter
+    def accepted_expeditures(self):
+        return sum([t.accepted_expeditures() for t in self.ticket_set.filter(rating_percentage__gt=0)])
+
+    @cached_getter
+    def tickets_per_payment_status(self):
+        out = {}
+        tickets = self.ticket_set.order_by() # remove default ordering as it b0rks our aggregation
+        for s in tickets.values('payment_status').annotate(models.Count('payment_status')):
+            out[s['payment_status']] = s['payment_status__count']
+        return out
+
+    @cached_getter
+    def paid_wages(self):
+        tosum = []
+        for ticket in self.ticket_set.filter(id__gt=0):
+            ticketsum = []
+            for expediture in ticket.expediture_set.filter(wage=True, paid=True):
+                ticketsum.append(expediture.amount)
+            if ticket.rating_percentage:
+                tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
+        return sum(tosum)
+
+    @cached_getter
+    def paid_together(self):
+        tosum = []
+        for ticket in self.ticket_set.filter(id__gt=0):
+            ticketsum = []
+            for expediture in ticket.expediture_set.filter(paid=True):
+                ticketsum.append(expediture.amount)
+            if ticket.rating_percentage:
+                tosum.append(sum(ticketsum)*ticket.rating_percentage/100)
+        return sum(tosum)
 
 class Topic(CachedModel):
     """ Topics according to which the tickets are grouped. """
