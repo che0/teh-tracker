@@ -20,7 +20,7 @@ class Command(NoArgsCommand):
             if user.email:
                 if len(Notification.objects.filter(target_user=user)) > 0:
                     c_dict = {
-                        "ack_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ack", "ack_remove"]),
+                        "ack_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ack_add", "ack_remove"]),
                         "ticket_new_notifs": Notification.objects.filter(target_user=user, notification_type="ticket_new"),
                         "comment_notifs": Notification.objects.filter(target_user=user, notification_type="comment"),
                         "supervisor_notes_notifs": Notification.objects.filter(target_user=user, notification_type="supervisor_notes"),
