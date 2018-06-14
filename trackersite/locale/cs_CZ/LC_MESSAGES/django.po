@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-14 09:48+0200\n"
+"POT-Creation-Date: 2018-06-14 09:53+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -242,7 +242,7 @@ msgstr "Shrnutí do titulku tiketu"
 
 #: tracker/models.py:122
 msgid "tags"
-msgstr ""
+msgstr "štítky"
 
 #: tracker/models.py:122
 msgid "Tags this ticket belongs to"
@@ -988,6 +988,8 @@ msgid ""
 "Only filters with at least one checked checkbox are applied. You can either "
 "check all checkboxes or none of them, it's the same. "
 msgstr ""
+"Budou aplikované pouze filtry s alespoň jedním checkboxem. Můžete zaškrtnout "
+"všechny checkboxy nebo ani jeden, má to stejný význam."
 
 #: tracker/templates/tracker/export.html:30
 msgid "waiting for submitting "
@@ -1180,6 +1182,10 @@ msgid ""
 "processed. If you really need to import so many objects, please contact the "
 "systemadmin. "
 msgstr ""
+"Pokud nejste superuživatel, nemůžete importovat více než 100 řádků. "
+"Pokud pošlete větší CSV, bude importováno pouze prvních 100 řádků."
+"Pokud opravdu potřebujte importovat tolik objektů, kontaktujte systémového "
+"administrátora."
 
 #: tracker/templates/tracker/import.html:14
 msgid "What kind of objects are you importing?"
@@ -1699,19 +1705,23 @@ msgstr "Vámi požadovaná záloha je vyšší než vámi zadané plánované v�
 
 #: tracker/views.py:285
 msgid "We muted notifications you do not want to hear."
-msgstr ""
+msgstr "Ztlumili jsme notifikace, o kterých nechcete slyšet."
 
 #: tracker/views.py:305
 msgid ""
 "You cannot watch tickets you own explictely. You are already subscribed to "
 "all notifications."
 msgstr ""
+"Nemůžete sledovat tikety, které vlastníte, explicitně. Již odebíráte všechny "
+"notifikace. "
 
 #: tracker/views.py:308
 msgid ""
 "You cannot watch ticket in topic you are an admin of explicitely. You are "
 "already subscribed to all notifications."
 msgstr ""
+"Nemůžete explicitně sledovat tikety v tématu, které spravujete. Již odebíráte "
+"všechny notifikace."
 
 #: tracker/views.py:314
 #, python-format
@@ -1723,6 +1733,8 @@ msgid ""
 "You cannot watch topic you are an admin of explicitely. You are already "
 "subscribed to all notifications."
 msgstr ""
+"Nemůžete explicitně sledovat témata, které spravujete. Již odebíráte "
+"všechny notifikace."
 
 #: tracker/views.py:341
 #, python-format
@@ -1803,10 +1815,12 @@ msgid ""
 "The form have returned strange values. Please contact the systemadmin and "
 "tell him what you tried to do. "
 msgstr ""
+"Formulář vrátil divné hodnoty. Prosím, kontaktujte systémového správce "
+"a sdělte mu, o co jste se pokoušeli."
 
 #: tracker/views.py:1336
 msgid "Your CSV file was imported. "
-msgstr ""
+msgstr "Váš CSV soubor byl importován"
 
 #: tracker/views.py:1398
 msgid "Preexpeditures were copied to expeditures successfuly."
