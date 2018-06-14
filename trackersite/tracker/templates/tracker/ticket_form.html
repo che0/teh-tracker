@@ -2,7 +2,13 @@
 <form class="form-horizontal" method="post" action="{{action}}">
 {{ ticketform.non_field_errors }}
 {% for field in ticketform %}
+{% if field.name == "tags" %}
+<p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label>
+    <select name="tags" multiple id="tags" class="form-control"></select>
+<span class="helptext">{{ field.help_text }}</span></p>
+{% else %}
 <p class="field_{{field.name}}{% if field.field.required %} required{% endif %}">{{field.errors.as_ul}}<label for="id_{{ field.name }}">{{ field.label }}:</label> {{ field|add_class:"form-control" }}<span class="helptext">{{ field.help_text }}</span></p>
+{% endif %}
 {% if field.name == "topic" %}<p id="topic_desc"></p>{% endif %}
 {% endfor %}
 

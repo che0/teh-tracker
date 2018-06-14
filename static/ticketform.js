@@ -7,6 +7,7 @@ function refresh_description()
 		$('#mediainfo-group').hide();
 		$('#expediture-group').hide();
 		$('#preexpediture-group').hide();
+		$('#tags').html("");
 		return;
 	}
 
@@ -15,6 +16,13 @@ function refresh_description()
 	$('#mediainfo-group').toggle(topic['ticket_media']);
 	$('#expediture-group').toggle(topic['ticket_expenses']);
 	$('#preexpediture-group').toggle(topic['ticket_preexpenses']);
+	var tagsHtml = "";
+	for(var i = 0; i < topic.tag_set.length; i++)
+	{
+		var tag = topic.tag_set[i];
+		tagsHtml += '<option value="' + tag.id + '">' + tag.display_name + '</option>';
+	}
+	$('#tags').html(tagsHtml);
 }
 
 $(document).ready(function() {

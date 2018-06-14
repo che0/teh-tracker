@@ -121,6 +121,7 @@ class Ticket(CachedModel):
     requested_user = models.ForeignKey('auth.User', verbose_name=_('requested by'), blank=True, null=True, help_text=_('User who created/requested for this ticket'))
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
+    tags = models.ManyToManyField('tracker.Tag', verbose_name=_('tags'), help_text=_('Tags this ticket belongs to'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'), default=100)
     mandatory_report = models.BooleanField(_('report mandatory'), default=False, help_text=_('Is report mandatory?'))
@@ -403,6 +404,13 @@ class FinanceStatus(object):
     def as_dict(self):
         return {'fuzzy':self.fuzzy, 'unpaid':self.unpaid, 'paid':self.paid, 'overpaid':self.overpaid}
 
+class Tag(models.Model):
+    name = models.CharField(_('name'), max_length=80)
+    description = models.TextField(_('description'), blank=True, help_text=_('Description shown to users who enter tickets for this tag'))
+    topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Topic where this tag belongs'))
+
+    def __unicode__(self):
+        return self.name
 
 class Topic(CachedModel):
     """ Topics according to which the tickets are grouped. """

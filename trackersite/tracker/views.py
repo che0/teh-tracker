@@ -160,6 +160,14 @@ def topics_js(request):
         data[t.id] = {}
         for attr in ('form_description', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses'):
             data[t.id][attr] = getattr(t, attr)
+        data[t.id]['tag_set'] = []
+        for tag in t.tag_set.all():
+            data[t.id]['tag_set'].append({
+                "id": tag.id,
+                "name": tag.name,
+                "display_name": unicode(tag),
+                "description": tag.description
+            })
 
     content = 'topics_table = %s;' % json.dumps(data)
     return HttpResponse(content, content_type='text/javascript')
