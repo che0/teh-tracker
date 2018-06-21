@@ -7,7 +7,7 @@ function refresh_description()
 		$('#mediainfo-group').hide();
 		$('#expediture-group').hide();
 		$('#preexpediture-group').hide();
-		$('#id_tags').html("");
+		$('#id_tag').html("<option value selected>---------</option>");
 		return;
 	}
 
@@ -16,13 +16,13 @@ function refresh_description()
 	$('#mediainfo-group').toggle(topic['ticket_media']);
 	$('#expediture-group').toggle(topic['ticket_expenses']);
 	$('#preexpediture-group').toggle(topic['ticket_preexpenses']);
-	var tagsHtml = "";
+	var tagsHtml = "<option value selected>---------</option>";
 	for(var i = 0; i < topic.tag_set.length; i++)
 	{
 		var tag = topic.tag_set[i];
 		tagsHtml += '<option value="' + tag.id + '">' + tag.display_name + '</option>';
 	}
-	$('#id_tags').html(tagsHtml);
+	$('#id_tag').html(tagsHtml);
 }
 
 $(document).ready(function() {
