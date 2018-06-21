@@ -23,9 +23,14 @@ function refresh_description()
 		tagsHtml += '<option value="' + tag.id + '">' + tag.display_name + '</option>';
 	}
 	$('#id_tag').html(tagsHtml);
+	if($('#id_tag').html().includes(window.originallyCheckedTag))
+		$('#id_tag').val(window.originallyCheckedTag);
+	else
+		$('#id_tag').val("");
 }
 
 $(document).ready(function() {
 	$('#id_topic').change(refresh_description);
+	window.originallyCheckedTag = $('#id_tag').val();
 	refresh_description();
 });
