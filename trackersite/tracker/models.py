@@ -412,15 +412,15 @@ class Tag(CachedModel):
 
     @cached_getter
     def media_count(self):
-        return MediaInfo.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+        return MediaInfo.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
 
     @cached_getter
     def expeditures(self):
-        return Expediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return Expediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
     @cached_getter
     def preexpeditures(self):
-        return Preexpediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket_tags where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return Preexpediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
     @cached_getter
     def accepted_expeditures(self):

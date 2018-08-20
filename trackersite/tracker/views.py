@@ -154,6 +154,15 @@ class TopicDetailView(CommentPostedCatcher, DetailView):
         return context
 topic_detail = TopicDetailView.as_view()
 
+def tag_list(request):
+    return render(request, 'tracker/tag_list.html', {
+        'tags': Tag.objects.all()
+    })
+
+class TagDetailView(CommentPostedCatcher, DetailView):
+    model = Tag
+tag_detail = TagDetailView.as_view()
+
 def topics_js(request):
     data = {}
     for t in Topic.objects.all():

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n comments recaptcha2 %}
+
+{% block title %}{{ tag.name }}{% endblock %}
+
+{% block content %}
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt; <a href="{{tag.topic.grant.get_absolute_url}}">{{tag.topic.grant.short_name}}</a> &gt; <a href="">{{ tag.topic }}</a> &gt;</p>
+<h1>{{ tag.name }}</h1>
+
+{% if tag.description %}<div>{{ tag.description|safe|linebreaks }}</div>{% endif %}
+
+{% if tag.ticket_set.all|length > 0 %}
+<h2>{% trans "Tickets" %}</h2>
+{% include "tracker/ticket_table.html" with ticket_list=tag.ticket_set.all show_media=tag.topic.ticket_media show_expenses=tag.topic.ticket_expenses summary_item=tag show_requester="True" total_desc=_("Total for this tag") total_colspan=4 %}
+{% endif %}
+{% endblock %}
