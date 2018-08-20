@@ -820,7 +820,9 @@ class Notification(models.Model):
         if notification_type == "ticket_new": initial_user = []
         users = set(initial_user)
         admins = set(ticket.topic.admin.all())
-        users = users.union(admins) - set([sender])
+        topicwatchers = set([tw.user for tw in ticket.topic.topicwatcher_set.filter(notification_type=notification_type)])
+        ticketwatchers = set([tw.user for tw in ticket.ticketwatcher_set.filter(notification_type=notification_type)])
+        users = users.union(admins, topicwatchers, ticketwatchers) - set([sender])
         for user in users:
             if notification_type in user.trackerprofile.get_muted_notifications(): continue
             Notification.objects.create(text=text, notification_type=notification_type, target_user=user)

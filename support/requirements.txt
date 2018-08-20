@@ -1,8 +1,8 @@
 # just our usual stuff
 Django>=1.8,<1.9
 django-sendfile
-django-recaptcha2
-django-contrib-comments
+django-recaptcha2==1.0.3
+django-contrib-comments==1.8.0
 django-widget-tweaks
 python-memcached
 
