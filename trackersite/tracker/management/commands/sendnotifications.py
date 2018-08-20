@@ -21,6 +21,10 @@ class Command(NoArgsCommand):
                 if len(Notification.objects.filter(target_user=user)) > 0:
                     c_dict = {
                         "ack_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ack_add", "ack_remove"]),
+                        "ticket_change_notifs": Notification.objects.filter(target_user=user, notification_type__in=["ticket_change", "ticket_change_all"]),
+                        "preexpeditures_notifs": Notification.objects.filter(target_user=user, notification_type="preexpeditures_change"),
+                        "expeditures_notifs": Notification.objects.filter(target_user=user, notification_type="expeditures_change"),
+                        "media_notifs": Notification.objects.filter(target_user=user, notification_type="media_change"),
                         "ticket_new_notifs": Notification.objects.filter(target_user=user, notification_type="ticket_new"),
                         "comment_notifs": Notification.objects.filter(target_user=user, notification_type="comment"),
                         "supervisor_notes_notifs": Notification.objects.filter(target_user=user, notification_type="supervisor_notes"),
@@ -28,4 +32,5 @@ class Command(NoArgsCommand):
                     c = Context(c_dict)
                     user.email_user(subject_text, strip_tags(html_template.render(c)), html_message=html_template.render(c))
             for notification in Notification.objects.filter(target_user=user):
-                notification.delete()
+                #notification.delete()
+                pass

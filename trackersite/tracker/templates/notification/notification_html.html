@@ -27,6 +27,43 @@
 </ul>
 {% endif %}
 
+{% if preexpeditures_notifs.count > 0 %}
+<h1>Změna sledovaného tiketu</h1>
+<ul>
+    {% for notif in ticket_change_notifs %}
+    <li>{{notif.fired}}: {{notif}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if preexpeditures_notifs.count > 0 %}
+<h1>Změna plánovaných výdajů u sledovaných tiketů</h1>
+<ul>
+    {% for notif in preexpeditures_notifs %}
+    <li>{{notif.fired}}: {{notif}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if expeditures_notifs.count > 0 %}
+<h1>Změna reálných výdajů u sledovaných tiketů</h1>
+<ul>
+    {% for notif in expeditures_notifs %}
+    <li>{{notif.fired}}: {{notif}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if media_notifs.count > 0 %}
+<h1>Změna médií u sledovaných tiketů</h1>
+<ul>
+    {% for notif in media_notifs %}
+    <li>{{notif.fired}}: {{notif}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
 {% if comment_notifs.count > 0 %}
 <h1>Seznam přidaných komentářů k sledovaným ticketům</h1>
 <ul>
