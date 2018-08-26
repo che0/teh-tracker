@@ -125,7 +125,7 @@ class Ticket(CachedModel):
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    subtopic = models.ForeignKey('tracker.Subtopic', blank=True, null=True, verbose_name=_('subtopics'), help_text=_('Subtopic this ticket belongs to'))
+    subtopic = models.ForeignKey('tracker.Subtopic', blank=True, null=True, verbose_name=_('subtopics'), help_text=_('Subtopic this ticket belongs to (if you don\'t know, leave this empty)'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'), default=100)
     mandatory_report = models.BooleanField(_('report mandatory'), default=False, help_text=_('Is report mandatory?'))
     report_url = models.CharField(_('report url'), blank=True, max_length=255, default='', help_text=_('URL to your report, if you want to report something (or if your report is mandatory per topic administrator).'))

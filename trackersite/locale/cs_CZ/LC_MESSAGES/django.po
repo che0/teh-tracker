@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-26 19:37+0200\n"
+"POT-Creation-Date: 2018-08-26 19:39+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -273,8 +273,8 @@ msgid "subtopics"
 msgstr "subtémata"
 
 #: tracker/models.py:128
-msgid "Subtopic this ticket belongs to"
-msgstr "Podtéma, do kterého tento tiket patří"
+msgid "Subtopic this ticket belongs to (if you don't know, leave this empty)"
+msgstr "Podtéma, do kterého tento tiket patří (pokud nevíte, nechte prázdné)"
 
 #: tracker/models.py:129
 msgid "rating percentage"
