@@ -9,7 +9,7 @@
 {% block title %}{{ ticket.summary }}{% endblock %}
 
 {% block content %}
-<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt; <a href="{{ticket.topic.grant.get_absolute_url}}">{{ticket.topic.grant.short_name}}</a> &gt; <a href="{% url "topic_detail" ticket.topic.id %}">{{ticket.topic}}</a> &gt;{% if ticket.tag %} <a href="{% url "tag_detail" ticket.tag_id %}">{{ ticket.tag }}</a> &gt;{% endif %}</p>
+<p class="nav"><a href="{% url "ticket_list" %}">{% trans "index" %}</a> &gt; <a href="{% url "topic_list" %}">{% trans "topics" %}</a> &gt; <a href="{{ticket.topic.grant.get_absolute_url}}">{{ticket.topic.grant.short_name}}</a> &gt; <a href="{% url "topic_detail" ticket.topic.id %}">{{ticket.topic}}</a> &gt;{% if ticket.subtopic %} <a href="{% url "subtopic_detail" ticket.subtopic_id %}">{{ ticket.subtopic }}</a> &gt;{% endif %}</p>
 <div id="ticket_id">{{ticket.id}}</div>
 <h1>{{ ticket.summary }}</h1>
 {% if user_can_edit_ticket or user_can_edit_ticket_in_admin or user.is_authenticated %}<p class="screenonly">
