@@ -7,14 +7,14 @@
 {% trans "Event date" %}: {{ ticket.event_date|default_if_none:_("unset") }}<br />
 {% trans "Requested by" %}: {% if active_links %}{{ticket.requested_by_html}}{% else %}{{ticket.requested_by}}{% endif %}<br />
 {% trans "Topic" %}: <a href="{% url "topic_detail" ticket.topic_id %}">{{ ticket.topic }}</a> (<a href="{% url "grant_detail"  ticket.topic.grant.slug %}">{{ticket.topic.grant.short_name}}</a>)<br />
-{% if ticket.tag %}{% trans "Tag" %}: <a href="{% url "tag_detail" ticket.tag_id %}">{{ ticket.tag }}</a><br />{% endif %}
+{% if ticket.subtopic %}{% trans "Subtopic" %}: <a href="{% url "subtopic_detail" ticket.subtopic_id %}">{{ ticket.subtopic }}</a><br />{% endif %}
 {% trans "State" %}: {{ ticket.state_str }}<br />
 {% if ticket.is_concept == False %}{% trans "Is report mandatory?" %}: {% if ticket.mandatory_report %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
 {% trans "Report URL" %}: {% if ticket.report_url == "" %}{% trans "No report filled" %}{% else %}<a href="{{ticket.report_url}}">{{ticket.report_url}}</a>{% endif %}<br>
 {% endif %}
 {% trans "Deposit" %}: {{ ticket.deposit }} {% trans "CZK" %}<br />
 {% if ticket.event_url %}{% trans "Event URL" %}: <a href="{{ ticket.event_url }}">{{ ticket.event_url }}</a><br />{% endif %}
-{% if "content" in ticket.ack_set %}<span {% if ticket.rating_percentage < 100 %}class="ratingpercentageunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;% </span><br /><br />{% endif %}
+{% if "content" in ticket.ack_set %}<span {% if ticket.rating_percensubtopice < 100 %}class="ratingpercensubtopiceunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percensubtopice}}&nbsp;% </span><br /><br />{% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}
