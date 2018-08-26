@@ -7,7 +7,7 @@ function refresh_description()
 		$('#mediainfo-group').hide();
 		$('#expediture-group').hide();
 		$('#preexpediture-group').hide();
-		$('#id_tag').html("<option value selected>---------</option>");
+		$('#id_subtopic').html("<option value selected>---------</option>");
 		return;
 	}
 
@@ -16,21 +16,21 @@ function refresh_description()
 	$('#mediainfo-group').toggle(topic['ticket_media']);
 	$('#expediture-group').toggle(topic['ticket_expenses']);
 	$('#preexpediture-group').toggle(topic['ticket_preexpenses']);
-	var tagsHtml = "<option value selected>---------</option>";
-	for(var i = 0; i < topic.tag_set.length; i++)
+	var subtopicsHtml = "<option value selected>---------</option>";
+	for(var i = 0; i < topic.subtopic_set.length; i++)
 	{
-		var tag = topic.tag_set[i];
-		tagsHtml += '<option value="' + tag.id + '">' + tag.display_name + '</option>';
+		var subtopic = topic.subtopic_set[i];
+		subtopicsHtml += '<option value="' + subtopic.id + '">' + subtopic.display_name + '</option>';
 	}
-	$('#id_tag').html(tagsHtml);
-	if($('#id_tag').html().includes(window.originallyCheckedTag))
-		$('#id_tag').val(window.originallyCheckedTag);
+	$('#id_subtopic').html(subtopicsHtml);
+	if($('#id_subtopic').html().includes(window.originallyCheckedTag))
+		$('#id_subtopic').val(window.originallyCheckedTag);
 	else
-		$('#id_tag').val("");
+		$('#id_subtopic').val("");
 }
 
 $(document).ready(function() {
 	$('#id_topic').change(refresh_description);
-	window.originallyCheckedTag = $('#id_tag').val();
+	window.originallyCheckedTag = $('#id_subtopic').val();
 	refresh_description();
 });

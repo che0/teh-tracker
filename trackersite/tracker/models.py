@@ -125,7 +125,7 @@ class Ticket(CachedModel):
     requested_text = models.CharField(verbose_name=_('requested by (text)'), blank=True, max_length=30, help_text=_('Text description of who requested for this ticket, in case user is not filled in'))
     summary = models.CharField(_('summary'), max_length=100, help_text=_('Headline summary for the ticket'))
     topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Project topic this ticket belongs to'))
-    tag = models.ForeignKey('tracker.Tag', blank=True, null=True, verbose_name=_('tags'), help_text=_('Tag this ticket belongs to'))
+    subtopic = models.ForeignKey('tracker.Subtopic', blank=True, null=True, verbose_name=_('subtopics'), help_text=_('Subtopic this ticket belongs to'))
     rating_percentage = PercentageField(_('rating percentage'), blank=True, null=True, help_text=_('Rating percentage set by topic administrator'), default=100)
     mandatory_report = models.BooleanField(_('report mandatory'), default=False, help_text=_('Is report mandatory?'))
     report_url = models.CharField(_('report url'), blank=True, max_length=255, default='', help_text=_('URL to your report, if you want to report something (or if your report is mandatory per topic administrator).'))
@@ -407,25 +407,25 @@ class FinanceStatus(object):
     def as_dict(self):
         return {'fuzzy':self.fuzzy, 'unpaid':self.unpaid, 'paid':self.paid, 'overpaid':self.overpaid}
 
-class Tag(CachedModel):
+class Subtopic(CachedModel):
     name = models.CharField(_('name'), max_length=80)
-    description = models.TextField(_('description'), blank=True, help_text=_('Description shown to users who enter tickets for this tag'))
-    topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Topic where this tag belongs'))
+    description = models.TextField(_('description'), blank=True, help_text=_('Description shown to users who enter tickets for this subtopic'))
+    topic = models.ForeignKey('tracker.Topic', verbose_name=_('topic'), help_text=_('Topic where this subtopic belongs'))
 
     def __unicode__(self):
         return self.name
 
     @cached_getter
     def media_count(self):
-        return MediaInfo.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
+        return MediaInfo.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where subtopic_id = %s)'], params=[self.id]).aggregate(objects=models.Count('id'), media=models.Sum('count'))
 
     @cached_getter
     def expeditures(self):
-        return Expediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return Expediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where subtopic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
     @cached_getter
     def preexpeditures(self):
-        return Preexpediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where tag_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
+        return Preexpediture.objects.extra(where=['ticket_id in (select ticket_id from tracker_ticket where subtopic_id = %s)'], params=[self.id]).aggregate(count=models.Count('id'), amount=models.Sum('amount'))
 
     @cached_getter
     def accepted_expeditures(self):
