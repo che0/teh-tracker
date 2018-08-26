@@ -25,7 +25,7 @@ from sendfile import sendfile
 from django.utils.translation import get_language
 import csv
 
-from tracker.models import Ticket, Topic, Tag, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher, TopicWatcher
+from tracker.models import Ticket, Topic, Subtopic, Grant, FinanceStatus, MediaInfo, Expediture, Preexpediture, Transaction, Cluster, TrackerProfile, Document, TicketAck, PossibleAck, TicketWatcher, TopicWatcher
 from tracker.models import NOTIFICATION_TYPES
 from users.models import UserWrapper
 
@@ -154,14 +154,9 @@ class TopicDetailView(CommentPostedCatcher, DetailView):
         return context
 topic_detail = TopicDetailView.as_view()
 
-def tag_list(request):
-    return render(request, 'tracker/tag_list.html', {
-        'tags': Tag.objects.all()
-    })
-
-class TagDetailView(CommentPostedCatcher, DetailView):
-    model = Tag
-tag_detail = TagDetailView.as_view()
+class SubtopicDetailView(CommentPostedCatcher, DetailView):
+    model = Subtopic
+subtopic_detail = SubtopicDetailView.as_view()
 
 def topics_js(request):
     data = {}
@@ -169,13 +164,13 @@ def topics_js(request):
         data[t.id] = {}
         for attr in ('form_description', 'ticket_media', 'ticket_expenses', 'ticket_preexpenses'):
             data[t.id][attr] = getattr(t, attr)
-        data[t.id]['tag_set'] = []
-        for tag in t.tag_set.all():
-            data[t.id]['tag_set'].append({
-                "id": tag.id,
-                "name": tag.name,
-                "display_name": unicode(tag),
-                "description": tag.description
+        data[t.id]['subtopic_set'] = []
+        for subtopic in t.subtopic_set.all():
+            data[t.id]['subtopic_set'].append({
+                "id": subtopic.id,
+                "name": subtopic.name,
+                "display_name": unicode(subtopic),
+                "description": subtopic.description
             })
 
     content = 'topics_table = %s;' % json.dumps(data)

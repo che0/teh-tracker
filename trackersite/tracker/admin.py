@@ -102,10 +102,10 @@ class TicketAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Ticket, TicketAdmin)
 
-class TagAdmin(admin.ModelAdmin):
+class SubtopicAdmin(admin.ModelAdmin):
     list_display = ('name', 'topic')
     list_filter = ('topic', )
-admin.site.register(models.Tag, TagAdmin)
+admin.site.register(models.Subtopic, SubtopicAdmin)
 
 class TopicAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
