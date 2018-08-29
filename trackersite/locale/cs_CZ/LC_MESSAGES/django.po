@@ -270,7 +270,7 @@ msgstr "Projektové téma, do kterého tento tiket patří"
 
 #: tracker/models.py:128
 msgid "subtopics"
-msgstr "subtémata"
+msgstr "podtémata"
 
 #: tracker/models.py:128
 msgid "Subtopic this ticket belongs to (if you don't know, leave this empty)"
