@@ -708,6 +708,10 @@ class TrackerProfile(models.Model):
     def __unicode__(self):
         return unicode(self.user)
 
+    class Meta:
+        verbose_name = _('Tracker profile')
+        verbose_name_plural = _('Tracker profiles')
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, **kwargs):
     if not kwargs.get('created', False):

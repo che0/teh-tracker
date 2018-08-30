@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-29 11:47+0200\n"
+"POT-Creation-Date: 2018-08-29 11:48+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -217,7 +217,7 @@ msgstr "Reálné výdaje se změnily"
 msgid "Media changed"
 msgstr "Média se změnily"
 
-#: tracker/models.py:121 tracker/models.py:785
+#: tracker/models.py:121 tracker/models.py:789
 msgid "created"
 msgstr "vytvořeno"
 
@@ -316,7 +316,7 @@ msgstr "Odkažte na veřejnou stránku popisující akci, pokud existuje"
 
 #: tracker/models.py:133 tracker/models.py:412 tracker/models.py:477
 #: tracker/models.py:558 tracker/models.py:590 tracker/models.py:604
-#: tracker/models.py:625 tracker/models.py:725 tracker/views.py:512
+#: tracker/models.py:625 tracker/models.py:729 tracker/views.py:512
 msgid "description"
 msgstr "popis"
 
@@ -619,7 +619,7 @@ msgstr "Tiket ke kterému tento reálný výdaj patří"
 msgid "Description of this expediture"
 msgstr "Popis tohoto reálného výdaje"
 
-#: tracker/models.py:605 tracker/models.py:626 tracker/models.py:724
+#: tracker/models.py:605 tracker/models.py:626 tracker/models.py:728
 msgid "amount"
 msgstr "částka"
 
@@ -627,7 +627,7 @@ msgstr "částka"
 msgid "Expediture amount in"
 msgstr "Vydaná částka v"
 
-#: tracker/models.py:606 tracker/models.py:726
+#: tracker/models.py:606 tracker/models.py:730
 msgid "accounting info"
 msgstr "účetní údaje"
 
@@ -705,27 +705,35 @@ msgid ""
 msgstr ""
 "Adresa, rodné číslo, nebo něco podobného pro případné doplnění do účetnictví"
 
-#: tracker/models.py:721
+#: tracker/models.py:712
+msgid "Tracker profile"
+msgstr "Profil uživatele"
+
+#: tracker/models.py:713
+msgid "Tracker profiles"
+msgstr "Profily uživatelů"
+
+#: tracker/models.py:725
 msgid "date"
 msgstr "datum"
 
-#: tracker/models.py:722 tracker/models.py:741
+#: tracker/models.py:726 tracker/models.py:745
 msgid "other party"
 msgstr "druhá strana"
 
-#: tracker/models.py:722
+#: tracker/models.py:726
 msgid "The other party; user who sent or received the payment"
 msgstr "Druhá strana převodu: uživatel který poslal nebo dostal platbu"
 
-#: tracker/models.py:723
+#: tracker/models.py:727
 msgid "other party (text)"
 msgstr "druhá strana (text)"
 
-#: tracker/models.py:723
+#: tracker/models.py:727
 msgid "The other party; this text is used when user is not selected"
 msgstr "Druhá strana převodu; tento text je použit není-li vyplněn uživatel"
 
-#: tracker/models.py:724
+#: tracker/models.py:728
 msgid ""
 "Payment amount; Positive value means transaction to the user, negative is a "
 "transaction from the user"
@@ -733,11 +741,11 @@ msgstr ""
 "Převedená částka. Kladná hodnota znamená platbu uživateli, záporná že "
 "uživatel dal peníze nám"
 
-#: tracker/models.py:725
+#: tracker/models.py:729
 msgid "Description of this transaction"
 msgstr "Popis převodu"
 
-#: tracker/models.py:726 tracker/templates/feeds/transaction_description.html:6
+#: tracker/models.py:730 tracker/templates/feeds/transaction_description.html:6
 #: tracker/templates/tracker/cluster_detail.html:19
 #: tracker/templates/tracker/ticket_common_detail.html:61
 #: tracker/templates/tracker/ticket_detail.html:31
@@ -746,25 +754,25 @@ msgstr "Popis převodu"
 msgid "Accounting info"
 msgstr "Účetní údaje"
 
-#: tracker/models.py:727
+#: tracker/models.py:731
 msgid "related tickets"
 msgstr "související tikety"
 
-#: tracker/models.py:727
+#: tracker/models.py:731
 msgid "Tickets this trackaction is related to"
 msgstr "Tikety ke kterým se tato platba vztahuje"
 
-#: tracker/models.py:763
+#: tracker/models.py:767
 msgid "Transaction"
 msgstr "Platba"
 
-#: tracker/models.py:764 tracker/templates/tracker/cluster_detail.html:18
+#: tracker/models.py:768 tracker/templates/tracker/cluster_detail.html:18
 #: tracker/templates/tracker/ticket_detail.html:27
 #: tracker/templates/tracker/user_detail.html:19
 msgid "Transactions"
 msgstr "Platby"
 
-#: tracker/models.py:787
+#: tracker/models.py:791
 msgid "comment"
 msgstr "komentář"
 
