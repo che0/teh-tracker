@@ -14,7 +14,7 @@
 {% endif %}
 {% trans "Deposit" %}: {{ ticket.deposit }} {% trans "CZK" %}<br />
 {% if ticket.event_url %}{% trans "Event URL" %}: <a href="{{ ticket.event_url }}">{{ ticket.event_url }}</a><br />{% endif %}
-{% if "content" in ticket.ack_set %}<span {% if ticket.rating_percensubtopice < 100 %}class="ratingpercensubtopiceunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percensubtopice}}&nbsp;% </span><br /><br />{% endif %}
+{% if "content" in ticket.ack_set %}<span {% if ticket.rating_percentage < 100 %}class="ratingpercentageunder100"{% endif %}>{% trans "Rating percentage" %}: {{ticket.rating_percentage}}&nbsp;% </span><br /><br />{% endif %}
 {% with acks=ticket.ticketack_set %}{% if acks.count > 0 %}<ul>{% for ack in acks.all %}
 	<li>{{ack.get_ack_type_display}}{% if ack.comment %}: {{ack.comment}}{% endif %}{% if ack.added_by %} --{% if active_links %}{{ack.added_by_html}}{% else %}{{ack.added_by}}{% endif %}{% endif %}, {{ack.added}}{% if user_can_edit_ticket and ack.user_removable %} <a href="{% url "ticket_ack_delete" ticket.id ack.id %}" class="screenonly">{% trans "remove" %}</a>{% endif %}</li>
 {% endfor %}</ul>{% else %}<br />{% endif %}{% endwith %}

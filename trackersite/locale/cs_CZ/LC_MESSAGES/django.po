@@ -1373,7 +1373,7 @@ msgstr "Odkaz na akci"
 
 #: tracker/templates/tracker/ticket_common_detail.html:17
 msgid "Rating percentage"
-msgstr "ohodnocení"
+msgstr "Ohodnocení"
 
 #: tracker/templates/tracker/ticket_common_detail.html:19
 msgid "remove"
