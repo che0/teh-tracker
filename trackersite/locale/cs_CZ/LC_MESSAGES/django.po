@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-29 11:48+0200\n"
+"POT-Creation-Date: 2018-09-06 09:25+0200\n"
 "PO-Revision-Date: 2016-12-27 18:50+0100\n"
 "Last-Translator: Petr Novák <petr.novak@cosmoboy.cz>\n"
 "Language-Team: none <none@example.org>\n"
@@ -1694,6 +1694,16 @@ msgstr "Schválené reálné výdaje celkem"
 #: tracker/templates/tracker/user_details_change.html:8
 msgid "My details"
 msgstr "Moje údaje"
+
+#: tracker/templates/tracker/user_details_change.html:18
+#: users/templates/users/register.html:16
+msgid ""
+"By using Tracker you agree with data processing. We use your data to display "
+"all payments correctly and for our accounting. You must give us your e-mail "
+"address; you may be requested to give us futher details. Data are not given "
+"to third parties and only authorized staff members are allowed to access "
+"them."
+msgstr "Používáním Trackeru souhlasíte se zpracováním vašich osobních údajů, které používáme ke správnému zpracování vašich plateb a vedení účetnictví v našem spolku. Udání e-mailu je povinné; můžete být požádáni o vyplnění i dalších údajů. Data nejsou předávána třetím stranám a mají k nim přístup pouze pověření zástupci spolku."
 
 #: tracker/templates/tracker/user_list.html:23
 msgid "Tickets not assigned to any tracker user"

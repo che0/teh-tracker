@@ -15,6 +15,7 @@
 {% endfor %}
 {% csrf_token %}
 <input class="form-control" type="submit" value="{% trans "Save" %}" />
+<p>{% trans "By using Tracker you agree with data processing. We use your data to display all payments correctly and for our accounting. You must give us your e-mail address; you may be requested to give us futher details. Data are not given to third parties and only authorized staff members are allowed to access them." %}</p>
 </form>
 
 {% endblock content %}
